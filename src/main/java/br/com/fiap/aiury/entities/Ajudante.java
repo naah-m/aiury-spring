@@ -1,23 +1,32 @@
 package br.com.fiap.aiury.entities;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-//@Table(name = "ajudante")
-//@PrimaryKeyJoinColumn(name = "id_usuario")
+@Table(name = "TB_AJUDANTE")
 public class Ajudante {
 
-    //@Column(name = "area_atuacao", length = 100) // Conforme modelo conceitual
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id; // 🔑 Chave primária
+
+    @Column(name = "area_atuacao", length = 100, nullable = false)
     private String areaAtuacao;
 
-    //@Column(name = "motivacao", columnDefinition = "TEXT") // Novo campo 'motivacao'
+    @Lob
+    @Column(name = "motivacao")
     private String motivacao;
 
-    //@Column(name = "disponibilidade", columnDefinition = "boolean default false")
-    private boolean isDisponivel;
+    @Column(name = "disponivel", nullable = false)
+    private boolean disponivel;
 
-    //@Column(name = "rating")
+    @Column(name = "rating")
     private Double rating;
 }
