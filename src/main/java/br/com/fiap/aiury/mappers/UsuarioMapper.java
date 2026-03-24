@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class UsuarioMapper {
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     public Usuario toEntity(UsuarioDTO usuarioDTO, Cidade cidade) {
         if (usuarioDTO == null) {

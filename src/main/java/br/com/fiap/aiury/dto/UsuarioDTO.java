@@ -15,7 +15,7 @@ public class UsuarioDTO {
     private String nomeAnonimo;
 
     @NotBlank(message = "A data de nascimento é obrigatória")
-    @Pattern(regexp = "^\\d{2}-\\d{2}-\\d{4}$", message = "Formato inválido. Use DD-MM-AAAA")
+    @Pattern(regexp = "^\\d{2}-\\d{2}-\\d{4}$", message = "Formato inválido para data de nascimento. Use DD-MM-AAAA")
     private String dataNascimento;
 
     private String celular;
