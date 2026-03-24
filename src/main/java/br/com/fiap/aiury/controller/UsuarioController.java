@@ -14,9 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 /**
  * Controlador responsável por expor os endpoints de Usuário.
@@ -28,10 +25,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final UsuarioModelAssembler usuarioModelAssembler;
 
     @Autowired
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, UsuarioModelAssembler usuarioModelAssembler) {
         this.usuarioService = usuarioService;
+        this.usuarioModelAssembler = usuarioModelAssembler;
     }
 
     // ➕ Criar novo usuário
@@ -39,10 +38,7 @@ public class UsuarioController {
     @Operation(summary = "Criar usuario", description = "Cadastra um novo usuario")
     public ResponseEntity<EntityModel<Usuario>> cadastrarUsuario(@Valid @RequestBody UsuarioDTO usuarioDTO) {
         Usuario novoUsuario = usuarioService.criarUsuario(usuarioDTO);
-
-        EntityModel<Usuario> resource = EntityModel.of(novoUsuario,
-                linkTo(methodOn(UsuarioController.class).buscarUsuarioPorId(novoUsuario.getId())).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).listarTodos()).withRel("todos-usuarios"));
+        EntityModel<Usuario> resource = usuarioModelAssembler.toModel(novoUsuario);
 
         return new ResponseEntity<>(resource, HttpStatus.CREATED);
     }
@@ -52,10 +48,7 @@ public class UsuarioController {
     @Operation(summary = "Buscar usuario por ID", description = "Busca um usuario pelo identificador")
     public ResponseEntity<EntityModel<Usuario>> buscarUsuarioPorId(@PathVariable Long id) {
         Usuario usuario = usuarioService.buscarPorId(id);
-
-        EntityModel<Usuario> resource = EntityModel.of(usuario,
-                linkTo(methodOn(UsuarioController.class).buscarUsuarioPorId(id)).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).listarTodos()).withRel("todos-usuarios"));
+        EntityModel<Usuario> resource = usuarioModelAssembler.toModel(usuario);
 
         return ResponseEntity.ok(resource);
     }
@@ -64,15 +57,8 @@ public class UsuarioController {
     @GetMapping
     @Operation(summary = "Listar usuarios", description = "Lista todos os usuarios cadastrados")
     public ResponseEntity<CollectionModel<EntityModel<Usuario>>> listarTodos() {
-        List<EntityModel<Usuario>> usuarios = usuarioService.buscarTodos().stream()
-                .map(usuario -> EntityModel.of(usuario,
-                        linkTo(methodOn(UsuarioController.class).buscarUsuarioPorId(usuario.getId())).withSelfRel()))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(
-                CollectionModel.of(usuarios,
-                        linkTo(methodOn(UsuarioController.class).listarTodos()).withSelfRel())
-        );
+        List<Usuario> usuarios = usuarioService.buscarTodos();
+        return ResponseEntity.ok(usuarioModelAssembler.toCollection(usuarios));
     }
 
     // ✏️ Atualizar usuário existente
@@ -80,10 +66,7 @@ public class UsuarioController {
     @Operation(summary = "Atualizar usuario", description = "Atualiza um usuario existente pelo ID")
     public ResponseEntity<EntityModel<Usuario>> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
         Usuario usuarioAtualizado = usuarioService.atualizarUsuario(id, usuarioDTO);
-
-        EntityModel<Usuario> resource = EntityModel.of(usuarioAtualizado,
-                linkTo(methodOn(UsuarioController.class).buscarUsuarioPorId(id)).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).listarTodos()).withRel("todos-usuarios"));
+        EntityModel<Usuario> resource = usuarioModelAssembler.toModel(usuarioAtualizado);
 
         return ResponseEntity.ok(resource);
     }
