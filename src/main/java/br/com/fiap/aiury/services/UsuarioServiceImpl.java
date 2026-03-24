@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UsuarioServiceImpl implements UsuarioService{
+public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final CidadeRepository cidadeRepository;
@@ -30,22 +30,17 @@ public class UsuarioServiceImpl implements UsuarioService{
     @Override
     @Transactional
     public Usuario criarUsuario(UsuarioDTO usuarioDTO) {
-
         Cidade cidade = cidadeRepository.findById(usuarioDTO.getCidadeId())
-                .orElseThrow(() -> new NotFoundException("Cidade não encontrada com ID: " + usuarioDTO.getCidadeId()));
+                .orElseThrow(() -> new NotFoundException("Cidade nao encontrada com ID: " + usuarioDTO.getCidadeId()));
 
         Usuario usuario = usuarioMapper.toEntity(usuarioDTO, cidade);
-
-        // TODO: Implementar a criptografia
-        System.out.println("LOG: Implementar criptografia de senha aqui...");
-
         return usuarioRepository.save(usuario);
     }
 
     @Override
     public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado com ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Usuario nao encontrado com ID: " + id));
     }
 
     @Override
@@ -61,14 +56,12 @@ public class UsuarioServiceImpl implements UsuarioService{
         Cidade novaCidade = null;
         if (detalhesUsuarioDTO.getCidadeId() != null) {
             novaCidade = cidadeRepository.findById(detalhesUsuarioDTO.getCidadeId())
-                    .orElseThrow(() -> new NotFoundException("Cidade não encontrada com ID: " + detalhesUsuarioDTO.getCidadeId()));
+                    .orElseThrow(() -> new NotFoundException("Cidade nao encontrada com ID: " + detalhesUsuarioDTO.getCidadeId()));
         }
 
         usuarioMapper.updateEntityFromDto(usuarioExistente, detalhesUsuarioDTO, novaCidade);
 
-        if (detalhesUsuarioDTO.getSenha() != null && detalhesUsuarioDTO.getSenha().length() >= 8) {
-            System.out.println("LOG: Aplicar BCryptPasswordEncoder na nova senha...");
-            // TODO: Aplicar BCryptPasswordEncoder aqui
+        if (detalhesUsuarioDTO.getSenha() != null) {
             usuarioExistente.setSenha(detalhesUsuarioDTO.getSenha());
         }
 
@@ -78,7 +71,9 @@ public class UsuarioServiceImpl implements UsuarioService{
     @Override
     @Transactional
     public void deletarUsuario(Long id) {
+        if (!usuarioRepository.existsById(id)) {
+            throw new NotFoundException("Usuario nao encontrado com ID: " + id);
+        }
         usuarioRepository.deleteById(id);
     }
-
 }
