@@ -3,6 +3,8 @@ package br.com.fiap.aiury.controller;
 import br.com.fiap.aiury.dto.UsuarioDTO;
 import br.com.fiap.aiury.entities.Usuario;
 import br.com.fiap.aiury.services.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
@@ -22,6 +24,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
  */
 @RestController
 @RequestMapping("/api/usuarios")
+@Tag(name = "Usuarios", description = "Operacoes de cadastro e manutencao de usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -33,6 +36,7 @@ public class UsuarioController {
 
     // ➕ Criar novo usuário
     @PostMapping
+    @Operation(summary = "Criar usuario", description = "Cadastra um novo usuario")
     public ResponseEntity<EntityModel<Usuario>> cadastrarUsuario(@Valid @RequestBody UsuarioDTO usuarioDTO) {
         Usuario novoUsuario = usuarioService.criarUsuario(usuarioDTO);
 
@@ -45,6 +49,7 @@ public class UsuarioController {
 
     // 🔍 Buscar usuário por ID
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar usuario por ID", description = "Busca um usuario pelo identificador")
     public ResponseEntity<EntityModel<Usuario>> buscarUsuarioPorId(@PathVariable Long id) {
         Usuario usuario = usuarioService.buscarPorId(id);
 
@@ -57,6 +62,7 @@ public class UsuarioController {
 
     // 📋 Listar todos os usuários
     @GetMapping
+    @Operation(summary = "Listar usuarios", description = "Lista todos os usuarios cadastrados")
     public ResponseEntity<CollectionModel<EntityModel<Usuario>>> listarTodos() {
         List<EntityModel<Usuario>> usuarios = usuarioService.buscarTodos().stream()
                 .map(usuario -> EntityModel.of(usuario,
@@ -71,6 +77,7 @@ public class UsuarioController {
 
     // ✏️ Atualizar usuário existente
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar usuario", description = "Atualiza um usuario existente pelo ID")
     public ResponseEntity<EntityModel<Usuario>> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
         Usuario usuarioAtualizado = usuarioService.atualizarUsuario(id, usuarioDTO);
 
@@ -84,6 +91,7 @@ public class UsuarioController {
     // 🗑️ Deletar usuário
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Excluir usuario", description = "Remove um usuario pelo ID")
     public void deletarUsuario(@PathVariable Long id) {
         usuarioService.deletarUsuario(id);
     }
