@@ -68,4 +68,5 @@ src/
 `[PLACEHOLDER]` Inserir link oficial do video.
 
 ### Documentacao de endpoints
-`[PLACEHOLDER]` Inserir link oficial (Swagger/Postman/arquivo da disciplina).
+- Arquivo consolidado: `docs/endpoints.md`
+- Recursos documentados: `Usuario`, `Ajudante`, `Chat` e `Mensagem`
