@@ -11,6 +11,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Implementacao da camada de servico para o recurso de ajudante.
+ *
+ * Responsabilidades:
+ * - coordenar mapeamento DTO para entidade;
+ * - validar existencia de registros em operacoes de consulta, atualizacao e exclusao.
+ */
 @Service
 public class AjudanteServiceImpl implements AjudanteService {
 
@@ -23,6 +30,9 @@ public class AjudanteServiceImpl implements AjudanteService {
         this.ajudanteMapper = ajudanteMapper;
     }
 
+    /**
+     * Cria ajudante novo no banco.
+     */
     @Override
     @Transactional
     public Ajudante criarAjudante(AjudanteDTO ajudanteDTO) {
@@ -30,17 +40,26 @@ public class AjudanteServiceImpl implements AjudanteService {
         return ajudanteRepository.save(ajudante);
     }
 
+    /**
+     * Busca ajudante por ID com tratamento de nao encontrado.
+     */
     @Override
     public Ajudante buscarPorId(Long id) {
         return ajudanteRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Ajudante nao encontrado com ID: " + id));
     }
 
+    /**
+     * Lista todos os ajudantes.
+     */
     @Override
     public List<Ajudante> buscarTodos() {
         return ajudanteRepository.findAll();
     }
 
+    /**
+     * Atualiza registro existente com base no DTO informado.
+     */
     @Override
     @Transactional
     public Ajudante atualizarAjudante(Long id, AjudanteDTO ajudanteDTO) {
@@ -49,6 +68,9 @@ public class AjudanteServiceImpl implements AjudanteService {
         return ajudanteRepository.save(ajudanteExistente);
     }
 
+    /**
+     * Exclui ajudante por ID, validando existencia antes da remocao.
+     */
     @Override
     @Transactional
     public void deletarAjudante(Long id) {

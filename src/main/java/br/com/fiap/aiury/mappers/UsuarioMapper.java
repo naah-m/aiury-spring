@@ -8,11 +8,28 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Mapper responsavel por conversoes entre {@link UsuarioDTO} e {@link Usuario}.
+ *
+ * Observacoes:
+ * - converte data textual no padrao DD-MM-AAAA para {@link LocalDate};
+ * - suporta atualizacao parcial da entidade para preservar campos nao enviados.
+ */
 @Component
 public class UsuarioMapper {
 
+    /**
+     * Formatter padrao do contrato atual de entrada da API.
+     */
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
+    /**
+     * Converte DTO de usuario em entidade pronta para persistencia.
+     *
+     * @param usuarioDTO dados de entrada
+     * @param cidade cidade resolvida pela camada de servico
+     * @return entidade de usuario ou {@code null} quando DTO for nulo
+     */
     public Usuario toEntity(UsuarioDTO usuarioDTO, Cidade cidade) {
         if (usuarioDTO == null) {
             return null;
@@ -30,6 +47,13 @@ public class UsuarioMapper {
         return usuario;
     }
 
+    /**
+     * Atualiza entidade existente somente com campos informados no DTO.
+     *
+     * @param usuario entidade alvo
+     * @param usuarioDTO dados recebidos no endpoint
+     * @param novaCidade cidade nova opcional, resolvida no servico
+     */
     public void updateEntityFromDto(Usuario usuario, UsuarioDTO usuarioDTO, Cidade novaCidade) {
         if (usuarioDTO.getNomeReal() != null) {
             usuario.setNomeReal(usuarioDTO.getNomeReal());
@@ -48,7 +72,5 @@ public class UsuarioMapper {
         if (usuarioDTO.getDataNascimento() != null) {
             usuario.setDataNascimento(LocalDate.parse(usuarioDTO.getDataNascimento(), formatter));
         }
-
     }
 }
-

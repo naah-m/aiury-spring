@@ -13,6 +13,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Implementacao de {@link UsuarioService}.
+ *
+ * Responsabilidades:
+ * - aplicar validacoes de existencia (usuario e cidade);
+ * - coordenar mapeamento DTO <-> entidade;
+ * - orquestrar persistencia transacional no repositorio.
+ */
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
@@ -27,6 +35,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         this.usuarioMapper = usuarioMapper;
     }
 
+    /**
+     * Cria usuario novo validando previamente a cidade informada.
+     */
     @Override
     @Transactional
     public Usuario criarUsuario(UsuarioDTO usuarioDTO) {
@@ -37,17 +48,28 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    /**
+     * Busca usuario por ID e dispara erro de negocio caso nao exista.
+     */
     @Override
     public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuario nao encontrado com ID: " + id));
     }
 
+    /**
+     * Retorna lista completa de usuarios.
+     */
     @Override
     public List<Usuario> buscarTodos() {
         return usuarioRepository.findAll();
     }
 
+    /**
+     * Atualiza dados do usuario e opcionalmente troca cidade.
+     *
+     * Mantem a regra existente de atualizar senha apenas quando o valor vier preenchido.
+     */
     @Override
     @Transactional
     public Usuario atualizarUsuario(Long id, UsuarioDTO detalhesUsuarioDTO) {
@@ -68,6 +90,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.save(usuarioExistente);
     }
 
+    /**
+     * Remove usuario por ID com validacao de existencia.
+     */
     @Override
     @Transactional
     public void deletarUsuario(Long id) {

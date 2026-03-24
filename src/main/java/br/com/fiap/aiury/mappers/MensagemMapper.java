@@ -6,9 +6,24 @@ import br.com.fiap.aiury.entities.Mensagem;
 import br.com.fiap.aiury.entities.Usuario;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapper de conversao entre {@link Mensagem} e {@link MensagemDTO}.
+ *
+ * Papel:
+ * - converter payload de entrada para entidade persistivel;
+ * - transformar entidade de resposta em DTO enxuto.
+ */
 @Component
 public class MensagemMapper {
 
+    /**
+     * Converte DTO em entidade de mensagem.
+     *
+     * @param mensagemDTO dados da mensagem
+     * @param chat chat resolvido no servico
+     * @param remetente usuario remetente resolvido no servico
+     * @return entidade nova de mensagem
+     */
     public Mensagem toEntity(MensagemDTO mensagemDTO, Chat chat, Usuario remetente) {
         if (mensagemDTO == null) {
             return null;
@@ -23,6 +38,14 @@ public class MensagemMapper {
         return mensagem;
     }
 
+    /**
+     * Atualiza entidade de mensagem existente com os dados recebidos.
+     *
+     * @param mensagem entidade alvo
+     * @param mensagemDTO dados novos de atualizacao
+     * @param chat referencia de chat resolvida
+     * @param remetente referencia de usuario remetente resolvida
+     */
     public void updateEntityFromDto(Mensagem mensagem, MensagemDTO mensagemDTO, Chat chat, Usuario remetente) {
         if (chat != null) {
             mensagem.setChat(chat);
@@ -38,6 +61,12 @@ public class MensagemMapper {
         }
     }
 
+    /**
+     * Converte entidade para DTO de resposta.
+     *
+     * @param mensagem entidade de dominio
+     * @return DTO serializavel para a API
+     */
     public MensagemDTO toDto(Mensagem mensagem) {
         if (mensagem == null) {
             return null;

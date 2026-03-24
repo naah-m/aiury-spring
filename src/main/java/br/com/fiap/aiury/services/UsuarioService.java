@@ -6,16 +6,51 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 
+/**
+ * Contrato de servicos para operacoes de usuario.
+ *
+ * Papel na arquitetura:
+ * - define casos de uso expostos para o controller;
+ * - isola regras de negocio e validacoes de existencia.
+ */
 public interface UsuarioService {
 
+    /**
+     * Cria novo usuario a partir do DTO de entrada.
+     *
+     * @param usuarioDTO dados validados de cadastro
+     * @return usuario persistido
+     */
     Usuario criarUsuario(@Valid UsuarioDTO usuarioDTO);
 
+    /**
+     * Recupera usuario por identificador.
+     *
+     * @param id identificador do usuario
+     * @return usuario localizado
+     */
     Usuario buscarPorId(Long id);
 
+    /**
+     * Lista todos os usuarios cadastrados.
+     *
+     * @return colecao de usuarios
+     */
     List<Usuario> buscarTodos();
 
+    /**
+     * Atualiza dados do usuario existente.
+     *
+     * @param id identificador do registro alvo
+     * @param detalhesUsuarioDTO novos dados de atualizacao
+     * @return usuario atualizado
+     */
     Usuario atualizarUsuario(Long id, @Valid UsuarioDTO detalhesUsuarioDTO);
 
+    /**
+     * Remove usuario por ID.
+     *
+     * @param id identificador do usuario
+     */
     void deletarUsuario(Long id);
-
 }

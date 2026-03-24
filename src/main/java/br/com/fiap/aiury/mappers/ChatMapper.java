@@ -6,9 +6,24 @@ import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.entities.Usuario;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapper para transformacoes entre entidade {@link Chat} e {@link ChatDTO}.
+ *
+ * Observacao:
+ * - as referencias de usuario e ajudante sao resolvidas na camada de servico
+ *   e recebidas prontas pelo mapper.
+ */
 @Component
 public class ChatMapper {
 
+    /**
+     * Converte DTO em entidade de chat.
+     *
+     * @param chatDTO dados do chat
+     * @param usuario referencia do usuario resolvida no servico
+     * @param ajudante referencia do ajudante resolvida no servico
+     * @return entidade pronta para persistencia
+     */
     public Chat toEntity(ChatDTO chatDTO, Usuario usuario, Ajudante ajudante) {
         if (chatDTO == null) {
             return null;
@@ -24,6 +39,14 @@ public class ChatMapper {
         return chat;
     }
 
+    /**
+     * Atualiza chat existente com dados recebidos no DTO.
+     *
+     * @param chat entidade alvo
+     * @param chatDTO novos dados
+     * @param usuario usuario resolvido para relacao
+     * @param ajudante ajudante resolvido para relacao
+     */
     public void updateEntityFromDto(Chat chat, ChatDTO chatDTO, Usuario usuario, Ajudante ajudante) {
         if (usuario != null) {
             chat.setUsuario(usuario);
@@ -40,6 +63,12 @@ public class ChatMapper {
         }
     }
 
+    /**
+     * Converte entidade para DTO de resposta.
+     *
+     * @param chat entidade de dominio
+     * @return DTO simplificado para camada HTTP
+     */
     public ChatDTO toDto(Chat chat) {
         if (chat == null) {
             return null;

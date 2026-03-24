@@ -15,6 +15,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Implementacao da camada de servico para o recurso de mensagem.
+ *
+ * Responsabilidades:
+ * - validar existencia de chat e remetente antes da persistencia;
+ * - delegar conversoes para {@link MensagemMapper};
+ * - encapsular operacoes transacionais de escrita.
+ */
 @Service
 public class MensagemServiceImpl implements MensagemService {
 
@@ -34,6 +42,9 @@ public class MensagemServiceImpl implements MensagemService {
         this.mensagemMapper = mensagemMapper;
     }
 
+    /**
+     * Cria mensagem apos validar chat e remetente.
+     */
     @Override
     @Transactional
     public Mensagem criarMensagem(MensagemDTO mensagemDTO) {
@@ -44,17 +55,26 @@ public class MensagemServiceImpl implements MensagemService {
         return mensagemRepository.save(mensagem);
     }
 
+    /**
+     * Busca mensagem por ID com tratamento de nao encontrado.
+     */
     @Override
     public Mensagem buscarPorId(Long id) {
         return mensagemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Mensagem nao encontrada com ID: " + id));
     }
 
+    /**
+     * Lista todas as mensagens.
+     */
     @Override
     public List<Mensagem> buscarTodos() {
         return mensagemRepository.findAll();
     }
 
+    /**
+     * Atualiza mensagem existente mantendo validacao de referencias.
+     */
     @Override
     @Transactional
     public Mensagem atualizarMensagem(Long id, MensagemDTO mensagemDTO) {
@@ -67,6 +87,9 @@ public class MensagemServiceImpl implements MensagemService {
         return mensagemRepository.save(mensagemExistente);
     }
 
+    /**
+     * Exclui mensagem por ID com validacao de existencia.
+     */
     @Override
     @Transactional
     public void deletarMensagem(Long id) {
@@ -76,11 +99,17 @@ public class MensagemServiceImpl implements MensagemService {
         mensagemRepository.deleteById(id);
     }
 
+    /**
+     * Resolve chat por ID para uso interno na regra de negocio.
+     */
     private Chat buscarChatPorId(Long id) {
         return chatRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Chat nao encontrado com ID: " + id));
     }
 
+    /**
+     * Resolve usuario por ID para uso interno na regra de negocio.
+     */
     private Usuario buscarUsuarioPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuario nao encontrado com ID: " + id));

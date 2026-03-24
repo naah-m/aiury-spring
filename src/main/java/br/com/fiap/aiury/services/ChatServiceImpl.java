@@ -15,6 +15,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Implementacao de regras da camada de servico para chats.
+ *
+ * Responsabilidades:
+ * - validar existencia de usuario e ajudante referenciados;
+ * - aplicar fluxo de criacao/atualizacao/exclusao do chat;
+ * - encapsular acesso aos repositorios.
+ */
 @Service
 public class ChatServiceImpl implements ChatService {
 
@@ -34,6 +42,9 @@ public class ChatServiceImpl implements ChatService {
         this.chatMapper = chatMapper;
     }
 
+    /**
+     * Cria chat apos validar usuario e ajudante informados.
+     */
     @Override
     @Transactional
     public Chat criarChat(ChatDTO chatDTO) {
@@ -44,17 +55,26 @@ public class ChatServiceImpl implements ChatService {
         return chatRepository.save(chat);
     }
 
+    /**
+     * Busca chat por ID com tratamento de nao encontrado.
+     */
     @Override
     public Chat buscarPorId(Long id) {
         return chatRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Chat nao encontrado com ID: " + id));
     }
 
+    /**
+     * Lista todos os chats persistidos.
+     */
     @Override
     public List<Chat> buscarTodos() {
         return chatRepository.findAll();
     }
 
+    /**
+     * Atualiza chat existente validando as referencias relacionais.
+     */
     @Override
     @Transactional
     public Chat atualizarChat(Long id, ChatDTO chatDTO) {
@@ -67,6 +87,9 @@ public class ChatServiceImpl implements ChatService {
         return chatRepository.save(chatExistente);
     }
 
+    /**
+     * Exclui chat com verificacao previa de existencia.
+     */
     @Override
     @Transactional
     public void deletarChat(Long id) {
@@ -76,11 +99,17 @@ public class ChatServiceImpl implements ChatService {
         chatRepository.deleteById(id);
     }
 
+    /**
+     * Busca usuario por ID para uso interno na composicao do chat.
+     */
     private Usuario buscarUsuarioPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuario nao encontrado com ID: " + id));
     }
 
+    /**
+     * Busca ajudante por ID para uso interno na composicao do chat.
+     */
     private Ajudante buscarAjudantePorId(Long id) {
         return ajudanteRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Ajudante nao encontrado com ID: " + id));

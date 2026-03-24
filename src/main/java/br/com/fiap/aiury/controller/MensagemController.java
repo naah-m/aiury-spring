@@ -14,6 +14,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller REST do recurso de mensagens.
+ *
+ * Responsabilidades:
+ * - disponibilizar CRUD basico de mensagens;
+ * - converter entidade para DTO de resposta;
+ * - manter contratos HTTP desacoplados da modelagem interna.
+ */
 @RestController
 @RequestMapping("/api/mensagens")
 @Tag(name = "Mensagens", description = "Operacoes de envio e manutencao de mensagens")
@@ -28,6 +36,12 @@ public class MensagemController {
         this.mensagemMapper = mensagemMapper;
     }
 
+    /**
+     * Cria nova mensagem vinculada a um chat.
+     *
+     * @param mensagemDTO dados de entrada da mensagem
+     * @return mensagem criada em formato DTO
+     */
     @PostMapping
     @Operation(summary = "Criar mensagem", description = "Cria uma nova mensagem vinculada a um chat")
     public ResponseEntity<MensagemDTO> cadastrarMensagem(@Valid @RequestBody MensagemDTO mensagemDTO) {
@@ -35,6 +49,12 @@ public class MensagemController {
         return new ResponseEntity<>(mensagemMapper.toDto(novaMensagem), HttpStatus.CREATED);
     }
 
+    /**
+     * Busca mensagem por identificador.
+     *
+     * @param id identificador da mensagem
+     * @return mensagem encontrada em formato DTO
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Buscar mensagem por ID", description = "Busca uma mensagem pelo identificador")
     public ResponseEntity<MensagemDTO> buscarMensagemPorId(@PathVariable Long id) {
@@ -42,6 +62,11 @@ public class MensagemController {
         return ResponseEntity.ok(mensagemMapper.toDto(mensagem));
     }
 
+    /**
+     * Lista todas as mensagens cadastradas.
+     *
+     * @return lista de mensagens convertidas para DTO
+     */
     @GetMapping
     @Operation(summary = "Listar mensagens", description = "Lista todas as mensagens cadastradas")
     public ResponseEntity<List<MensagemDTO>> listarTodos() {
@@ -53,6 +78,13 @@ public class MensagemController {
         return ResponseEntity.ok(mensagens);
     }
 
+    /**
+     * Atualiza mensagem existente.
+     *
+     * @param id identificador da mensagem
+     * @param mensagemDTO novos dados da mensagem
+     * @return mensagem atualizada em formato DTO
+     */
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar mensagem", description = "Atualiza uma mensagem existente pelo ID")
     public ResponseEntity<MensagemDTO> atualizarMensagem(@PathVariable Long id, @Valid @RequestBody MensagemDTO mensagemDTO) {
@@ -60,6 +92,11 @@ public class MensagemController {
         return ResponseEntity.ok(mensagemMapper.toDto(mensagemAtualizada));
     }
 
+    /**
+     * Exclui mensagem por ID.
+     *
+     * @param id identificador da mensagem
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Excluir mensagem", description = "Remove uma mensagem pelo ID")
