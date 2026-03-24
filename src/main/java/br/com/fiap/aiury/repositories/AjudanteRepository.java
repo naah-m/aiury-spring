@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface AjudanteRepository extends JpaRepository<Ajudante, Long> {
-    List<Ajudante> findByIsDisponivel(boolean isDisponivel);
+    List<Ajudante> findByDisponivel(boolean disponivel);
 }
