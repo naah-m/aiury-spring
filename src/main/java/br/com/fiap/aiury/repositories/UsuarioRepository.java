@@ -34,6 +34,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @EntityGraph(attributePaths = {"cidade", "cidade.estado"})
     List<Usuario> findByCidade_Id(Long cidadeId);
 
+    Optional<Usuario> findByCelular(String celular);
+
     boolean existsByCelular(String celular);
 
     boolean existsByCelularAndIdNot(String celular, Long id);

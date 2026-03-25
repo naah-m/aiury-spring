@@ -30,6 +30,18 @@
 7. Requests de listagem com filtros
 8. Pasta `Erros Controlados`
 
+## 4.1 Atalho para demo com seed local (`dev`)
+Quando a aplicacao sobe no profile `dev`, uma seed minima e aplicada automaticamente.
+Com isso, voce pode iniciar direto pelas requests de `GET` (listagens) para gravacao de video:
+- `GET /api/estados`
+- `GET /api/cidades`
+- `GET /api/usuarios`
+- `GET /api/ajudantes`
+- `GET /api/chats`
+- `GET /api/mensagens`
+
+Depois, use os IDs retornados para executar updates/deletes sem precisar criar tudo do zero.
+
 ## 5. Padrao de data para requests
 - `dataNascimento` (`Usuario`): `dd/MM/yyyy`
 - `dataInicio` e `dataFim` (`Chat`): `dd/MM/yyyy HH:mm:ss`

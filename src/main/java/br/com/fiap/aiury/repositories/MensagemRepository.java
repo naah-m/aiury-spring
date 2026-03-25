@@ -4,7 +4,9 @@ import br.com.fiap.aiury.entities.Mensagem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repositorio de acesso a dados para {@link Mensagem}.
@@ -28,4 +30,11 @@ public interface MensagemRepository extends JpaRepository<Mensagem, Long> {
      * Lista mensagens por chat e remetente.
      */
     List<Mensagem> findByChat_IdAndRemetente_IdOrderByDataEnvioAsc(Long chatId, Long remetenteId);
+
+    Optional<Mensagem> findFirstByChat_IdAndRemetente_IdAndDataEnvioAndTextoOrderByIdAsc(
+            Long chatId,
+            Long remetenteId,
+            LocalDateTime dataEnvio,
+            String texto
+    );
 }

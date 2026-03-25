@@ -24,5 +24,8 @@ public interface CidadeRepository extends JpaRepository<Cidade, Long> {
     @EntityGraph(attributePaths = "estado")
     List<Cidade> findByEstado_IdOrderByNomeCidadeAsc(Long estadoId);
 
+    @EntityGraph(attributePaths = "estado")
+    Optional<Cidade> findByNomeCidadeIgnoreCaseAndEstado_Id(String nomeCidade, Long estadoId);
+
     boolean existsByNomeCidadeIgnoreCaseAndEstado_Id(String nomeCidade, Long estadoId);
 }

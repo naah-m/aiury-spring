@@ -82,7 +82,29 @@ O projeto sobe com H2 por default:
 .\mvnw.cmd spring-boot:run
 ```
 
-### 7.2 Perfil Oracle (`oracle`)
+### 7.2 Seed local para demo (automatico no `dev`)
+Ao subir no profile `dev`, a aplicacao carrega uma seed minima controlada para facilitar testes e apresentacao:
+- 2 estados (`SP`, `RJ`)
+- 3 cidades (`Sao Paulo`, `Campinas`, `Rio de Janeiro`)
+- 2 usuarios de dominio (`Camila Nunes`, `Diego Pereira`)
+- 2 ajudantes
+- 2 chats e 3 mensagens
+
+Credenciais do painel web (Spring Security):
+- `admin / admin123` (perfil `ADMIN`)
+- `atendente / atendente123` (perfil `ATENDENTE`)
+
+Senha padrao dos usuarios de dominio seed:
+- `demo12345`
+
+Para desabilitar a seed local:
+
+```powershell
+$env:AIURY_SEED_ENABLED="false"
+.\mvnw.cmd spring-boot:run
+```
+
+### 7.3 Perfil Oracle (`oracle`)
 
 ```powershell
 $env:SPRING_PROFILES_ACTIVE="oracle"

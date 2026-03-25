@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repositorio de persistencia para {@link Ajudante}.
@@ -16,6 +17,8 @@ import java.util.List;
 public interface AjudanteRepository extends JpaRepository<Ajudante, Long> {
 
     List<Ajudante> findAllByOrderByAreaAtuacaoAsc();
+
+    Optional<Ajudante> findFirstByAreaAtuacaoIgnoreCaseOrderByIdAsc(String areaAtuacao);
 
     /**
      * Retorna ajudantes filtrando pela disponibilidade atual.
