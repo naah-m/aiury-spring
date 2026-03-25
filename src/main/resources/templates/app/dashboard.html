@@ -14,6 +14,8 @@
         </div>
     </section>
 
+    <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
+
     <section class="row g-3 g-lg-4">
         <div class="col-sm-6 col-xl-3">
             <article class="metric-card rounded-4 p-4 h-100">

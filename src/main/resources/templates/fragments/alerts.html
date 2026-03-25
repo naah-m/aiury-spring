@@ -2,15 +2,25 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <body>
 <div th:fragment="feedback(successMessage, errorMessage)">
-    <div class="alert alert-success border-0 shadow-sm" role="alert"
-         th:if="${successMessage != null and !#strings.isEmpty(successMessage)}"
-         th:text="${successMessage}">
-        Operacao concluida com sucesso.
+    <div class="alert app-alert alert-success border-0 shadow-sm alert-dismissible fade show" role="alert"
+         th:if="${successMessage != null and !#strings.isEmpty(successMessage)}">
+        <span th:text="${successMessage}">Operacao concluida com sucesso.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
     </div>
-    <div class="alert alert-danger border-0 shadow-sm" role="alert"
-         th:if="${errorMessage != null and !#strings.isEmpty(errorMessage)}"
-         th:text="${errorMessage}">
-        Nao foi possivel concluir a operacao.
+    <div class="alert app-alert alert-danger border-0 shadow-sm alert-dismissible fade show" role="alert"
+         th:if="${errorMessage != null and !#strings.isEmpty(errorMessage)}">
+        <span th:text="${errorMessage}">Nao foi possivel concluir a operacao.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+    </div>
+    <div class="alert app-alert alert-warning border-0 shadow-sm alert-dismissible fade show" role="alert"
+         th:if="${mensagemAviso != null and !#strings.isEmpty(mensagemAviso)}">
+        <span th:text="${mensagemAviso}">Verifique as informacoes desta pagina.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+    </div>
+    <div class="alert app-alert alert-info border-0 shadow-sm alert-dismissible fade show" role="alert"
+         th:if="${mensagemInfo != null and !#strings.isEmpty(mensagemInfo)}">
+        <span th:text="${mensagemInfo}">Informacao importante.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
     </div>
 </div>
 </body>

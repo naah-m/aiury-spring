@@ -4,6 +4,8 @@ import br.com.fiap.aiury.dto.web.UsuarioListItemView;
 import br.com.fiap.aiury.dto.web.UsuarioWebForm;
 import br.com.fiap.aiury.entities.Cidade;
 import br.com.fiap.aiury.entities.Usuario;
+import br.com.fiap.aiury.exceptions.ConflictException;
+import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.web.UsuarioWebMapper;
 import br.com.fiap.aiury.services.CidadeService;
 import br.com.fiap.aiury.services.UsuarioService;
@@ -68,13 +70,20 @@ public class UsuarioMvcController {
             return "app/usuarios/form";
         }
 
-        usuarioService.criarUsuario(usuarioWebMapper.toRequestDto(usuarioForm));
-        redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuario cadastrado com sucesso.");
-        return "redirect:/app/usuarios";
+        try {
+            usuarioService.criarUsuario(usuarioWebMapper.toRequestDto(usuarioForm));
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuario cadastrado com sucesso.");
+            return "redirect:/app/usuarios";
+        } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
+            carregarCidades(model);
+            model.addAttribute("mensagemErro", ex.getMessage());
+            return "app/usuarios/form";
+        }
     }
 
     private void carregarCidades(Model model) {
         List<Cidade> cidades = cidadeService.buscarTodos(null);
         model.addAttribute("cidades", cidades);
+        model.addAttribute("semCidades", cidades.isEmpty());
     }
 }

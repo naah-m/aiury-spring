@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{layout/base :: base('Erro', 'home', ~{::content})}">
 <th:block th:fragment="content">
     <section class="error-card rounded-4 p-4 p-lg-5 text-center mx-auto">
@@ -8,7 +9,11 @@
         <h1 class="display-5 fw-bold mb-2" th:text="${status}">500</h1>
         <h2 class="h4 mb-3" th:text="${error}">Erro interno</h2>
         <p class="text-secondary mb-4" th:text="${message}">Nao foi possivel concluir a operacao.</p>
-        <a class="btn btn-primary px-4" th:href="@{/}">Voltar ao inicio</a>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a class="btn btn-primary px-4" th:href="@{/}">Voltar ao inicio</a>
+            <a class="btn btn-outline-primary px-4" sec:authorize="isAuthenticated()" th:href="@{/app}">Voltar ao painel</a>
+            <a class="btn btn-outline-primary px-4" sec:authorize="isAnonymous()" th:href="@{/login}">Ir para login</a>
+        </div>
     </section>
 </th:block>
 </html>

@@ -73,7 +73,17 @@
                 </thead>
                 <tbody>
                 <tr th:if="${#lists.isEmpty(chats)}">
-                    <td colspan="7" class="text-center py-4">Nenhum chat encontrado para os filtros aplicados.</td>
+                    <td colspan="7" class="text-center py-4">
+                        <p class="mb-2">Nenhum chat encontrado para os filtros aplicados.</p>
+                        <div class="d-inline-flex gap-2 flex-wrap justify-content-center">
+                            <a class="btn btn-sm btn-outline-secondary" th:if="${temFiltrosAtivos}" th:href="@{/app/chats}">
+                                Limpar filtros
+                            </a>
+                            <a class="btn btn-sm btn-primary" th:href="@{/app/chats/novo}">
+                                Abrir novo chat
+                            </a>
+                        </div>
+                    </td>
                 </tr>
                 <tr th:each="chat : ${chats}">
                     <td class="fw-semibold" th:text="${'#' + chat.id}">#1</td>
@@ -91,10 +101,8 @@
                     <td th:text="${chat.dataInicio != null ? #temporals.format(chat.dataInicio, 'dd/MM/yyyy HH:mm') : '-'}">-</td>
                     <td th:text="${chat.dataFim != null ? #temporals.format(chat.dataFim, 'dd/MM/yyyy HH:mm') : '-'}">-</td>
                     <td>
-                        <span class="status-pill"
-                              th:classappend="' status-' + ${#strings.toLowerCase(#strings.replace(chat.status.name(), '_', '-'))}"
-                              th:text="${statusLabels[chat.status]}">
-                            Em andamento
+                        <span th:replace="~{fragments/chat-status :: pill(${chat.status})}">
+                            Status
                         </span>
                     </td>
                     <td class="text-end">

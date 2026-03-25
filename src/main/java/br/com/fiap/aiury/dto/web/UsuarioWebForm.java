@@ -26,7 +26,7 @@ public class UsuarioWebForm {
     private LocalDate dataNascimento;
 
     @Pattern(
-            regexp = "^\\d{10,11}$",
+            regexp = "^$|^\\d{10,11}$",
             message = "O celular deve conter apenas numeros com DDD (10 ou 11 digitos)"
     )
     private String celular;

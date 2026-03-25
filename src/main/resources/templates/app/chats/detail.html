@@ -7,10 +7,8 @@
         <div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
                 <h1 class="mb-0" th:text="${'Chat #' + chat.id}">Chat #1</h1>
-                <span class="status-pill"
-                      th:classappend="' status-' + ${#strings.toLowerCase(#strings.replace(chat.status.name(), '_', '-'))}"
-                      th:text="${statusLabels[chat.status]}">
-                    Em andamento
+                <span th:replace="~{fragments/chat-status :: pill(${chat.status})}">
+                    Status
                 </span>
             </div>
             <p class="text-secondary mb-0 mt-1">Visualizacao completa do atendimento e atualizacao de status.</p>
@@ -78,6 +76,12 @@
             <article class="page-card rounded-4 p-3 p-lg-4 h-100">
                 <h2 class="h5 fw-bold mb-3">Acompanhamento de status</h2>
 
+                <div class="alert alert-info border-0 shadow-sm"
+                     role="alert"
+                     th:if="${chatEncerrado}">
+                    Este atendimento esta finalizado. Altere o status apenas se houver correcao operacional.
+                </div>
+
                 <ul class="status-timeline list-unstyled m-0 mb-4">
                     <li th:each="step : ${statusTimeline}"
                         class="status-step"
@@ -90,13 +94,7 @@
                 <form th:action="@{/app/chats/{id}/status(id=${chat.id})}" th:object="${statusForm}" method="post" class="row g-3">
                     <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-                    <div class="col-12" th:if="${#fields.hasErrors('*')}">
-                        <div class="alert alert-danger border-0 shadow-sm mb-0">
-                            <ul class="mb-0 ps-3">
-                                <li th:each="erro : ${#fields.errors('*')}" th:text="${erro}">Erro</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="col-12" th:replace="~{fragments/form-errors :: summary('Revise os campos para atualizar o status.')}"></div>
 
                     <div class="col-12">
                         <label for="status" class="form-label">Novo status</label>
@@ -135,7 +133,10 @@
 
     <section class="page-card rounded-4 p-3 p-lg-4">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
-            <h2 class="h5 fw-bold mb-0">Mensagens do chat</h2>
+            <div>
+                <h2 class="h5 fw-bold mb-0">Mensagens do chat</h2>
+                <small class="text-secondary" th:text="${totalMensagens + ' registradas'}">0 registradas</small>
+            </div>
             <a class="btn btn-sm btn-outline-primary" th:href="@{/app/chats/{id}/conversa(id=${chat.id})}">
                 Ir para tela de conversa
             </a>

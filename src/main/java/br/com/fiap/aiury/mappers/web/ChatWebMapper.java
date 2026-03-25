@@ -94,7 +94,7 @@ public class ChatWebMapper {
         MensagemRequestDTO dto = new MensagemRequestDTO();
         dto.setChatId(chat.getId());
         dto.setRemetenteId(chat.getUsuario() != null ? chat.getUsuario().getId() : null);
-        dto.setTexto(form.getTexto());
+        dto.setTexto(form.getTexto() != null ? form.getTexto().trim() : null);
         dto.setDataEnvio(dataEnvio);
         return dto;
     }

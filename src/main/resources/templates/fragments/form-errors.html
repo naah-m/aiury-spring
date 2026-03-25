@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="summary(title)">
+    <div class="alert alert-danger border-0 shadow-sm mb-0" th:if="${#fields.hasErrors('*')}">
+        <p class="fw-semibold mb-2"
+           th:text="${title != null and !#strings.isEmpty(title) ? title : 'Corrija os campos abaixo:'}">
+            Corrija os campos abaixo:
+        </p>
+        <ul class="mb-0 ps-3">
+            <li th:each="erro : ${#fields.errors('*')}" th:text="${erro}">Erro de validacao</li>
+        </ul>
+    </div>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+<span th:fragment="pill(status)"
+      class="status-pill"
+      th:classappend="' ' + ${@chatMvcViewSupport.resolverClasseStatus(status)}"
+      th:text="${@chatMvcViewSupport.resolverRotuloStatus(status)}">
+    Status
+</span>
+</body>
+</html>

@@ -64,6 +64,26 @@ body {
     backdrop-filter: blur(4px);
 }
 
+.app-alert {
+    border-left: 4px solid transparent;
+}
+
+.app-alert.alert-success {
+    border-left-color: #1b8f72;
+}
+
+.app-alert.alert-danger {
+    border-left-color: #b63a4b;
+}
+
+.app-alert.alert-warning {
+    border-left-color: #b07a00;
+}
+
+.app-alert.alert-info {
+    border-left-color: #0a6e8a;
+}
+
 .home-hero {
     color: #ffffff;
     background: linear-gradient(135deg, #0d6c60 0%, #0f8f7d 50%, #0fa28f 100%);
@@ -185,6 +205,11 @@ body {
 .status-finalizado-sistema {
     background: #f1f3f5;
     color: #495057;
+}
+
+.status-desconhecido {
+    background: #f1f3f5;
+    color: #6c757d;
 }
 
 .chat-info-item {

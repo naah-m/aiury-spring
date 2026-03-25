@@ -53,7 +53,17 @@
                 </thead>
                 <tbody>
                 <tr th:if="${#lists.isEmpty(usuarios)}">
-                    <td colspan="6" class="text-center py-4">Nenhum usuario encontrado para o filtro informado.</td>
+                    <td colspan="6" class="text-center py-4">
+                        <p class="mb-2">Nenhum usuario encontrado para o filtro informado.</p>
+                        <div class="d-inline-flex gap-2 flex-wrap justify-content-center">
+                            <a class="btn btn-sm btn-outline-secondary" th:if="${filtroCidadeId != null}" th:href="@{/app/usuarios}">
+                                Limpar filtro
+                            </a>
+                            <a class="btn btn-sm btn-primary" sec:authorize="hasRole('ADMIN')" th:href="@{/app/usuarios/novo}">
+                                Cadastrar usuario
+                            </a>
+                        </div>
+                    </td>
                 </tr>
                 <tr th:each="usuario : ${usuarios}">
                     <td th:text="${usuario.id}">1</td>

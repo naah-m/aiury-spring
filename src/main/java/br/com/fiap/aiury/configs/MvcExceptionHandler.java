@@ -26,6 +26,14 @@ public class MvcExceptionHandler {
         return "error/default";
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public String handleBadRequest(IllegalArgumentException ex, Model model) {
+        model.addAttribute("status", 400);
+        model.addAttribute("error", "Bad Request");
+        model.addAttribute("message", ex.getMessage());
+        return "error/default";
+    }
+
     @ExceptionHandler(Exception.class)
     public String handleGeneric(Exception ex, Model model) {
         model.addAttribute("status", 500);

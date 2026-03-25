@@ -11,7 +11,10 @@
             Seu perfil nao possui permissao para acessar esta funcionalidade.
             Se precisar, solicite elevacao de acesso ao administrador.
         </p>
-        <a class="btn btn-primary px-4" th:href="@{/app}">Voltar ao painel</a>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a class="btn btn-primary px-4" th:href="@{/app}">Voltar ao painel</a>
+            <a class="btn btn-outline-primary px-4" th:href="@{/app/chats}">Abrir chats</a>
+        </div>
     </section>
 </th:block>
 </html>

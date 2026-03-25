@@ -7,10 +7,8 @@
         <div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
                 <h1 class="mb-0" th:text="${'Conversa - Chat #' + chat.id}">Conversa</h1>
-                <span class="status-pill"
-                      th:classappend="' status-' + ${#strings.toLowerCase(#strings.replace(chat.status.name(), '_', '-'))}"
-                      th:text="${statusLabels[chat.status]}">
-                    Em andamento
+                <span th:replace="~{fragments/chat-status :: pill(${chat.status})}">
+                    Status
                 </span>
             </div>
             <p class="text-secondary mb-0 mt-1"
@@ -72,6 +70,8 @@
 
             <form th:action="@{/app/chats/{id}/conversa/mensagens(id=${chat.id})}" th:object="${mensagemForm}" method="post">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="mb-3" th:replace="~{fragments/form-errors :: summary('A mensagem nao foi enviada. Revise o conteudo.')}"></div>
 
                 <label for="texto" class="form-label fw-semibold">Nova mensagem</label>
                 <textarea id="texto"

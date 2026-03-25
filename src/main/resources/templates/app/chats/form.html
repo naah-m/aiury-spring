@@ -23,14 +23,7 @@
         <form th:action="@{/app/chats}" th:object="${chatForm}" method="post" class="row g-3">
             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-            <div class="col-12" th:if="${#fields.hasErrors('*')}">
-                <div class="alert alert-danger border-0 shadow-sm mb-0">
-                    <p class="fw-semibold mb-2">Corrija os pontos abaixo:</p>
-                    <ul class="mb-0 ps-3">
-                        <li th:each="erro : ${#fields.errors('*')}" th:text="${erro}">Erro de validacao</li>
-                    </ul>
-                </div>
-            </div>
+            <div class="col-12" th:replace="~{fragments/form-errors :: summary('Corrija os campos obrigatorios para abrir o chat.')}"></div>
 
             <div class="col-12 col-lg-6">
                 <label for="usuarioId" class="form-label">Usuario</label>

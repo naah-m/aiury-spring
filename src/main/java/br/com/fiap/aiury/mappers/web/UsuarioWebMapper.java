@@ -13,10 +13,10 @@ public class UsuarioWebMapper {
 
     public UsuarioRequestDTO toRequestDto(UsuarioWebForm form) {
         UsuarioRequestDTO dto = new UsuarioRequestDTO();
-        dto.setNomeReal(form.getNomeReal());
-        dto.setNomeAnonimo(form.getNomeAnonimo());
+        dto.setNomeReal(normalizarTextoObrigatorio(form.getNomeReal()));
+        dto.setNomeAnonimo(normalizarTextoOpcional(form.getNomeAnonimo()));
         dto.setDataNascimento(form.getDataNascimento());
-        dto.setCelular(form.getCelular());
+        dto.setCelular(normalizarTextoOpcional(form.getCelular()));
         dto.setSenha(form.getSenha());
         dto.setCidadeId(form.getCidadeId());
         return dto;
@@ -34,5 +34,18 @@ public class UsuarioWebMapper {
                 estado != null ? estado.getUf() : "-",
                 usuario.getDataCadastro()
         );
+    }
+
+    private String normalizarTextoObrigatorio(String valor) {
+        return valor == null ? null : valor.trim();
+    }
+
+    private String normalizarTextoOpcional(String valor) {
+        if (valor == null) {
+            return null;
+        }
+
+        String valorNormalizado = valor.trim();
+        return valorNormalizado.isEmpty() ? null : valorNormalizado;
     }
 }
