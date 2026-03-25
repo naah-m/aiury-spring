@@ -1,40 +1,45 @@
-# Guia de Uso - Postman (Aiury API)
+# Guia de Validacao com Postman
 
-## 1. Conteudo da Pasta
-- `Aiury-Sprint3.postman_collection.json`: collection oficial da entrega.
-- `Aiury-local.postman_environment.json`: environment com variaveis de ambiente local.
-- `payloads/`: exemplos de corpo para requisicoes de criacao e atualizacao.
+## 1. Arquivos desta pasta
+- `Aiury-Sprint3.postman_collection.json`: collection oficial da Sprint 3.
+- `Aiury-local.postman_environment.json`: environment para execucao local.
+- `payloads/`: exemplos de payload por recurso.
 
-## 2. Como Importar
-1. Abrir o Postman.
-2. Importar a collection `Aiury-Sprint3.postman_collection.json`.
-3. Importar o environment `Aiury-local.postman_environment.json`.
-4. Selecionar o environment `Aiury Local`.
+## 2. Importacao
+1. Abra o Postman.
+2. Importe `Aiury-Sprint3.postman_collection.json`.
+3. Importe `Aiury-local.postman_environment.json`.
+4. Selecione o environment `Aiury Local`.
 
-## 3. Variaveis do Environment
-- `baseUrl`: URL base da API (default: `http://localhost:8080`)
-- `usuarioId`: preenchido apos criar usuario
-- `ajudanteId`: preenchido apos criar ajudante
-- `chatId`: preenchido apos criar chat
-- `mensagemId`: preenchido apos criar mensagem
+## 3. Variaveis do environment
+- `baseUrl`: URL base da API. Default: `http://localhost:8080`.
+- `estadoId`: preenchido apos `POST /api/estados`.
+- `cidadeId`: preenchido apos `POST /api/cidades`.
+- `usuarioId`: preenchido apos `POST /api/usuarios`.
+- `ajudanteId`: preenchido apos `POST /api/ajudantes`.
+- `chatId`: preenchido apos `POST /api/chats`.
+- `mensagemId`: preenchido apos `POST /api/mensagens`.
 
-## 4. Ordem Recomendada de Execucao
-1. `POST /api/usuarios`
-2. `POST /api/ajudantes`
-3. `POST /api/chats`
-4. `POST /api/mensagens`
-5. `GET` de listagens com filtros
-6. `PUT` de atualizacao dos recursos
-7. `DELETE` de encerramento dos recursos
-8. Cenarios de erro (`400`, `404`, `409`)
+## 4. Ordem recomendada de execucao
+1. `Catalogos > Criar estado`
+2. `Catalogos > Criar cidade`
+3. `Usuarios > Criar usuario`
+4. `Ajudantes > Criar ajudante`
+5. `Chats > Criar chat`
+6. `Mensagens > Criar mensagem`
+7. Requests de listagem com filtros
+8. Pasta `Erros Controlados`
 
-## 5. Arquivos de Payload de Apoio
-- Usuario: `usuario-create.json`, `usuario-update.json`, `usuario-invalid-date.json`
-- Ajudante: `ajudante-create.json`, `ajudante-update.json`
-- Chat: `chat-create.json`, `chat-update.json`
-- Mensagem: `mensagem-create.json`, `mensagem-update.json`
+## 5. Cenarios cobertos na collection
+- Fluxo completo de cadastro e vinculacao entre recursos.
+- Filtros por `estadoId`, `cidadeId`, `usuarioId`, `chatId`.
+- Captura automatica de IDs para as proximas requests.
+- Validacao de erro `400` (payload invalido).
+- Validacao de erro `404` (recurso inexistente).
 
-## 6. Evidencias Esperadas para Avaliacao
-- Captura de tela dos principais requests com status de sucesso.
-- Captura de tela de erros controlados com payload `ApiErrorResponse`.
-- Export atualizado da collection apos rodada completa de testes.
+## 6. Evidencias que devem ser salvas para avaliacao
+- Print de `201` para cada recurso criado.
+- Print de `200` em listagens com filtro.
+- Print de `400` com `validationErrors`.
+- Print de `404` para busca de recurso inexistente.
+- Export atualizado da collection apos execucao final.

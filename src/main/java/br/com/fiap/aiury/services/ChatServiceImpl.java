@@ -13,6 +13,7 @@ import br.com.fiap.aiury.repositories.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,6 +51,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public Chat criarChat(ChatRequestDTO chatDTO) {
+        validarConsistenciaTemporal(chatDTO);
         Usuario usuario = buscarUsuarioPorId(chatDTO.getUsuarioId());
         Ajudante ajudante = buscarAjudantePorId(chatDTO.getAjudanteId());
 
@@ -91,7 +93,7 @@ public class ChatServiceImpl implements ChatService {
             );
         }
 
-        return chatRepository.findAll(specification);
+        return chatRepository.findAll(specification, Sort.by(Sort.Direction.DESC, "dataInicio"));
     }
 
     /**
@@ -101,6 +103,7 @@ public class ChatServiceImpl implements ChatService {
     @Transactional
     public Chat atualizarChat(Long id, ChatRequestDTO chatDTO) {
         Chat chatExistente = buscarPorId(id);
+        validarConsistenciaTemporal(chatDTO);
 
         Usuario usuario = buscarUsuarioPorId(chatDTO.getUsuarioId());
         Ajudante ajudante = buscarAjudantePorId(chatDTO.getAjudanteId());
@@ -135,5 +138,23 @@ public class ChatServiceImpl implements ChatService {
     private Ajudante buscarAjudantePorId(Long id) {
         return ajudanteRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Ajudante nao encontrado com ID: " + id));
+    }
+
+    private void validarConsistenciaTemporal(ChatRequestDTO chatDTO) {
+        if (chatDTO.getDataFim() != null && chatDTO.getDataFim().isBefore(chatDTO.getDataInicio())) {
+            throw new IllegalArgumentException("A data/hora de fim nao pode ser anterior a data/hora de inicio.");
+        }
+
+        boolean statusFinalizado = chatDTO.getStatus() == ChatStatus.FINALIZADO_USUARIO
+                || chatDTO.getStatus() == ChatStatus.FINALIZADO_AJUDANTE
+                || chatDTO.getStatus() == ChatStatus.FINALIZADO_SISTEMA;
+
+        if (statusFinalizado && chatDTO.getDataFim() == null) {
+            throw new IllegalArgumentException("Chats finalizados devem informar data/hora de fim.");
+        }
+
+        if (chatDTO.getStatus() == ChatStatus.INICIADO && chatDTO.getDataFim() != null) {
+            throw new IllegalArgumentException("Chat com status INICIADO nao pode ter data/hora de fim.");
+        }
     }
 }

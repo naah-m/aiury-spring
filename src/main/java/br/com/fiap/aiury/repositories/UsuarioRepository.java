@@ -16,6 +16,8 @@ import java.util.List;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
+    List<Usuario> findAllByOrderByNomeRealAsc();
+
     /**
      * Retorna usuarios filtrados por cidade.
      *
@@ -23,4 +25,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
      * @return lista de usuarios da cidade
      */
     List<Usuario> findByCidade_Id(Long cidadeId);
+
+    boolean existsByCelular(String celular);
+
+    boolean existsByCelularAndIdNot(String celular, Long id);
 }

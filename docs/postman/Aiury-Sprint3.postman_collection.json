@@ -1,11 +1,132 @@
 {
   "info": {
-    "_postman_id": "a1a7d222-d7dc-4d02-9204-91f302f9e100",
+    "_postman_id": "15f996bc-bfb8-4ff2-86b2-a6e8cc6322a0",
     "name": "Aiury Sprint 3",
-    "description": "Colecao de testes manuais para usuarios, ajudantes, chats e mensagens.",
+    "description": "Colecao oficial de validacao Sprint 3 para catalogos, usuarios, ajudantes, chats e mensagens.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
+    {
+      "name": "Catalogos",
+      "item": [
+        {
+          "name": "Criar estado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomeEstado\": \"Sao Paulo\",\n  \"uf\": \"SP\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/estados",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "estados"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "if (json.id) { pm.environment.set('estadoId', json.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar estados",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/estados",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "estados"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Criar cidade",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomeCidade\": \"Sao Paulo\",\n  \"estadoId\": {{estadoId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cidades",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cidades"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "if (json.id) { pm.environment.set('cidadeId', json.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar cidades por estado",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/cidades?estadoId={{estadoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cidades"
+              ],
+              "query": [
+                {
+                  "key": "estadoId",
+                  "value": "{{estadoId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
     {
       "name": "Usuarios",
       "item": [
@@ -21,7 +142,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nomeReal\": \"Maria Silva\",\n  \"nomeAnonimo\": \"LuzInterior\",\n  \"dataNascimento\": \"15-08-1998\",\n  \"celular\": \"11999998888\",\n  \"senha\": \"segredo123\",\n  \"cidadeId\": 1\n}"
+              "raw": "{\n  \"nomeReal\": \"Maria Silva\",\n  \"nomeAnonimo\": \"LuzInterior\",\n  \"dataNascimento\": \"15-08-1998\",\n  \"celular\": \"11999998888\",\n  \"senha\": \"segredo123\",\n  \"cidadeId\": {{cidadeId}}\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/usuarios",
@@ -38,90 +159,34 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "if (pm.response.code === 201) {",
-                  "  const json = pm.response.json();",
-                  "  if (json.id) { pm.environment.set('usuarioId', json.id); }",
-                  "}"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "if (json.id) { pm.environment.set('usuarioId', json.id); }"
+                ]
               }
             }
           ]
         },
         {
-          "name": "Listar usuarios",
+          "name": "Listar usuarios por cidade",
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/api/usuarios",
+              "raw": "{{baseUrl}}/api/usuarios?cidadeId={{cidadeId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "usuarios"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Buscar usuario por ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/usuarios/{{usuarioId}}",
-              "host": [
-                "{{baseUrl}}"
               ],
-              "path": [
-                "api",
-                "usuarios",
-                "{{usuarioId}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Atualizar usuario",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nomeReal\": \"Maria Silva Atualizada\",\n  \"nomeAnonimo\": \"LuzInterior\",\n  \"dataNascimento\": \"15-08-1998\",\n  \"celular\": \"11999990000\",\n  \"senha\": \"novaSenha123\",\n  \"cidadeId\": 1\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/usuarios/{{usuarioId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "usuarios",
-                "{{usuarioId}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Deletar usuario",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/api/usuarios/{{usuarioId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "usuarios",
-                "{{usuarioId}}"
+              "query": [
+                {
+                  "key": "cidadeId",
+                  "value": "{{cidadeId}}"
+                }
               ]
             }
           }
@@ -160,19 +225,18 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "if (pm.response.code === 201) {",
-                  "  const json = pm.response.json();",
-                  "  if (json.id) { pm.environment.set('ajudanteId', json.id); }",
-                  "}"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "if (json.id) { pm.environment.set('ajudanteId', json.id); }"
+                ]
               }
             }
           ]
         },
         {
-          "name": "Listar ajudantes",
+          "name": "Listar ajudantes disponiveis",
           "request": {
             "method": "GET",
             "url": {
@@ -227,23 +291,22 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "if (pm.response.code === 201) {",
-                  "  const json = pm.response.json();",
-                  "  if (json.id) { pm.environment.set('chatId', json.id); }",
-                  "}"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "if (json.id) { pm.environment.set('chatId', json.id); }"
+                ]
               }
             }
           ]
         },
         {
-          "name": "Listar chats por status",
+          "name": "Listar chats por usuario",
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/api/chats?status=INICIADO",
+              "raw": "{{baseUrl}}/api/chats?usuarioId={{usuarioId}}",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -253,8 +316,8 @@
               ],
               "query": [
                 {
-                  "key": "status",
-                  "value": "INICIADO"
+                  "key": "usuarioId",
+                  "value": "{{usuarioId}}"
                 }
               ]
             }
@@ -294,13 +357,12 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
-                  "if (pm.response.code === 201) {",
-                  "  const json = pm.response.json();",
-                  "  if (json.id) { pm.environment.set('mensagemId', json.id); }",
-                  "}"
-                ],
-                "type": "text/javascript"
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "if (json.id) { pm.environment.set('mensagemId', json.id); }"
+                ]
               }
             }
           ]
@@ -323,6 +385,54 @@
                   "key": "chatId",
                   "value": "{{chatId}}"
                 }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Erros Controlados",
+      "item": [
+        {
+          "name": "Usuario com data invalida",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomeReal\": \"Usuario Data Invalida\",\n  \"nomeAnonimo\": \"TesteData\",\n  \"dataNascimento\": \"1998-08-15\",\n  \"celular\": \"11999997777\",\n  \"senha\": \"segredo123\",\n  \"cidadeId\": {{cidadeId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar recurso inexistente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "999999"
               ]
             }
           }

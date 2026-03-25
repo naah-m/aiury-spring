@@ -1,6 +1,7 @@
 package br.com.fiap.aiury.configs;
 
 import br.com.fiap.aiury.dto.ApiErrorResponse;
+import br.com.fiap.aiury.exceptions.ConflictException;
 import br.com.fiap.aiury.exceptions.NotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -28,6 +29,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleNotFound(NotFoundException ex, HttpServletRequest request) {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiErrorResponse> handleConflict(ConflictException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI(), null);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -67,7 +73,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ApiErrorResponse> handleConflict(DataIntegrityViolationException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleDataConflict(DataIntegrityViolationException ex, HttpServletRequest request) {
         String message = "Violacao de integridade de dados.";
         if (ex.getMostSpecificCause() != null && ex.getMostSpecificCause().getMessage() != null) {
             message = message + " " + ex.getMostSpecificCause().getMessage();

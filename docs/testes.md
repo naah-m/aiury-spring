@@ -1,71 +1,83 @@
-# Estrategia de Testes e Evidencias de Validacao
+# Estrategia de Testes e Evidencias
 
 ## 1. Objetivo
-Comprovar estabilidade tecnica da entrega por meio de:
-- testes automatizados em camadas-chave;
-- roteiro manual reproduzivel via Postman;
-- evidencias de build e execucao.
+Comprovar que a entrega Sprint 3 esta:
+- compilando sem quebra;
+- com repositories consistentes;
+- com regras de negocio validadas;
+- com API documentada e testavel.
 
-## 2. Testes Automatizados Implementados
-| Camada | Arquivo | Cobertura |
-|---|---|---|
-| Contexto | `AiuryApplicationTests` | Inicializacao do contexto Spring com perfil `test` |
-| Controller | `UsuarioControllerTest` | `GET /api/usuarios/{id}` com HATEOAS e validacao `400` para payload invalido |
-| Service | `UsuarioServiceImplTest` | Regra de criacao e validacao de cidade inexistente |
-| Repository | `AjudanteRepositoryTest` | Query derivada por disponibilidade |
-| Repository | `UsuarioRepositoryTest` | Query derivada por cidade |
-| Repository | `MensagemRepositoryTest` | Queries derivadas de filtro e ordenacao de mensagens |
+## 2. Validacao automatizada oficial
 
-## 3. Comandos Oficiais de Validacao
+Comandos obrigatorios:
+
 ```powershell
 .\mvnw.cmd clean test
 .\mvnw.cmd clean package
 ```
 
-## 4. Ambiente de Testes
+Resultado esperado:
+- `BUILD SUCCESS` nos dois comandos.
+
+## 3. Cobertura automatizada atual
+
+| Camada | Classe de teste | Cobertura principal |
+|---|---|---|
+| Contexto | `AiuryApplicationTests` | Inicializacao da aplicacao com perfil `test` |
+| Controller | `UsuarioControllerTest` | HATEOAS no GET por ID e erro de validacao 400 |
+| Service | `UsuarioServiceImplTest` | Validacao de cidade inexistente e criacao de usuario |
+| Service | `EstadoServiceImplTest` | Regras de conflito para nome/UF duplicados |
+| Repository | `AjudanteRepositoryTest` | Filtro por disponibilidade |
+| Repository | `CidadeRepositoryTest` | Filtro por estado com ordenacao |
+| Repository | `EstadoRepositoryTest` | Busca por UF ignorando case |
+| Repository | `UsuarioRepositoryTest` | Filtro por cidade |
+| Repository | `MensagemRepositoryTest` | Filtros de mensagem por chat/remetente com ordenacao |
+
+## 4. Ambiente de teste automatizado
 - Perfil: `test`
 - Banco: H2 em memoria
-- Configuracao: `src/test/resources/application-test.properties`
-- Estrategia de schema: `create-drop`
+- Config: `src/test/resources/application-test.properties`
+- DDL: `create-drop`
 
-## 5. Validacao Manual da API (Postman)
-Arquivos:
+## 5. Validacao manual via Postman
+
+Arquivos oficiais:
 - Collection: `docs/postman/Aiury-Sprint3.postman_collection.json`
 - Environment: `docs/postman/Aiury-local.postman_environment.json`
-- Payloads: `docs/postman/payloads/`
+- Guia: `docs/postman/README.md`
 
-## 6. Fluxo Recomendado de Teste Manual
-1. Criar usuario.
-2. Criar ajudante.
-3. Criar chat com `usuarioId` e `ajudanteId`.
-4. Criar mensagem com `chatId` e `remetenteId`.
-5. Validar filtros de listagem.
-6. Validar atualizacao de recursos.
-7. Validar exclusao de recursos.
-8. Validar cenarios de erro (`400`, `404`, `409`).
+Ordem recomendada:
+1. Catalogos (`estado`, `cidade`)
+2. Usuario
+3. Ajudante
+4. Chat
+5. Mensagem
+6. Filtros de listagem
+7. Cenarios de erro
 
-## 7. Matriz de Cenarios
-| Caso de teste | Endpoint | Metodo | Payload | Resultado esperado |
-|---|---|---|---|---|
-| Criar usuario valido | `/api/usuarios` | POST | `payloads/usuario-create.json` | `201 Created` com links HATEOAS |
-| Criar usuario com data invalida | `/api/usuarios` | POST | `payloads/usuario-invalid-date.json` | `400 Bad Request` com `validationErrors` |
-| Listar usuarios por cidade | `/api/usuarios?cidadeId=1` | GET | N/A | `200 OK` filtrado |
-| Criar ajudante valido | `/api/ajudantes` | POST | `payloads/ajudante-create.json` | `201 Created` |
-| Filtrar ajudantes disponiveis | `/api/ajudantes?disponivel=true` | GET | N/A | `200 OK` |
-| Criar chat valido | `/api/chats` | POST | `payloads/chat-create.json` | `201 Created` com links para usuario/ajudante/mensagens |
-| Filtrar chat por status | `/api/chats?status=EM_ANDAMENTO` | GET | N/A | `200 OK` |
-| Criar mensagem valida | `/api/mensagens` | POST | `payloads/mensagem-create.json` | `201 Created` |
-| Filtrar mensagens por chat e remetente | `/api/mensagens?chatId={id}&remetenteId={id}` | GET | N/A | `200 OK` ordenado por data |
-| Buscar recurso inexistente | `/api/usuarios/99999` | GET | N/A | `404 Not Found` com `ApiErrorResponse` |
+## 6. Matriz de cenarios minimos por endpoint
 
-## 8. Evidencias para Entrega
-- Print do terminal com `BUILD SUCCESS` em `clean test`.
-- Print do terminal com `BUILD SUCCESS` em `clean package`.
-- Prints de requests no Postman para `201`, `200`, `204`, `400`, `404`.
-- Print do Swagger UI com os quatro recursos documentados.
+| Cenario | Endpoint | Metodo | Esperado |
+|---|---|---|---|
+| Criar estado valido | `/api/estados` | POST | `201` + `_links` |
+| Criar cidade valida | `/api/cidades` | POST | `201` + link para estado |
+| Criar usuario valido | `/api/usuarios` | POST | `201` + link para cidade/estado |
+| Criar ajudante valido | `/api/ajudantes` | POST | `201` |
+| Criar chat valido | `/api/chats` | POST | `201` + links usuario/ajudante/mensagens |
+| Criar mensagem valida | `/api/mensagens` | POST | `201` |
+| Filtro de usuarios por cidade | `/api/usuarios?cidadeId={id}` | GET | `200` |
+| Filtro de chats por usuario | `/api/chats?usuarioId={id}` | GET | `200` |
+| Filtro de mensagens por chat | `/api/mensagens?chatId={id}` | GET | `200` |
+| Payload invalido de usuario | `/api/usuarios` | POST | `400` com `validationErrors` |
+| Recurso inexistente | `/api/usuarios/999999` | GET | `404` |
 
-## 9. Criterios de Aprovacao Interna
-- Nenhum teste automatizado falhando.
-- Nenhuma query derivada quebrada por nome de campo.
-- Respostas de erro padronizadas.
-- Endpoints documentados e consistentes com implementacao real.
+## 7. Evidencias para anexar na entrega
+- Log de terminal com `BUILD SUCCESS` em `clean test`.
+- Log de terminal com `BUILD SUCCESS` em `clean package`.
+- Captura do Swagger com os 6 recursos (`Estados`, `Cidades`, `Usuarios`, `Ajudantes`, `Chats`, `Mensagens`).
+- Capturas de requests no Postman para `201`, `200`, `204`, `400`, `404`, `409`.
+- Export final da collection apos execucao.
+
+## 8. Gap conhecido para evolucao futura
+- Incluir testes de controller para `Cidade`, `Estado`, `Chat` e `Mensagem`.
+- Adicionar testes de integracao de regra de negocio em `MensagemServiceImpl`.

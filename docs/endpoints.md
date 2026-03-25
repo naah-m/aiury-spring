@@ -1,18 +1,19 @@
-# Documentacao de Endpoints - Aiury API
+# Endpoints da API Aiury
 
-## 1. Informacoes Gerais
+## 1. Convencoes gerais
 - Base URL local: `http://localhost:8080`
-- Base path: `/api`
-- Content-Type: `application/json`
+- Prefixo da API: `/api`
+- Media type: `application/json`
 - Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
-## 2. Padrao de Resposta
-- `POST`, `GET` e `PUT` retornam representacoes HATEOAS com `_links`.
-- `DELETE` retorna `204 No Content`.
-- Erros retornam `ApiErrorResponse`:
+As respostas `GET`, `POST` e `PUT` retornam representacoes HATEOAS com `_links`.
+
+Estrutura padrao de erro:
+
 ```json
 {
-  "timestamp": "2026-03-24T17:00:00",
+  "timestamp": "2026-03-25T00:10:00",
   "status": 400,
   "error": "Bad Request",
   "message": "Erro de validacao nos campos informados.",
@@ -23,29 +24,67 @@
 }
 ```
 
----
+## 2. Resumo executivo de recursos
 
-## 3. Recurso Usuarios
+| Recurso | Base path | Filtros suportados |
+|---|---|---|
+| Estados | `/api/estados` | `uf` |
+| Cidades | `/api/cidades` | `estadoId` |
+| Usuarios | `/api/usuarios` | `cidadeId` |
+| Ajudantes | `/api/ajudantes` | `disponivel` |
+| Chats | `/api/chats` | `usuarioId`, `ajudanteId`, `status` |
+| Mensagens | `/api/mensagens` | `chatId`, `remetenteId` |
 
-### 3.1 `GET /api/usuarios`
-- Descricao: lista usuarios com filtro opcional por cidade.
-- Parametros:
-  - `cidadeId` (query, opcional, `Long`)
-- Sucesso: `200 OK`
-- Erros possiveis: `400` (parametro invalido)
+## 3. Estados
 
-### 3.2 `GET /api/usuarios/{id}`
-- Descricao: retorna um usuario por identificador.
-- Parametros:
-  - `id` (path, obrigatorio, `Long`)
-- Sucesso: `200 OK`
-- Erros possiveis: `404` (usuario nao encontrado)
+| Metodo | Endpoint | Descricao | Sucesso | Erros |
+|---|---|---|---|---|
+| `POST` | `/api/estados` | Criar estado | `201` | `400`, `409` |
+| `GET` | `/api/estados` | Listar estados | `200` | `400` |
+| `GET` | `/api/estados/{id}` | Buscar estado por ID | `200` | `404` |
+| `PUT` | `/api/estados/{id}` | Atualizar estado | `200` | `400`, `404`, `409` |
+| `DELETE` | `/api/estados/{id}` | Excluir estado | `204` | `404`, `409` |
 
-### 3.3 `POST /api/usuarios`
-- Descricao: cria um novo usuario.
-- Parametros:
-  - Body `UsuarioRequest`
-- Exemplo de request:
+Exemplo `POST /api/estados`:
+
+```json
+{
+  "nomeEstado": "Sao Paulo",
+  "uf": "SP"
+}
+```
+
+## 4. Cidades
+
+| Metodo | Endpoint | Descricao | Sucesso | Erros |
+|---|---|---|---|---|
+| `POST` | `/api/cidades` | Criar cidade | `201` | `400`, `404`, `409` |
+| `GET` | `/api/cidades` | Listar cidades | `200` | `404` (estado inexistente no filtro) |
+| `GET` | `/api/cidades/{id}` | Buscar cidade por ID | `200` | `404` |
+| `PUT` | `/api/cidades/{id}` | Atualizar cidade | `200` | `400`, `404`, `409` |
+| `DELETE` | `/api/cidades/{id}` | Excluir cidade | `204` | `404`, `409` |
+
+Exemplo `POST /api/cidades`:
+
+```json
+{
+  "nomeCidade": "Sao Paulo",
+  "estadoId": 1
+}
+```
+
+## 5. Usuarios
+
+| Metodo | Endpoint | Descricao | Sucesso | Erros |
+|---|---|---|---|---|
+| `POST` | `/api/usuarios` | Criar usuario | `201` | `400`, `404`, `409` |
+| `GET` | `/api/usuarios` | Listar usuarios | `200` | `400` |
+| `GET` | `/api/usuarios/{id}` | Buscar usuario por ID | `200` | `404` |
+| `PUT` | `/api/usuarios/{id}` | Atualizar usuario | `200` | `400`, `404`, `409` |
+| `DELETE` | `/api/usuarios/{id}` | Excluir usuario | `204` | `404`, `409` |
+
+Exemplo `POST /api/usuarios`:
+
 ```json
 {
   "nomeReal": "Maria Silva",
@@ -56,153 +95,47 @@
   "cidadeId": 1
 }
 ```
-- Exemplo de resposta (`201`):
-```json
-{
-  "id": 10,
-  "nomeReal": "Maria Silva",
-  "nomeAnonimo": "LuzInterior",
-  "dataNascimento": "1998-08-15",
-  "celular": "11999998888",
-  "dataCadastro": "2026-03-24",
-  "cidadeId": 1,
-  "_links": {
-    "self": { "href": "http://localhost:8080/api/usuarios/10" },
-    "usuarios": { "href": "http://localhost:8080/api/usuarios" },
-    "atualizar": { "href": "http://localhost:8080/api/usuarios/10" },
-    "excluir": { "href": "http://localhost:8080/api/usuarios/10" },
-    "chats": { "href": "http://localhost:8080/api/chats?usuarioId=10" },
-    "mensagens-enviadas": { "href": "http://localhost:8080/api/mensagens?remetenteId=10" }
-  }
-}
-```
-- Erros possiveis:
-  - `400` payload invalido
-  - `404` cidade nao encontrada
-  - `409` violacao de integridade (ex.: celular duplicado)
 
-### 3.4 `PUT /api/usuarios/{id}`
-- Descricao: atualiza usuario existente.
-- Parametros:
-  - `id` (path, obrigatorio)
-  - Body `UsuarioRequest`
-- Exemplo de request:
-```json
-{
-  "nomeReal": "Maria Silva Atualizada",
-  "nomeAnonimo": "LuzInterior",
-  "dataNascimento": "15-08-1998",
-  "celular": "11999990000",
-  "senha": "novaSenha123",
-  "cidadeId": 2
-}
-```
-- Sucesso: `200 OK` com mesmo formato de resposta do `POST`.
-- Erros possiveis: `400`, `404`, `409`.
+## 6. Ajudantes
 
-### 3.5 `DELETE /api/usuarios/{id}`
-- Descricao: remove usuario por ID.
-- Parametros:
-  - `id` (path, obrigatorio)
-- Sucesso: `204 No Content`
-- Erros possiveis: `404`, `409`.
+| Metodo | Endpoint | Descricao | Sucesso | Erros |
+|---|---|---|---|---|
+| `POST` | `/api/ajudantes` | Criar ajudante | `201` | `400` |
+| `GET` | `/api/ajudantes` | Listar ajudantes | `200` | `400` |
+| `GET` | `/api/ajudantes/{id}` | Buscar ajudante por ID | `200` | `404` |
+| `PUT` | `/api/ajudantes/{id}` | Atualizar ajudante | `200` | `400`, `404` |
+| `DELETE` | `/api/ajudantes/{id}` | Excluir ajudante | `204` | `404`, `409` |
 
----
+Exemplo `POST /api/ajudantes`:
 
-## 4. Recurso Ajudantes
-
-### 4.1 `GET /api/ajudantes`
-- Descricao: lista ajudantes com filtro opcional por disponibilidade.
-- Parametros:
-  - `disponivel` (query, opcional, `Boolean`)
-- Sucesso: `200 OK`
-- Erros possiveis: `400` (formato de query invalido)
-
-### 4.2 `GET /api/ajudantes/{id}`
-- Descricao: retorna ajudante por ID.
-- Parametros:
-  - `id` (path, obrigatorio)
-- Sucesso: `200 OK`
-- Erros possiveis: `404`.
-
-### 4.3 `POST /api/ajudantes`
-- Descricao: cria ajudante.
-- Parametros:
-  - Body `AjudanteRequest`
-- Exemplo de request:
 ```json
 {
   "areaAtuacao": "Escuta ativa",
-  "motivacao": "Atuo em acolhimento voluntario",
+  "motivacao": "Acolhimento voluntario em plantao",
   "disponivel": true,
   "rating": 4.8
 }
 ```
-- Exemplo de resposta (`201`):
-```json
-{
-  "id": 3,
-  "areaAtuacao": "Escuta ativa",
-  "motivacao": "Atuo em acolhimento voluntario",
-  "disponivel": true,
-  "rating": 4.8,
-  "_links": {
-    "self": { "href": "http://localhost:8080/api/ajudantes/3" },
-    "ajudantes": { "href": "http://localhost:8080/api/ajudantes" },
-    "atualizar": { "href": "http://localhost:8080/api/ajudantes/3" },
-    "excluir": { "href": "http://localhost:8080/api/ajudantes/3" },
-    "chats-do-ajudante": { "href": "http://localhost:8080/api/chats?ajudanteId=3" }
-  }
-}
-```
-- Erros possiveis: `400`.
 
-### 4.4 `PUT /api/ajudantes/{id}`
-- Descricao: atualiza ajudante por ID.
-- Parametros:
-  - `id` (path, obrigatorio)
-  - Body `AjudanteRequest`
-- Sucesso: `200 OK`
-- Erros possiveis: `400`, `404`.
+## 7. Chats
 
-### 4.5 `DELETE /api/ajudantes/{id}`
-- Descricao: remove ajudante por ID.
-- Parametros:
-  - `id` (path, obrigatorio)
-- Sucesso: `204 No Content`
-- Erros possiveis: `404`, `409`.
+| Metodo | Endpoint | Descricao | Sucesso | Erros |
+|---|---|---|---|---|
+| `POST` | `/api/chats` | Criar chat | `201` | `400`, `404` |
+| `GET` | `/api/chats` | Listar chats | `200` | `400` |
+| `GET` | `/api/chats/{id}` | Buscar chat por ID | `200` | `404` |
+| `PUT` | `/api/chats/{id}` | Atualizar chat | `200` | `400`, `404` |
+| `DELETE` | `/api/chats/{id}` | Excluir chat | `204` | `404` |
 
----
+Valores validos de `status`:
+- `INICIADO`
+- `EM_ANDAMENTO`
+- `FINALIZADO_USUARIO`
+- `FINALIZADO_AJUDANTE`
+- `FINALIZADO_SISTEMA`
 
-## 5. Recurso Chats
+Exemplo `POST /api/chats`:
 
-### 5.1 `GET /api/chats`
-- Descricao: lista chats com filtros opcionais.
-- Parametros:
-  - `usuarioId` (query, opcional, `Long`)
-  - `ajudanteId` (query, opcional, `Long`)
-  - `status` (query, opcional, `ChatStatus`)
-- Valores validos de `status`:
-  - `INICIADO`
-  - `EM_ANDAMENTO`
-  - `FINALIZADO_USUARIO`
-  - `FINALIZADO_AJUDANTE`
-  - `FINALIZADO_SISTEMA`
-- Sucesso: `200 OK`
-- Erros possiveis: `400`.
-
-### 5.2 `GET /api/chats/{id}`
-- Descricao: retorna chat por ID.
-- Parametros:
-  - `id` (path, obrigatorio)
-- Sucesso: `200 OK`
-- Erros possiveis: `404`.
-
-### 5.3 `POST /api/chats`
-- Descricao: cria novo chat.
-- Parametros:
-  - Body `ChatRequest`
-- Exemplo de request:
 ```json
 {
   "usuarioId": 10,
@@ -212,116 +145,44 @@
   "status": "INICIADO"
 }
 ```
-- Exemplo de resposta (`201`):
-```json
-{
-  "id": 101,
-  "usuarioId": 10,
-  "ajudanteId": 3,
-  "dataInicio": "2026-03-24T14:00:00",
-  "dataFim": null,
-  "status": "INICIADO",
-  "_links": {
-    "self": { "href": "http://localhost:8080/api/chats/101" },
-    "chats": { "href": "http://localhost:8080/api/chats" },
-    "atualizar": { "href": "http://localhost:8080/api/chats/101" },
-    "excluir": { "href": "http://localhost:8080/api/chats/101" },
-    "mensagens": { "href": "http://localhost:8080/api/mensagens?chatId=101" },
-    "usuario": { "href": "http://localhost:8080/api/usuarios/10" },
-    "ajudante": { "href": "http://localhost:8080/api/ajudantes/3" }
-  }
-}
-```
-- Erros possiveis: `400`, `404`.
 
-### 5.4 `PUT /api/chats/{id}`
-- Descricao: atualiza chat por ID.
-- Parametros:
-  - `id` (path, obrigatorio)
-  - Body `ChatRequest`
-- Sucesso: `200 OK`
-- Erros possiveis: `400`, `404`.
+Regra adicional de negocio:
+- `dataFim` nao pode ser anterior a `dataInicio`.
+- status finalizado exige `dataFim`.
 
-### 5.5 `DELETE /api/chats/{id}`
-- Descricao: remove chat por ID.
-- Parametros:
-  - `id` (path, obrigatorio)
-- Sucesso: `204 No Content`
-- Erros possiveis: `404`.
+## 8. Mensagens
 
----
+| Metodo | Endpoint | Descricao | Sucesso | Erros |
+|---|---|---|---|---|
+| `POST` | `/api/mensagens` | Criar mensagem | `201` | `400`, `404` |
+| `GET` | `/api/mensagens` | Listar mensagens | `200` | `400` |
+| `GET` | `/api/mensagens/{id}` | Buscar mensagem por ID | `200` | `404` |
+| `PUT` | `/api/mensagens/{id}` | Atualizar mensagem | `200` | `400`, `404` |
+| `DELETE` | `/api/mensagens/{id}` | Excluir mensagem | `204` | `404` |
 
-## 6. Recurso Mensagens
+Exemplo `POST /api/mensagens`:
 
-### 6.1 `GET /api/mensagens`
-- Descricao: lista mensagens com filtros opcionais.
-- Parametros:
-  - `chatId` (query, opcional, `Long`)
-  - `remetenteId` (query, opcional, `Long`)
-- Sucesso: `200 OK`
-- Erros possiveis: `400`.
-
-### 6.2 `GET /api/mensagens/{id}`
-- Descricao: retorna mensagem por ID.
-- Parametros:
-  - `id` (path, obrigatorio)
-- Sucesso: `200 OK`
-- Erros possiveis: `404`.
-
-### 6.3 `POST /api/mensagens`
-- Descricao: cria mensagem vinculada a chat e remetente.
-- Parametros:
-  - Body `MensagemRequest`
-- Exemplo de request:
 ```json
 {
   "chatId": 101,
   "remetenteId": 10,
-  "texto": "Obrigado pela escuta.",
+  "texto": "Obrigado pela escuta de hoje.",
   "dataEnvio": "2026-03-24T14:15:00"
 }
 ```
-- Exemplo de resposta (`201`):
-```json
-{
-  "id": 700,
-  "chatId": 101,
-  "remetenteId": 10,
-  "texto": "Obrigado pela escuta.",
-  "dataEnvio": "2026-03-24T14:15:00",
-  "_links": {
-    "self": { "href": "http://localhost:8080/api/mensagens/700" },
-    "mensagens": { "href": "http://localhost:8080/api/mensagens" },
-    "atualizar": { "href": "http://localhost:8080/api/mensagens/700" },
-    "excluir": { "href": "http://localhost:8080/api/mensagens/700" },
-    "chat": { "href": "http://localhost:8080/api/chats/101" },
-    "remetente": { "href": "http://localhost:8080/api/usuarios/10" }
-  }
-}
-```
-- Erros possiveis: `400`, `404`.
 
-### 6.4 `PUT /api/mensagens/{id}`
-- Descricao: atualiza mensagem por ID.
-- Parametros:
-  - `id` (path, obrigatorio)
-  - Body `MensagemRequest`
-- Sucesso: `200 OK`
-- Erros possiveis: `400`, `404`.
+Regras adicionais de negocio:
+- `remetenteId` deve pertencer ao usuario dono do chat.
+- `dataEnvio` deve estar entre inicio e fim do chat.
 
-### 6.5 `DELETE /api/mensagens/{id}`
-- Descricao: remove mensagem por ID.
-- Parametros:
-  - `id` (path, obrigatorio)
-- Sucesso: `204 No Content`
-- Erros possiveis: `404`.
+## 9. Status HTTP usados na API
 
----
-
-## 7. Resumo de Erros HTTP
-| Status | Cenario |
+| Status | Uso |
 |---|---|
-| `400` | Validacao de payload, tipo de parametro invalido, corpo mal formatado |
-| `404` | Recurso ou referencia nao encontrado |
-| `409` | Violacao de integridade de dados |
-| `500` | Falha inesperada no servidor |
+| `200` | Consulta e atualizacao bem-sucedidas |
+| `201` | Criacao bem-sucedida |
+| `204` | Exclusao bem-sucedida |
+| `400` | Validacao ou regra de entrada invalida |
+| `404` | Recurso nao encontrado |
+| `409` | Conflito de integridade ou unicidade |
+| `500` | Erro inesperado no servidor |

@@ -55,7 +55,7 @@ public class AjudanteServiceImpl implements AjudanteService {
     @Override
     public List<Ajudante> buscarTodos(Boolean disponivel) {
         if (disponivel == null) {
-            return ajudanteRepository.findAll();
+            return ajudanteRepository.findAllByOrderByAreaAtuacaoAsc();
         }
         return ajudanteRepository.findByDisponivel(disponivel);
     }

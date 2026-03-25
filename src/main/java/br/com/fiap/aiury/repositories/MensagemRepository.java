@@ -12,6 +12,8 @@ import java.util.List;
 @Repository
 public interface MensagemRepository extends JpaRepository<Mensagem, Long> {
 
+    List<Mensagem> findAllByOrderByDataEnvioAsc();
+
     /**
      * Lista mensagens por chat.
      */

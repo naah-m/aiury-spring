@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class UsuarioRequestDTO {
     private String nomeAnonimo;
 
     @NotNull(message = "A data de nascimento e obrigatoria")
+    @Past(message = "A data de nascimento deve ser anterior a data atual")
     @JsonFormat(pattern = "dd-MM-yyyy")
     @Schema(description = "Data de nascimento no formato DD-MM-AAAA", example = "15-08-1998")
     private LocalDate dataNascimento;

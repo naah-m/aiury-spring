@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Entidade de referencia para unidades federativas.
  */
@@ -25,4 +28,7 @@ public class Estado {
 
     @Column(name = "uf", nullable = false, length = 2, unique = true)
     private String uf;
+
+    @OneToMany(mappedBy = "estado")
+    private List<Cidade> cidades = new ArrayList<>();
 }

@@ -3,6 +3,7 @@ package br.com.fiap.aiury.services;
 import br.com.fiap.aiury.dto.UsuarioRequestDTO;
 import br.com.fiap.aiury.entities.Cidade;
 import br.com.fiap.aiury.entities.Usuario;
+import br.com.fiap.aiury.exceptions.ConflictException;
 import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.UsuarioMapper;
 import br.com.fiap.aiury.repositories.CidadeRepository;
@@ -44,6 +45,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         Cidade cidade = cidadeRepository.findById(usuarioDTO.getCidadeId())
                 .orElseThrow(() -> new NotFoundException("Cidade nao encontrada com ID: " + usuarioDTO.getCidadeId()));
 
+        validarCelularUnico(usuarioDTO.getCelular(), null);
+
         Usuario usuario = usuarioMapper.toEntity(usuarioDTO, cidade);
         return usuarioRepository.save(usuario);
     }
@@ -63,7 +66,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public List<Usuario> buscarTodos(Long cidadeId) {
         if (cidadeId == null) {
-            return usuarioRepository.findAll();
+            return usuarioRepository.findAllByOrderByNomeRealAsc();
         }
         return usuarioRepository.findByCidade_Id(cidadeId);
     }
@@ -84,6 +87,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                     .orElseThrow(() -> new NotFoundException("Cidade nao encontrada com ID: " + detalhesUsuarioDTO.getCidadeId()));
         }
 
+        validarCelularUnico(detalhesUsuarioDTO.getCelular(), id);
         usuarioMapper.updateEntityFromDto(usuarioExistente, detalhesUsuarioDTO, novaCidade);
 
         if (detalhesUsuarioDTO.getSenha() != null) {
@@ -103,5 +107,19 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new NotFoundException("Usuario nao encontrado com ID: " + id);
         }
         usuarioRepository.deleteById(id);
+    }
+
+    private void validarCelularUnico(String celular, Long usuarioIdAtual) {
+        if (celular == null || celular.isBlank()) {
+            return;
+        }
+
+        boolean celularEmUso = usuarioIdAtual == null
+                ? usuarioRepository.existsByCelular(celular)
+                : usuarioRepository.existsByCelularAndIdNot(celular, usuarioIdAtual);
+
+        if (celularEmUso) {
+            throw new ConflictException("Ja existe usuario cadastrado com o celular informado.");
+        }
     }
 }

@@ -12,7 +12,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "cidade")
+@Table(
+        name = "cidade",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_cidade_nome_estado",
+                        columnNames = {"nome_cidade", "id_estado"}
+                )
+        }
+)
 public class Cidade {
 
     @Id

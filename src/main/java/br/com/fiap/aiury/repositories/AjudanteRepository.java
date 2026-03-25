@@ -15,6 +15,8 @@ import java.util.List;
 @Repository
 public interface AjudanteRepository extends JpaRepository<Ajudante, Long> {
 
+    List<Ajudante> findAllByOrderByAreaAtuacaoAsc();
+
     /**
      * Retorna ajudantes filtrando pela disponibilidade atual.
      *

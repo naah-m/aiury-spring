@@ -1,39 +1,37 @@
-# Aiury API - Plataforma de Acolhimento Emocional
+# Aiury API
 
-API REST desenvolvida em Spring Boot para gerenciar usuarios, ajudantes, chats e mensagens em um fluxo de acolhimento digital com rastreabilidade, padronizacao de erro e navegacao HATEOAS.
+Backend Spring Boot para a plataforma Aiury, focada em acolhimento emocional com trilha estruturada de atendimento.
 
-## 1. Visao Geral
-O projeto implementa um backend em arquitetura em camadas para suportar o ciclo de atendimento da plataforma Aiury, com persistencia relacional, validacao de dados, documentacao OpenAPI e testes automatizados.
+## 1. Contexto do problema
+Atendimentos informais sem registro dificultam continuidade e analise de qualidade. A API organiza esse fluxo em recursos REST relacionais, com validacao, rastreabilidade e documentacao.
 
-## 2. Problema de Negocio
-Processos de acolhimento informal tendem a perder historico, dificultar auditoria e comprometer continuidade de atendimento. O projeto resolve isso estruturando o fluxo em recursos REST versionaveis e consultaveis.
+## 2. Objetivo da solucao
+- Gerenciar catalogos geograficos (`Estado` e `Cidade`).
+- Cadastrar usuarios e ajudantes.
+- Abrir, acompanhar e encerrar chats.
+- Registrar mensagens vinculadas ao chat.
+- Entregar API REST nivel 3 com HATEOAS, tratamento padrao de erros e OpenAPI.
 
-## 3. Objetivo da Solucao
-- Centralizar cadastro e manutencao de usuarios e ajudantes.
-- Controlar abertura, evolucao e encerramento de chats.
-- Registrar mensagens por chat com trilha temporal.
-- Entregar API documentada e testavel para avaliacao academica e consumo futuro por frontend/mobile.
+## 3. Publico-alvo
+- Equipe academica avaliadora.
+- Equipe tecnica do projeto (backend/frontend).
+- Time que vai evoluir a plataforma nas proximas sprints.
 
-## 4. Publico-Alvo
-- Equipe academica (avaliacao de sprints).
-- Equipe tecnica de backend/frontend.
-- Consumidores futuros da API de acolhimento.
+## 4. Arquitetura
+Arquitetura em camadas:
+- `controller`: contrato HTTP e status codes.
+- `services`: regras de negocio e validacao de dominio.
+- `repositories`: persistencia Spring Data JPA.
+- `entities`: modelo relacional JPA.
+- `dto`: contratos request/response.
+- `mappers`: conversao DTO <-> entidade.
+- `representation`: composicao HATEOAS.
+- `configs` e `exceptions`: OpenAPI e erros globais.
 
-## 5. Arquitetura da Aplicacao
-Arquitetura em camadas com responsabilidades claras:
-- `controller`: contratos HTTP, status code e validacao de entrada.
-- `service`: regras de negocio, validacao de existencia e orquestracao.
-- `repository`: persistencia com Spring Data JPA.
-- `entity`: modelo relacional JPA.
-- `dto`: contratos `Request` e `Response`.
-- `mappers`: conversao entre entidade e DTO.
-- `representation`: composicao HATEOAS sem poluir controllers.
-- `configs` e `exceptions`: OpenAPI e tratamento global de erros.
+Detalhes: `docs/arquitetura.md`.
 
-Documento detalhado: `docs/arquitetura.md`.
-
-## 6. Tecnologias Utilizadas
-- Java 21+
+## 5. Tecnologias
+- Java 21
 - Spring Boot 3.5.6
 - Spring Web
 - Spring Data JPA
@@ -41,149 +39,123 @@ Documento detalhado: `docs/arquitetura.md`.
 - Spring HATEOAS
 - Springdoc OpenAPI (Swagger UI)
 - Maven Wrapper
-- Oracle JDBC (`ojdbc11`)
-- H2 (ambiente de testes)
+- Oracle JDBC (perfil `oracle`)
+- H2 (perfil `dev` e testes)
 - JUnit 5 e Mockito
 
-## 7. Estrutura do Projeto
+## 6. Estrutura do projeto
+
 ```text
 src/main/java/br/com/fiap/aiury
-  ├─ controller
-  ├─ services
-  ├─ repositories
-  ├─ entities
-  ├─ dto
-  ├─ mappers
-  ├─ representation
-  ├─ configs
-  └─ exceptions
+- controller
+- services
+- repositories
+- entities
+- dto
+- mappers
+- representation
+- configs
+- exceptions
 
 src/test/java/br/com/fiap/aiury
-  ├─ controller
-  ├─ services
-  └─ repositories
+- controller
+- services
+- repositories
 
 docs
-  ├─ arquitetura.md
-  ├─ endpoints.md
-  ├─ modelagem.md
-  ├─ cronograma.md
-  ├─ testes.md
-  └─ postman/
+- arquitetura.md
+- cronograma.md
+- modelagem.md
+- endpoints.md
+- testes.md
+- postman/
 ```
 
-## 8. Requisitos para Execucao
-- JDK 21 ou superior.
-- Maven 3.9+ (opcional, pois o projeto inclui `mvnw`).
-- Banco Oracle acessivel para execucao da aplicacao principal.
+## 7. Como executar
 
-## 9. Como Configurar Banco de Dados
-As credenciais nao ficam no repositorio. Configure variaveis de ambiente:
-- `DB_URL`
-- `DB_USERNAME`
-- `DB_PASSWORD`
-- `JPA_DDL_AUTO` (opcional, default `update`)
-- `JPA_SHOW_SQL` (opcional, default `false`)
+### 7.1 Perfil padrao (`dev`)
+O projeto sobe com H2 por default:
 
-Exemplo PowerShell:
-```powershell
-$env:DB_URL="jdbc:oracle:thin:@oracle.fiap.com.br:1521:orcl"
-$env:DB_USERNAME="SEU_USUARIO_ORACLE"
-$env:DB_PASSWORD="SUA_SENHA_ORACLE"
-$env:JPA_DDL_AUTO="update"
-```
-
-## 10. Como Executar a Aplicacao
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
 
-## 11. Como Acessar Swagger
+### 7.2 Perfil Oracle (`oracle`)
+
+```powershell
+$env:SPRING_PROFILES_ACTIVE="oracle"
+$env:DB_URL="jdbc:oracle:thin:@oracle.fiap.com.br:1521:orcl"
+$env:DB_USERNAME="SEU_USUARIO"
+$env:DB_PASSWORD="SUA_SENHA"
+.\mvnw.cmd spring-boot:run
+```
+
+## 8. Configuracao de banco
+- Arquivo base: `src/main/resources/application.properties`
+- Perfil local: `src/main/resources/application-dev.properties`
+- Perfil Oracle: `src/main/resources/application-oracle.properties`
+- Perfil de teste: `src/test/resources/application-test.properties`
+
+## 9. Swagger / OpenAPI
 - Swagger UI: `http://localhost:8080/swagger-ui/index.html`
-- Atalho: `http://localhost:8080/swagger-ui.html`
+- Alias: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
-## 12. Endpoints Principais
+## 10. Endpoints da API
+
 | Recurso | Base path | Operacoes |
 |---|---|---|
+| Estados | `/api/estados` | `GET`, `GET/{id}`, `POST`, `PUT/{id}`, `DELETE/{id}` |
+| Cidades | `/api/cidades` | `GET`, `GET/{id}`, `POST`, `PUT/{id}`, `DELETE/{id}` |
 | Usuarios | `/api/usuarios` | `GET`, `GET/{id}`, `POST`, `PUT/{id}`, `DELETE/{id}` |
 | Ajudantes | `/api/ajudantes` | `GET`, `GET/{id}`, `POST`, `PUT/{id}`, `DELETE/{id}` |
 | Chats | `/api/chats` | `GET`, `GET/{id}`, `POST`, `PUT/{id}`, `DELETE/{id}` |
 | Mensagens | `/api/mensagens` | `GET`, `GET/{id}`, `POST`, `PUT/{id}`, `DELETE/{id}` |
 
-Filtros implementados:
-- `/api/usuarios?cidadeId=`
-- `/api/ajudantes?disponivel=`
-- `/api/chats?usuarioId=&ajudanteId=&status=`
-- `/api/mensagens?chatId=&remetenteId=`
+Detalhes completos, filtros e exemplos: `docs/endpoints.md`.
 
-Detalhamento completo: `docs/endpoints.md`.
+## 11. Modelagem do dominio
+- Entidades: `Estado`, `Cidade`, `Usuario`, `Ajudante`, `Chat`, `Mensagem`.
+- `Usuario` referencia `Cidade`; `Estado` e derivado pela cidade.
+- `Cidade` usa unicidade composta por estado.
+- Regras adicionais de consistencia em `Chat` e `Mensagem`.
 
-## 13. Modelagem do Sistema
-- Entidades principais: `Usuario`, `Ajudante`, `Chat`, `Mensagem`, `Cidade`, `Estado`.
-- Relacionamentos mapeados via JPA com FKs explicitas.
-- Consistencia entre entidades, repositories e DTOs validada por testes.
+Detalhes: `docs/modelagem.md`.
 
-Documento detalhado: `docs/modelagem.md`.
+## 12. DER e diagrama de classes
+- DER final: `docs/imagens/der.png`
+- Diagrama de classes final: `docs/imagens/diagrama-classes.png`
 
-## 14. DER
-Imagem esperada em: `docs/imagens/der.png`.
+## 13. Testes
 
-## 15. Diagrama de Classes
-Imagem esperada em: `docs/imagens/diagrama-classes.png`.
+### 13.1 Automatizados
 
-## 16. Testes da API
-### Automatizados
 ```powershell
 .\mvnw.cmd clean test
 .\mvnw.cmd clean package
 ```
 
-### Manuais (Postman)
+### 13.2 Manuais
 - Collection: `docs/postman/Aiury-Sprint3.postman_collection.json`
 - Environment: `docs/postman/Aiury-local.postman_environment.json`
 - Guia: `docs/postman/README.md`
 
-Documentacao de validacao: `docs/testes.md`.
+Documento de evidencias: `docs/testes.md`.
 
-## 17. Integrantes do Grupo
-Preencher tabela no bloco final "Informacoes a complementar pelo grupo".
+## 14. Integrantes
 
-## 18. Funcao/Responsabilidade de Cada Integrante
-Detalhar no bloco final por frente de trabalho:
-- backend e persistencia;
-- documentacao e arquitetura;
-- testes e evidencias;
-- apresentacao e consolidacao final.
-
-## 19. Link do Video
-Registrar no bloco final "Informacoes a complementar pelo grupo".
-
-## 20. Melhorias Futuras
-- Autenticacao/autorizacao com JWT.
-- Auditoria de alteracoes em recursos criticos.
-- Cobertura de testes de integracao para todos os controllers.
-- Pipeline CI para build/test/package em pull request.
-- Observabilidade (metricas e tracing) para acompanhamento operacional.
-
-## 21. Conclusao
-O repositorio esta estruturado para entrega academica de Sprint 3 com foco em robustez tecnica: compilacao estavel, contratos REST consistentes, HATEOAS, tratamento global de erros, documentacao completa e trilha de validacao automatizada/manual.
-
-## 22. Informacoes a Complementar pelo Grupo
-Preencher antes da submissao final:
-
-### Integrantes
-| Nome | RM | Papel principal no projeto |
+| Nome | Identificacao academica | Papel principal |
 |---|---|---|
-| Integrante 1 | RMXXXXX | Backend e persistencia |
-| Integrante 2 | RMXXXXX | API/Swagger e README |
-| Integrante 3 | RMXXXXX | Testes e Postman |
-| Integrante 4 | RMXXXXX | Arquitetura, cronograma e revisao final |
+| Rafael (owner do repositorio) | inserir RM oficial | Backend, modelagem, revisao tecnica |
+| Demais integrantes do grupo | inserir RM oficial | Documentacao final, evidencias e apresentacao |
 
-### Evidencias finais obrigatorias
-- Link do video de apresentacao:
-  - `https://SEU-LINK-DE-VIDEO`
-- DER final:
-  - `docs/imagens/der.png`
-- Diagrama de classes final:
-  - `docs/imagens/diagrama-classes.png`
+## 15. Responsabilidade por integrante
+- Backend e persistencia: implementacao e correcao de entidades, repositories, services e controllers.
+- Documentacao tecnica: README, endpoints, modelagem, cronograma.
+- Evidencias e apresentacao: Postman, capturas de validacao, video final.
+
+## 16. Link do video
+- Inserir link final de apresentacao da Sprint 3 apos gravacao.
+
+## 17. Conclusao
+O projeto foi consolidado para uma entrega academica mais madura: build estavel, modelagem consistente, catalogos geograficos integrados, HATEOAS padronizado, regras de negocio explicitas, Swagger atualizado e trilha de testes documentada.

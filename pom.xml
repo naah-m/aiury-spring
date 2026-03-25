@@ -84,11 +84,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Banco em memoria para testes automatizados -->
+        <!-- Banco em memoria para execucao local e testes -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

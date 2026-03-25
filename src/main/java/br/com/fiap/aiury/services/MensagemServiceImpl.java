@@ -50,6 +50,7 @@ public class MensagemServiceImpl implements MensagemService {
     public Mensagem criarMensagem(MensagemRequestDTO mensagemDTO) {
         Chat chat = buscarChatPorId(mensagemDTO.getChatId());
         Usuario remetente = buscarUsuarioPorId(mensagemDTO.getRemetenteId());
+        validarMensagem(chat, remetente, mensagemDTO);
 
         Mensagem mensagem = mensagemMapper.toEntity(mensagemDTO, chat, remetente);
         return mensagemRepository.save(mensagem);
@@ -78,7 +79,7 @@ public class MensagemServiceImpl implements MensagemService {
         if (remetenteId != null) {
             return mensagemRepository.findByRemetente_IdOrderByDataEnvioAsc(remetenteId);
         }
-        return mensagemRepository.findAll();
+        return mensagemRepository.findAllByOrderByDataEnvioAsc();
     }
 
     /**
@@ -91,6 +92,7 @@ public class MensagemServiceImpl implements MensagemService {
 
         Chat chat = buscarChatPorId(mensagemDTO.getChatId());
         Usuario remetente = buscarUsuarioPorId(mensagemDTO.getRemetenteId());
+        validarMensagem(chat, remetente, mensagemDTO);
 
         mensagemMapper.updateEntityFromDto(mensagemExistente, mensagemDTO, chat, remetente);
         return mensagemRepository.save(mensagemExistente);
@@ -122,5 +124,19 @@ public class MensagemServiceImpl implements MensagemService {
     private Usuario buscarUsuarioPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuario nao encontrado com ID: " + id));
+    }
+
+    private void validarMensagem(Chat chat, Usuario remetente, MensagemRequestDTO mensagemDTO) {
+        if (chat.getUsuario() == null || !chat.getUsuario().getId().equals(remetente.getId())) {
+            throw new IllegalArgumentException("O remetente informado nao pertence ao chat.");
+        }
+
+        if (mensagemDTO.getDataEnvio().isBefore(chat.getDataInicio())) {
+            throw new IllegalArgumentException("A data/hora da mensagem nao pode ser anterior ao inicio do chat.");
+        }
+
+        if (chat.getDataFim() != null && mensagemDTO.getDataEnvio().isAfter(chat.getDataFim())) {
+            throw new IllegalArgumentException("A data/hora da mensagem nao pode ser posterior ao fim do chat.");
+        }
     }
 }
