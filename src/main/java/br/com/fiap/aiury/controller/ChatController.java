@@ -47,8 +47,7 @@ public class ChatController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
-                    description = "Chat criado",
-                    content = @Content(schema = @Schema(implementation = ChatResponseDTO.class))
+                    description = "Chat criado"
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -73,8 +72,7 @@ public class ChatController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Chat encontrado",
-                    content = @Content(schema = @Schema(implementation = ChatResponseDTO.class))
+                    description = "Chat encontrado"
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -91,8 +89,7 @@ public class ChatController {
     @Operation(summary = "Listar chats", description = "Lista chats com filtros opcionais")
     @ApiResponse(
             responseCode = "200",
-            description = "Lista retornada com sucesso",
-            content = @Content(schema = @Schema(implementation = ChatResponseDTO.class))
+            description = "Lista retornada com sucesso"
     )
     public ResponseEntity<CollectionModel<EntityModel<ChatResponseDTO>>> listarTodos(
             @Parameter(description = "Filtro opcional por usuario")
@@ -111,8 +108,7 @@ public class ChatController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Chat atualizado",
-                    content = @Content(schema = @Schema(implementation = ChatResponseDTO.class))
+                    description = "Chat atualizado"
             ),
             @ApiResponse(
                     responseCode = "400",

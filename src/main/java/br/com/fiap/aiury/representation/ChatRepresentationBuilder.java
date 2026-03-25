@@ -39,17 +39,17 @@ public class ChatRepresentationBuilder {
         EntityModel<ChatResponseDTO> model = EntityModel.of(
                 dto,
                 linkTo(methodOn(ChatController.class).buscarChatPorId(chatId)).withSelfRel(),
-                linkTo(methodOn(ChatController.class).listarTodos(null, null, null)).withRel("chats"),
-                linkTo(methodOn(ChatController.class).atualizarChat(chatId, (ChatRequestDTO) null)).withRel("atualizar"),
-                linkTo(methodOn(ChatController.class).deletarChat(chatId)).withRel("excluir"),
-                linkTo(methodOn(MensagemController.class).listarTodos(chatId, null)).withRel("mensagens")
+                linkTo(methodOn(ChatController.class).listarTodos(null, null, null)).withRel(ApiRelations.CHATS),
+                linkTo(methodOn(ChatController.class).atualizarChat(chatId, (ChatRequestDTO) null)).withRel(ApiRelations.ACAO_ATUALIZAR),
+                linkTo(methodOn(ChatController.class).deletarChat(chatId)).withRel(ApiRelations.ACAO_EXCLUIR),
+                linkTo(methodOn(MensagemController.class).listarTodos(chatId, null)).withRel(ApiRelations.MENSAGENS)
         );
 
         if (usuarioId != null) {
-            model.add(linkTo(methodOn(UsuarioController.class).buscarUsuarioPorId(usuarioId)).withRel("usuario"));
+            model.add(linkTo(methodOn(UsuarioController.class).buscarUsuarioPorId(usuarioId)).withRel(ApiRelations.USUARIO));
         }
         if (ajudanteId != null) {
-            model.add(linkTo(methodOn(AjudanteController.class).buscarAjudantePorId(ajudanteId)).withRel("ajudante"));
+            model.add(linkTo(methodOn(AjudanteController.class).buscarAjudantePorId(ajudanteId)).withRel(ApiRelations.AJUDANTE));
         }
 
         return model;
@@ -62,7 +62,8 @@ public class ChatRepresentationBuilder {
 
         return CollectionModel.of(
                 models,
-                linkTo(methodOn(ChatController.class).listarTodos(usuarioId, ajudanteId, status)).withSelfRel()
+                linkTo(methodOn(ChatController.class).listarTodos(usuarioId, ajudanteId, status)).withSelfRel(),
+                linkTo(methodOn(ChatController.class).cadastrarChat((ChatRequestDTO) null)).withRel(ApiRelations.ACAO_CRIAR)
         );
     }
 }

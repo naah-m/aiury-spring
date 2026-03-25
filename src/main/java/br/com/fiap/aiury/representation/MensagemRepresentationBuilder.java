@@ -37,16 +37,16 @@ public class MensagemRepresentationBuilder {
         EntityModel<MensagemResponseDTO> model = EntityModel.of(
                 dto,
                 linkTo(methodOn(MensagemController.class).buscarMensagemPorId(mensagemId)).withSelfRel(),
-                linkTo(methodOn(MensagemController.class).listarTodos(null, null)).withRel("mensagens"),
-                linkTo(methodOn(MensagemController.class).atualizarMensagem(mensagemId, (MensagemRequestDTO) null)).withRel("atualizar"),
-                linkTo(methodOn(MensagemController.class).deletarMensagem(mensagemId)).withRel("excluir")
+                linkTo(methodOn(MensagemController.class).listarTodos(null, null)).withRel(ApiRelations.MENSAGENS),
+                linkTo(methodOn(MensagemController.class).atualizarMensagem(mensagemId, (MensagemRequestDTO) null)).withRel(ApiRelations.ACAO_ATUALIZAR),
+                linkTo(methodOn(MensagemController.class).deletarMensagem(mensagemId)).withRel(ApiRelations.ACAO_EXCLUIR)
         );
 
         if (chatId != null) {
-            model.add(linkTo(methodOn(ChatController.class).buscarChatPorId(chatId)).withRel("chat"));
+            model.add(linkTo(methodOn(ChatController.class).buscarChatPorId(chatId)).withRel(ApiRelations.CHAT));
         }
         if (remetenteId != null) {
-            model.add(linkTo(methodOn(UsuarioController.class).buscarUsuarioPorId(remetenteId)).withRel("remetente"));
+            model.add(linkTo(methodOn(UsuarioController.class).buscarUsuarioPorId(remetenteId)).withRel(ApiRelations.REMETENTE));
         }
 
         return model;
@@ -59,7 +59,8 @@ public class MensagemRepresentationBuilder {
 
         return CollectionModel.of(
                 models,
-                linkTo(methodOn(MensagemController.class).listarTodos(chatId, remetenteId)).withSelfRel()
+                linkTo(methodOn(MensagemController.class).listarTodos(chatId, remetenteId)).withSelfRel(),
+                linkTo(methodOn(MensagemController.class).cadastrarMensagem((MensagemRequestDTO) null)).withRel(ApiRelations.ACAO_CRIAR)
         );
     }
 }

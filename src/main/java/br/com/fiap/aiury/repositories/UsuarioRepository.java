@@ -2,9 +2,11 @@ package br.com.fiap.aiury.repositories;
 
 import br.com.fiap.aiury.entities.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repositorio JPA para persistencia de {@link Usuario}.
@@ -16,6 +18,11 @@ import java.util.List;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
+    @Override
+    @EntityGraph(attributePaths = {"cidade", "cidade.estado"})
+    Optional<Usuario> findById(Long id);
+
+    @EntityGraph(attributePaths = {"cidade", "cidade.estado"})
     List<Usuario> findAllByOrderByNomeRealAsc();
 
     /**
@@ -24,6 +31,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
      * @param cidadeId identificador da cidade
      * @return lista de usuarios da cidade
      */
+    @EntityGraph(attributePaths = {"cidade", "cidade.estado"})
     List<Usuario> findByCidade_Id(Long cidadeId);
 
     boolean existsByCelular(String celular);

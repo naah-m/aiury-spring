@@ -46,8 +46,7 @@ public class EstadoController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
-                    description = "Estado criado",
-                    content = @Content(schema = @Schema(implementation = EstadoResponseDTO.class))
+                    description = "Estado criado"
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -72,8 +71,7 @@ public class EstadoController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Estado encontrado",
-                    content = @Content(schema = @Schema(implementation = EstadoResponseDTO.class))
+                    description = "Estado encontrado"
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -90,8 +88,7 @@ public class EstadoController {
     @Operation(summary = "Listar estados", description = "Lista estados com filtro opcional por UF")
     @ApiResponse(
             responseCode = "200",
-            description = "Lista retornada com sucesso",
-            content = @Content(schema = @Schema(implementation = EstadoResponseDTO.class))
+            description = "Lista retornada com sucesso"
     )
     public ResponseEntity<CollectionModel<EntityModel<EstadoResponseDTO>>> listarEstados(
             @Parameter(description = "Filtro opcional por UF, ex.: SP")
@@ -106,8 +103,7 @@ public class EstadoController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Estado atualizado",
-                    content = @Content(schema = @Schema(implementation = EstadoResponseDTO.class))
+                    description = "Estado atualizado"
             ),
             @ApiResponse(
                     responseCode = "400",

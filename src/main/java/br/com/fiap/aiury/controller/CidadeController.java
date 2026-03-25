@@ -46,8 +46,7 @@ public class CidadeController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
-                    description = "Cidade criada",
-                    content = @Content(schema = @Schema(implementation = CidadeResponseDTO.class))
+                    description = "Cidade criada"
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -77,8 +76,7 @@ public class CidadeController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Cidade encontrada",
-                    content = @Content(schema = @Schema(implementation = CidadeResponseDTO.class))
+                    description = "Cidade encontrada"
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -96,8 +94,7 @@ public class CidadeController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Lista retornada com sucesso",
-                    content = @Content(schema = @Schema(implementation = CidadeResponseDTO.class))
+                    description = "Lista retornada com sucesso"
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -118,8 +115,7 @@ public class CidadeController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Cidade atualizada",
-                    content = @Content(schema = @Schema(implementation = CidadeResponseDTO.class))
+                    description = "Cidade atualizada"
             ),
             @ApiResponse(
                     responseCode = "400",

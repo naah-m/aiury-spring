@@ -34,10 +34,10 @@ public class EstadoRepresentationBuilder {
         return EntityModel.of(
                 dto,
                 linkTo(methodOn(EstadoController.class).buscarEstadoPorId(estadoId)).withSelfRel(),
-                linkTo(methodOn(EstadoController.class).listarEstados(null)).withRel("estados"),
-                linkTo(methodOn(EstadoController.class).atualizarEstado(estadoId, (EstadoRequestDTO) null)).withRel("atualizar"),
-                linkTo(methodOn(EstadoController.class).deletarEstado(estadoId)).withRel("excluir"),
-                linkTo(methodOn(CidadeController.class).listarCidades(estadoId)).withRel("cidades")
+                linkTo(methodOn(EstadoController.class).listarEstados(null)).withRel(ApiRelations.ESTADOS),
+                linkTo(methodOn(EstadoController.class).atualizarEstado(estadoId, (EstadoRequestDTO) null)).withRel(ApiRelations.ACAO_ATUALIZAR),
+                linkTo(methodOn(EstadoController.class).deletarEstado(estadoId)).withRel(ApiRelations.ACAO_EXCLUIR),
+                linkTo(methodOn(CidadeController.class).listarCidades(estadoId)).withRel(ApiRelations.CIDADES)
         );
     }
 
@@ -48,7 +48,8 @@ public class EstadoRepresentationBuilder {
 
         return CollectionModel.of(
                 models,
-                linkTo(methodOn(EstadoController.class).listarEstados(uf)).withSelfRel()
+                linkTo(methodOn(EstadoController.class).listarEstados(uf)).withSelfRel(),
+                linkTo(methodOn(EstadoController.class).cadastrarEstado((EstadoRequestDTO) null)).withRel(ApiRelations.ACAO_CRIAR)
         );
     }
 }

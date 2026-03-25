@@ -46,8 +46,7 @@ public class AjudanteController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
-                    description = "Ajudante criado",
-                    content = @Content(schema = @Schema(implementation = AjudanteResponseDTO.class))
+                    description = "Ajudante criado"
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -67,8 +66,7 @@ public class AjudanteController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Ajudante encontrado",
-                    content = @Content(schema = @Schema(implementation = AjudanteResponseDTO.class))
+                    description = "Ajudante encontrado"
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -85,8 +83,7 @@ public class AjudanteController {
     @Operation(summary = "Listar ajudantes", description = "Lista ajudantes com filtro opcional por disponibilidade")
     @ApiResponse(
             responseCode = "200",
-            description = "Lista retornada com sucesso",
-            content = @Content(schema = @Schema(implementation = AjudanteResponseDTO.class))
+            description = "Lista retornada com sucesso"
     )
     public ResponseEntity<CollectionModel<EntityModel<AjudanteResponseDTO>>> listarTodos(
             @Parameter(description = "Filtro opcional por disponibilidade")
@@ -101,8 +98,7 @@ public class AjudanteController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Ajudante atualizado",
-                    content = @Content(schema = @Schema(implementation = AjudanteResponseDTO.class))
+                    description = "Ajudante atualizado"
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -127,6 +123,11 @@ public class AjudanteController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Ajudante nao encontrado",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Ajudante vinculado a chats",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })

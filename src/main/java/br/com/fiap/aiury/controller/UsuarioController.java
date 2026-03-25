@@ -46,8 +46,7 @@ public class UsuarioController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
-                    description = "Usuario criado",
-                    content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))
+                    description = "Usuario criado"
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -57,6 +56,11 @@ public class UsuarioController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Cidade nao encontrada",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Celular ja cadastrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
@@ -72,8 +76,7 @@ public class UsuarioController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Usuario encontrado",
-                    content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))
+                    description = "Usuario encontrado"
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -90,8 +93,7 @@ public class UsuarioController {
     @Operation(summary = "Listar usuarios", description = "Lista usuarios com filtro opcional por cidade")
     @ApiResponse(
             responseCode = "200",
-            description = "Lista retornada com sucesso",
-            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))
+            description = "Lista retornada com sucesso"
     )
     public ResponseEntity<CollectionModel<EntityModel<UsuarioResponseDTO>>> listarTodos(
             @Parameter(description = "Filtro opcional por cidade")
@@ -106,8 +108,7 @@ public class UsuarioController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Usuario atualizado",
-                    content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))
+                    description = "Usuario atualizado"
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -117,6 +118,11 @@ public class UsuarioController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Usuario ou cidade nao encontrados",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Celular ja cadastrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
@@ -132,6 +138,11 @@ public class UsuarioController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Usuario nao encontrado",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Usuario vinculado a outros recursos",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })

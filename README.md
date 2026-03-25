@@ -11,6 +11,7 @@ Atendimentos informais sem registro dificultam continuidade e analise de qualida
 - Abrir, acompanhar e encerrar chats.
 - Registrar mensagens vinculadas ao chat.
 - Entregar API REST nivel 3 com HATEOAS, tratamento padrao de erros e OpenAPI.
+- Padronizar relacoes HATEOAS (`criar`, `atualizar`, `excluir`, relacionamentos de dominio).
 
 ## 3. Publico-alvo
 - Equipe academica avaliadora.
@@ -105,6 +106,7 @@ $env:DB_PASSWORD="SUA_SENHA"
 
 | Recurso | Base path | Operacoes |
 |---|---|---|
+| Root | `/api` | `GET` |
 | Estados | `/api/estados` | `GET`, `GET/{id}`, `POST`, `PUT/{id}`, `DELETE/{id}` |
 | Cidades | `/api/cidades` | `GET`, `GET/{id}`, `POST`, `PUT/{id}`, `DELETE/{id}` |
 | Usuarios | `/api/usuarios` | `GET`, `GET/{id}`, `POST`, `PUT/{id}`, `DELETE/{id}` |

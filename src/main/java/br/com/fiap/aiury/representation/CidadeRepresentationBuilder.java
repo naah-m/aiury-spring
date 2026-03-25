@@ -36,14 +36,14 @@ public class CidadeRepresentationBuilder {
         EntityModel<CidadeResponseDTO> model = EntityModel.of(
                 dto,
                 linkTo(methodOn(CidadeController.class).buscarCidadePorId(cidadeId)).withSelfRel(),
-                linkTo(methodOn(CidadeController.class).listarCidades(null)).withRel("cidades"),
-                linkTo(methodOn(CidadeController.class).atualizarCidade(cidadeId, (CidadeRequestDTO) null)).withRel("atualizar"),
-                linkTo(methodOn(CidadeController.class).deletarCidade(cidadeId)).withRel("excluir"),
-                linkTo(methodOn(UsuarioController.class).listarTodos(cidadeId)).withRel("usuarios")
+                linkTo(methodOn(CidadeController.class).listarCidades(null)).withRel(ApiRelations.CIDADES),
+                linkTo(methodOn(CidadeController.class).atualizarCidade(cidadeId, (CidadeRequestDTO) null)).withRel(ApiRelations.ACAO_ATUALIZAR),
+                linkTo(methodOn(CidadeController.class).deletarCidade(cidadeId)).withRel(ApiRelations.ACAO_EXCLUIR),
+                linkTo(methodOn(UsuarioController.class).listarTodos(cidadeId)).withRel(ApiRelations.USUARIOS)
         );
 
         if (estadoId != null) {
-            model.add(linkTo(methodOn(EstadoController.class).buscarEstadoPorId(estadoId)).withRel("estado"));
+            model.add(linkTo(methodOn(EstadoController.class).buscarEstadoPorId(estadoId)).withRel(ApiRelations.ESTADO));
         }
 
         return model;
@@ -56,7 +56,8 @@ public class CidadeRepresentationBuilder {
 
         return CollectionModel.of(
                 models,
-                linkTo(methodOn(CidadeController.class).listarCidades(estadoId)).withSelfRel()
+                linkTo(methodOn(CidadeController.class).listarCidades(estadoId)).withSelfRel(),
+                linkTo(methodOn(CidadeController.class).cadastrarCidade((CidadeRequestDTO) null)).withRel(ApiRelations.ACAO_CRIAR)
         );
     }
 }

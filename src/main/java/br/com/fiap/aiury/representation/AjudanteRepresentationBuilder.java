@@ -34,10 +34,10 @@ public class AjudanteRepresentationBuilder {
         return EntityModel.of(
                 dto,
                 linkTo(methodOn(AjudanteController.class).buscarAjudantePorId(ajudanteId)).withSelfRel(),
-                linkTo(methodOn(AjudanteController.class).listarTodos(null)).withRel("ajudantes"),
-                linkTo(methodOn(AjudanteController.class).atualizarAjudante(ajudanteId, (AjudanteRequestDTO) null)).withRel("atualizar"),
-                linkTo(methodOn(AjudanteController.class).deletarAjudante(ajudanteId)).withRel("excluir"),
-                linkTo(methodOn(ChatController.class).listarTodos(null, ajudanteId, null)).withRel("chats-do-ajudante")
+                linkTo(methodOn(AjudanteController.class).listarTodos(null)).withRel(ApiRelations.AJUDANTES),
+                linkTo(methodOn(AjudanteController.class).atualizarAjudante(ajudanteId, (AjudanteRequestDTO) null)).withRel(ApiRelations.ACAO_ATUALIZAR),
+                linkTo(methodOn(AjudanteController.class).deletarAjudante(ajudanteId)).withRel(ApiRelations.ACAO_EXCLUIR),
+                linkTo(methodOn(ChatController.class).listarTodos(null, ajudanteId, null)).withRel(ApiRelations.CHATS)
         );
     }
 
@@ -48,7 +48,8 @@ public class AjudanteRepresentationBuilder {
 
         return CollectionModel.of(
                 models,
-                linkTo(methodOn(AjudanteController.class).listarTodos(disponivel)).withSelfRel()
+                linkTo(methodOn(AjudanteController.class).listarTodos(disponivel)).withSelfRel(),
+                linkTo(methodOn(AjudanteController.class).cadastrarAjudante((AjudanteRequestDTO) null)).withRel(ApiRelations.ACAO_CRIAR)
         );
     }
 }

@@ -46,8 +46,7 @@ public class MensagemController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
-                    description = "Mensagem criada",
-                    content = @Content(schema = @Schema(implementation = MensagemResponseDTO.class))
+                    description = "Mensagem criada"
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -72,8 +71,7 @@ public class MensagemController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Mensagem encontrada",
-                    content = @Content(schema = @Schema(implementation = MensagemResponseDTO.class))
+                    description = "Mensagem encontrada"
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -90,8 +88,7 @@ public class MensagemController {
     @Operation(summary = "Listar mensagens", description = "Lista mensagens com filtros opcionais")
     @ApiResponse(
             responseCode = "200",
-            description = "Lista retornada com sucesso",
-            content = @Content(schema = @Schema(implementation = MensagemResponseDTO.class))
+            description = "Lista retornada com sucesso"
     )
     public ResponseEntity<CollectionModel<EntityModel<MensagemResponseDTO>>> listarTodos(
             @Parameter(description = "Filtro opcional por chat")
@@ -108,8 +105,7 @@ public class MensagemController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Mensagem atualizada",
-                    content = @Content(schema = @Schema(implementation = MensagemResponseDTO.class))
+                    description = "Mensagem atualizada"
             ),
             @ApiResponse(
                     responseCode = "400",

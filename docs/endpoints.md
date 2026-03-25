@@ -9,6 +9,11 @@
 
 As respostas `GET`, `POST` e `PUT` retornam representacoes HATEOAS com `_links`.
 
+Relacoes (`rel`) padronizadas na API:
+- Acoes: `criar`, `atualizar`, `excluir`
+- Colecoes: `usuarios`, `ajudantes`, `chats`, `mensagens`, `cidades`, `estados`
+- Relacionamentos: `usuario`, `ajudante`, `remetente`, `chat`, `cidade`, `estado`
+
 Estrutura padrao de erro:
 
 ```json
@@ -28,6 +33,7 @@ Estrutura padrao de erro:
 
 | Recurso | Base path | Filtros suportados |
 |---|---|---|
+| Root | `/api` | nenhum |
 | Estados | `/api/estados` | `uf` |
 | Cidades | `/api/cidades` | `estadoId` |
 | Usuarios | `/api/usuarios` | `cidadeId` |
@@ -35,7 +41,22 @@ Estrutura padrao de erro:
 | Chats | `/api/chats` | `usuarioId`, `ajudanteId`, `status` |
 | Mensagens | `/api/mensagens` | `chatId`, `remetenteId` |
 
-## 3. Estados
+## 3. Root (entrypoint HATEOAS)
+
+| Metodo | Endpoint | Descricao | Sucesso | Erros |
+|---|---|---|---|---|
+| `GET` | `/api` | Retorna links de navegacao para os recursos principais | `200` | - |
+
+Exemplo de relacoes retornadas:
+- `self`
+- `usuarios`
+- `ajudantes`
+- `chats`
+- `mensagens`
+- `cidades`
+- `estados`
+
+## 4. Estados
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -54,7 +75,7 @@ Exemplo `POST /api/estados`:
 }
 ```
 
-## 4. Cidades
+## 5. Cidades
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -73,7 +94,7 @@ Exemplo `POST /api/cidades`:
 }
 ```
 
-## 5. Usuarios
+## 6. Usuarios
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -96,7 +117,7 @@ Exemplo `POST /api/usuarios`:
 }
 ```
 
-## 6. Ajudantes
+## 7. Ajudantes
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -117,7 +138,7 @@ Exemplo `POST /api/ajudantes`:
 }
 ```
 
-## 7. Chats
+## 8. Chats
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -150,7 +171,7 @@ Regra adicional de negocio:
 - `dataFim` nao pode ser anterior a `dataInicio`.
 - status finalizado exige `dataFim`.
 
-## 8. Mensagens
+## 9. Mensagens
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -175,7 +196,7 @@ Regras adicionais de negocio:
 - `remetenteId` deve pertencer ao usuario dono do chat.
 - `dataEnvio` deve estar entre inicio e fim do chat.
 
-## 9. Status HTTP usados na API
+## 10. Status HTTP usados na API
 
 | Status | Uso |
 |---|---|

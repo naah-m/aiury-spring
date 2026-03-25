@@ -38,18 +38,18 @@ public class UsuarioRepresentationBuilder {
         EntityModel<UsuarioResponseDTO> model = EntityModel.of(
                 dto,
                 linkTo(methodOn(UsuarioController.class).buscarUsuarioPorId(usuarioId)).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).listarTodos(null)).withRel("usuarios"),
-                linkTo(methodOn(UsuarioController.class).atualizarUsuario(usuarioId, (UsuarioRequestDTO) null)).withRel("atualizar"),
-                linkTo(methodOn(UsuarioController.class).deletarUsuario(usuarioId)).withRel("excluir"),
-                linkTo(methodOn(ChatController.class).listarTodos(usuarioId, null, null)).withRel("chats"),
-                linkTo(methodOn(MensagemController.class).listarTodos(null, usuarioId)).withRel("mensagens-enviadas")
+                linkTo(methodOn(UsuarioController.class).listarTodos(null)).withRel(ApiRelations.USUARIOS),
+                linkTo(methodOn(UsuarioController.class).atualizarUsuario(usuarioId, (UsuarioRequestDTO) null)).withRel(ApiRelations.ACAO_ATUALIZAR),
+                linkTo(methodOn(UsuarioController.class).deletarUsuario(usuarioId)).withRel(ApiRelations.ACAO_EXCLUIR),
+                linkTo(methodOn(ChatController.class).listarTodos(usuarioId, null, null)).withRel(ApiRelations.CHATS),
+                linkTo(methodOn(MensagemController.class).listarTodos(null, usuarioId)).withRel(ApiRelations.MENSAGENS)
         );
 
         if (cidadeId != null) {
-            model.add(linkTo(methodOn(CidadeController.class).buscarCidadePorId(cidadeId)).withRel("cidade"));
+            model.add(linkTo(methodOn(CidadeController.class).buscarCidadePorId(cidadeId)).withRel(ApiRelations.CIDADE));
             if (usuario.getCidade().getEstado() != null) {
                 Long estadoId = usuario.getCidade().getEstado().getId();
-                model.add(linkTo(methodOn(EstadoController.class).buscarEstadoPorId(estadoId)).withRel("estado"));
+                model.add(linkTo(methodOn(EstadoController.class).buscarEstadoPorId(estadoId)).withRel(ApiRelations.ESTADO));
             }
         }
 
@@ -63,7 +63,8 @@ public class UsuarioRepresentationBuilder {
 
         return CollectionModel.of(
                 models,
-                linkTo(methodOn(UsuarioController.class).listarTodos(cidadeId)).withSelfRel()
+                linkTo(methodOn(UsuarioController.class).listarTodos(cidadeId)).withSelfRel(),
+                linkTo(methodOn(UsuarioController.class).cadastrarUsuario((UsuarioRequestDTO) null)).withRel(ApiRelations.ACAO_CRIAR)
         );
     }
 }
