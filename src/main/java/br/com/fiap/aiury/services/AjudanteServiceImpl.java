@@ -2,11 +2,13 @@ package br.com.fiap.aiury.services;
 
 import br.com.fiap.aiury.dto.AjudanteRequestDTO;
 import br.com.fiap.aiury.entities.Ajudante;
+import br.com.fiap.aiury.exceptions.ConflictException;
 import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.AjudanteMapper;
 import br.com.fiap.aiury.repositories.AjudanteRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -80,6 +82,11 @@ public class AjudanteServiceImpl implements AjudanteService {
         if (!ajudanteRepository.existsById(id)) {
             throw new NotFoundException("Ajudante nao encontrado com ID: " + id);
         }
-        ajudanteRepository.deleteById(id);
+
+        try {
+            ajudanteRepository.deleteById(id);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ConflictException("Nao foi possivel excluir o ajudante pois existem chats vinculados.");
+        }
     }
 }

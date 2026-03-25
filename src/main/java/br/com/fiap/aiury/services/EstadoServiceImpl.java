@@ -7,6 +7,7 @@ import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.EstadoMapper;
 import br.com.fiap.aiury.repositories.EstadoRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -62,7 +63,12 @@ public class EstadoServiceImpl implements EstadoService {
         if (!estadoRepository.existsById(id)) {
             throw new NotFoundException("Estado nao encontrado com ID: " + id);
         }
-        estadoRepository.deleteById(id);
+
+        try {
+            estadoRepository.deleteById(id);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ConflictException("Nao foi possivel excluir o estado pois existem cidades vinculadas.");
+        }
     }
 
     private void validarDuplicidade(String nomeEstado, String uf, Estado estadoExistente) {

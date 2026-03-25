@@ -47,12 +47,10 @@ public class UsuarioMapper {
         if (request.getNomeReal() != null) {
             usuario.setNomeReal(request.getNomeReal());
         }
-        if (request.getNomeAnonimo() != null) {
-            usuario.setNomeAnonimo(request.getNomeAnonimo());
-        }
-        if (request.getCelular() != null) {
-            usuario.setCelular(request.getCelular());
-        }
+
+        // Campos opcionais devem aceitar limpeza (null) durante a edicao.
+        usuario.setNomeAnonimo(request.getNomeAnonimo());
+        usuario.setCelular(request.getCelular());
 
         if (novaCidade != null) {
             usuario.setCidade(novaCidade);

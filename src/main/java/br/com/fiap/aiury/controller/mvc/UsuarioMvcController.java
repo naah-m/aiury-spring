@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,6 +57,19 @@ public class UsuarioMvcController {
         if (!model.containsAttribute("usuarioForm")) {
             model.addAttribute("usuarioForm", new UsuarioWebForm());
         }
+        configurarModoCriacao(model);
+        carregarCidades(model);
+        return "app/usuarios/form";
+    }
+
+    @GetMapping("/{id}/editar")
+    public String exibirFormularioEdicao(@PathVariable Long id, Model model) {
+        if (!model.containsAttribute("usuarioForm")) {
+            Usuario usuario = usuarioService.buscarPorId(id);
+            model.addAttribute("usuarioForm", usuarioWebMapper.toForm(usuario));
+        }
+
+        configurarModoEdicao(model, id);
         carregarCidades(model);
         return "app/usuarios/form";
     }
@@ -66,6 +80,7 @@ public class UsuarioMvcController {
                         Model model,
                         RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
+            configurarModoCriacao(model);
             carregarCidades(model);
             return "app/usuarios/form";
         }
@@ -75,15 +90,61 @@ public class UsuarioMvcController {
             redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuario cadastrado com sucesso.");
             return "redirect:/app/usuarios";
         } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
+            configurarModoCriacao(model);
             carregarCidades(model);
             model.addAttribute("mensagemErro", ex.getMessage());
             return "app/usuarios/form";
         }
     }
 
+    @PostMapping("/{id}")
+    public String atualizar(@PathVariable Long id,
+                            @Valid @ModelAttribute("usuarioForm") UsuarioWebForm usuarioForm,
+                            BindingResult bindingResult,
+                            Model model,
+                            RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            configurarModoEdicao(model, id);
+            carregarCidades(model);
+            return "app/usuarios/form";
+        }
+
+        try {
+            usuarioService.atualizarUsuario(id, usuarioWebMapper.toRequestDto(usuarioForm));
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuario atualizado com sucesso.");
+            return "redirect:/app/usuarios";
+        } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
+            configurarModoEdicao(model, id);
+            carregarCidades(model);
+            model.addAttribute("mensagemErro", ex.getMessage());
+            return "app/usuarios/form";
+        }
+    }
+
+    @PostMapping("/{id}/excluir")
+    public String excluir(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            usuarioService.deletarUsuario(id);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuario excluido com sucesso.");
+        } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
+        }
+        return "redirect:/app/usuarios";
+    }
+
     private void carregarCidades(Model model) {
         List<Cidade> cidades = cidadeService.buscarTodos(null);
         model.addAttribute("cidades", cidades);
         model.addAttribute("semCidades", cidades.isEmpty());
+    }
+
+    private void configurarModoCriacao(Model model) {
+        model.addAttribute("modoEdicao", false);
+        model.addAttribute("usuarioId", null);
+    }
+
+    private void configurarModoEdicao(Model model, Long id) {
+        model.addAttribute("modoEdicao", true);
+        model.addAttribute("usuarioId", id);
     }
 }

@@ -49,11 +49,12 @@
                     <th scope="col">Cidade</th>
                     <th scope="col">UF</th>
                     <th scope="col">Cadastro</th>
+                    <th scope="col" class="text-end">Acoes</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:if="${#lists.isEmpty(usuarios)}">
-                    <td colspan="6" class="text-center py-4">
+                    <td colspan="7" class="text-center py-4">
                         <p class="mb-2">Nenhum usuario encontrado para o filtro informado.</p>
                         <div class="d-inline-flex gap-2 flex-wrap justify-content-center">
                             <a class="btn btn-sm btn-outline-secondary" th:if="${filtroCidadeId != null}" th:href="@{/app/usuarios}">
@@ -72,6 +73,23 @@
                     <td th:text="${usuario.cidadeNome}">Cidade</td>
                     <td th:text="${usuario.estadoUf}">UF</td>
                     <td th:text="${usuario.dataCadastro != null ? #temporals.format(usuario.dataCadastro, 'dd/MM/yyyy') : '-'}">-</td>
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-1" sec:authorize="hasRole('ADMIN')">
+                            <a class="btn btn-sm btn-outline-primary"
+                               th:href="@{/app/usuarios/{id}/editar(id=${usuario.id})}">
+                                Editar
+                            </a>
+                            <form th:action="@{/app/usuarios/{id}/excluir(id=${usuario.id})}" method="post" class="d-inline">
+                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Deseja excluir este usuario? Esta acao nao pode ser desfeita.');">
+                                    Excluir
+                                </button>
+                            </form>
+                        </div>
+                        <span sec:authorize="!hasRole('ADMIN')" class="text-secondary">-</span>
+                    </td>
                 </tr>
                 </tbody>
             </table>

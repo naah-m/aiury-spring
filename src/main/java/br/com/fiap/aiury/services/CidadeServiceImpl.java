@@ -9,6 +9,7 @@ import br.com.fiap.aiury.mappers.CidadeMapper;
 import br.com.fiap.aiury.repositories.CidadeRepository;
 import br.com.fiap.aiury.repositories.EstadoRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -73,7 +74,12 @@ public class CidadeServiceImpl implements CidadeService {
         if (!cidadeRepository.existsById(id)) {
             throw new NotFoundException("Cidade nao encontrada com ID: " + id);
         }
-        cidadeRepository.deleteById(id);
+
+        try {
+            cidadeRepository.deleteById(id);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ConflictException("Nao foi possivel excluir a cidade pois existem usuarios vinculados.");
+        }
     }
 
     private Estado buscarEstadoPorId(Long estadoId) {

@@ -17,6 +17,14 @@
             <a class="btn btn-outline-secondary px-4" th:href="@{/app/chats}">Voltar para lista</a>
             <a class="btn btn-outline-primary px-4" th:href="@{/app/chats/{id}/conversa(id=${chat.id})}">Abrir conversa</a>
             <a class="btn btn-primary px-4" th:href="@{/app/chats/novo}">Abrir outro chat</a>
+            <form th:action="@{/app/chats/{id}/excluir(id=${chat.id})}" method="post" class="d-inline">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button type="submit"
+                        class="btn btn-outline-danger px-4"
+                        onclick="return confirm('Deseja excluir este chat? Esta acao nao pode ser desfeita.');">
+                    Excluir chat
+                </button>
+            </form>
         </div>
     </section>
 

@@ -5,13 +5,16 @@ import br.com.fiap.aiury.entities.Ajudante;
 import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.entities.ChatStatus;
 import br.com.fiap.aiury.entities.Usuario;
+import br.com.fiap.aiury.exceptions.ConflictException;
 import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.ChatMapper;
 import br.com.fiap.aiury.repositories.AjudanteRepository;
 import br.com.fiap.aiury.repositories.ChatRepository;
+import br.com.fiap.aiury.repositories.MensagemRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -32,16 +35,19 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
     private final UsuarioRepository usuarioRepository;
     private final AjudanteRepository ajudanteRepository;
+    private final MensagemRepository mensagemRepository;
     private final ChatMapper chatMapper;
 
     @Autowired
     public ChatServiceImpl(ChatRepository chatRepository,
                            UsuarioRepository usuarioRepository,
                            AjudanteRepository ajudanteRepository,
+                           MensagemRepository mensagemRepository,
                            ChatMapper chatMapper) {
         this.chatRepository = chatRepository;
         this.usuarioRepository = usuarioRepository;
         this.ajudanteRepository = ajudanteRepository;
+        this.mensagemRepository = mensagemRepository;
         this.chatMapper = chatMapper;
     }
 
@@ -121,7 +127,13 @@ public class ChatServiceImpl implements ChatService {
         if (!chatRepository.existsById(id)) {
             throw new NotFoundException("Chat nao encontrado com ID: " + id);
         }
-        chatRepository.deleteById(id);
+
+        try {
+            mensagemRepository.deleteByChat_Id(id);
+            chatRepository.deleteById(id);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ConflictException("Nao foi possivel excluir o chat pois existem dados vinculados.");
+        }
     }
 
     /**

@@ -31,4 +31,6 @@ public interface ChatRepository extends JpaRepository<Chat, Long>, JpaSpecificat
             Long ajudanteId,
             LocalDateTime dataInicio
     );
+
+    long deleteByUsuario_Id(Long usuarioId);
 }

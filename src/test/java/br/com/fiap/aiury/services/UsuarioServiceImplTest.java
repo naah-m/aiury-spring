@@ -5,7 +5,9 @@ import br.com.fiap.aiury.entities.Cidade;
 import br.com.fiap.aiury.entities.Usuario;
 import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.UsuarioMapper;
+import br.com.fiap.aiury.repositories.ChatRepository;
 import br.com.fiap.aiury.repositories.CidadeRepository;
+import br.com.fiap.aiury.repositories.MensagemRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +21,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +32,12 @@ class UsuarioServiceImplTest {
 
     @Mock
     private CidadeRepository cidadeRepository;
+
+    @Mock
+    private ChatRepository chatRepository;
+
+    @Mock
+    private MensagemRepository mensagemRepository;
 
     @Mock
     private UsuarioMapper usuarioMapper;
@@ -71,5 +80,29 @@ class UsuarioServiceImplTest {
         Usuario criado = usuarioService.criarUsuario(dto);
         assertThat(criado.getNomeReal()).isEqualTo("Maria Silva");
         assertThat(criado.getCidade().getId()).isEqualTo(1L);
+    }
+
+    @Test
+    void deveExcluirUsuarioComDependenciasQuandoUsuarioExiste() {
+        Long usuarioId = 10L;
+
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+
+        usuarioService.deletarUsuario(usuarioId);
+
+        verify(mensagemRepository).deleteByChat_Usuario_Id(usuarioId);
+        verify(mensagemRepository).deleteByRemetente_Id(usuarioId);
+        verify(chatRepository).deleteByUsuario_Id(usuarioId);
+        verify(usuarioRepository).deleteById(usuarioId);
+    }
+
+    @Test
+    void deveLancarNotFoundAoExcluirUsuarioInexistente() {
+        Long usuarioId = 999L;
+        when(usuarioRepository.existsById(usuarioId)).thenReturn(false);
+
+        assertThatThrownBy(() -> usuarioService.deletarUsuario(usuarioId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("Usuario nao encontrado");
     }
 }

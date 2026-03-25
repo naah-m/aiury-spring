@@ -6,10 +6,13 @@ import br.com.fiap.aiury.entities.Usuario;
 import br.com.fiap.aiury.exceptions.ConflictException;
 import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.UsuarioMapper;
+import br.com.fiap.aiury.repositories.ChatRepository;
 import br.com.fiap.aiury.repositories.CidadeRepository;
+import br.com.fiap.aiury.repositories.MensagemRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,12 +30,20 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final CidadeRepository cidadeRepository;
+    private final ChatRepository chatRepository;
+    private final MensagemRepository mensagemRepository;
     private final UsuarioMapper usuarioMapper;
 
     @Autowired
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, CidadeRepository cidadeRepository, UsuarioMapper usuarioMapper) {
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository,
+                              CidadeRepository cidadeRepository,
+                              ChatRepository chatRepository,
+                              MensagemRepository mensagemRepository,
+                              UsuarioMapper usuarioMapper) {
         this.usuarioRepository = usuarioRepository;
         this.cidadeRepository = cidadeRepository;
+        this.chatRepository = chatRepository;
+        this.mensagemRepository = mensagemRepository;
         this.usuarioMapper = usuarioMapper;
     }
 
@@ -106,7 +117,15 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (!usuarioRepository.existsById(id)) {
             throw new NotFoundException("Usuario nao encontrado com ID: " + id);
         }
-        usuarioRepository.deleteById(id);
+
+        try {
+            mensagemRepository.deleteByChat_Usuario_Id(id);
+            mensagemRepository.deleteByRemetente_Id(id);
+            chatRepository.deleteByUsuario_Id(id);
+            usuarioRepository.deleteById(id);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ConflictException("Nao foi possivel excluir o usuario pois existem registros vinculados.");
+        }
     }
 
     private void validarCelularUnico(String celular, Long usuarioIdAtual) {

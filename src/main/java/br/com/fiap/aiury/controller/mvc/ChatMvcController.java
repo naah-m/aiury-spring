@@ -130,4 +130,16 @@ public class ChatMvcController {
             return "app/chats/detail";
         }
     }
+
+    @PostMapping("/{id}/excluir")
+    public String excluir(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            chatService.deletarChat(id);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Chat excluido com sucesso.");
+        } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
+        }
+
+        return "redirect:/app/chats";
+    }
 }

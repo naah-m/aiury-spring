@@ -36,6 +36,16 @@ public class UsuarioWebMapper {
         );
     }
 
+    public UsuarioWebForm toForm(Usuario usuario) {
+        UsuarioWebForm form = new UsuarioWebForm();
+        form.setNomeReal(usuario.getNomeReal());
+        form.setNomeAnonimo(usuario.getNomeAnonimo());
+        form.setDataNascimento(usuario.getDataNascimento());
+        form.setCelular(usuario.getCelular());
+        form.setCidadeId(usuario.getCidade() != null ? usuario.getCidade().getId() : null);
+        return form;
+    }
+
     private String normalizarTextoObrigatorio(String valor) {
         return valor == null ? null : valor.trim();
     }

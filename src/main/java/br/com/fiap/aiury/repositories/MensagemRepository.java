@@ -37,4 +37,10 @@ public interface MensagemRepository extends JpaRepository<Mensagem, Long> {
             LocalDateTime dataEnvio,
             String texto
     );
+
+    long deleteByChat_Id(Long chatId);
+
+    long deleteByChat_Usuario_Id(Long usuarioId);
+
+    long deleteByRemetente_Id(Long remetenteId);
 }
