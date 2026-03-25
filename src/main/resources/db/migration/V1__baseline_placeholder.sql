@@ -1,2 +1,0 @@
--- Baseline inicial para habilitar estrutura de migracoes com Flyway.
--- Nesta etapa, o schema continua sendo evoluido incrementalmente sem migracao completa.
