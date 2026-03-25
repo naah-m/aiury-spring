@@ -1,5 +1,6 @@
 package br.com.fiap.aiury.controller;
 
+import br.com.fiap.aiury.configs.OpenApiExamples;
 import br.com.fiap.aiury.dto.ApiErrorResponse;
 import br.com.fiap.aiury.dto.EstadoRequestDTO;
 import br.com.fiap.aiury.dto.EstadoResponseDTO;
@@ -9,6 +10,7 @@ import br.com.fiap.aiury.services.EstadoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -43,6 +45,15 @@ public class EstadoController {
 
     @PostMapping
     @Operation(summary = "Criar estado", description = "Cadastra um novo estado no catalogo")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Payload de criacao de estado.",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = EstadoRequestDTO.class),
+                    examples = @ExampleObject(name = "EstadoValido", value = OpenApiExamples.ESTADO_REQUEST)
+            )
+    )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
@@ -56,7 +67,10 @@ public class EstadoController {
             @ApiResponse(
                     responseCode = "409",
                     description = "Conflito de unicidade para nome ou UF",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = @ExampleObject(name = "Conflito", value = OpenApiExamples.ERROR_CONFLICT_GENERIC)
+                    )
             )
     })
     public ResponseEntity<EntityModel<EstadoResponseDTO>> cadastrarEstado(@Valid @RequestBody EstadoRequestDTO estadoDTO) {
@@ -79,7 +93,10 @@ public class EstadoController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<EstadoResponseDTO>> buscarEstadoPorId(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<EstadoResponseDTO>> buscarEstadoPorId(
+            @Parameter(description = "ID do estado. Deve existir previamente.", example = "1")
+            @PathVariable Long id
+    ) {
         Estado estado = estadoService.buscarPorId(id);
         return ResponseEntity.ok(estadoRepresentationBuilder.toModel(estado));
     }
@@ -100,6 +117,15 @@ public class EstadoController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar estado", description = "Atualiza um estado existente")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Payload de atualizacao de estado.",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = EstadoRequestDTO.class),
+                    examples = @ExampleObject(name = "EstadoAtualizacao", value = OpenApiExamples.ESTADO_REQUEST)
+            )
+    )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
@@ -118,10 +144,17 @@ public class EstadoController {
             @ApiResponse(
                     responseCode = "409",
                     description = "Conflito de unicidade para nome ou UF",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = @ExampleObject(name = "Conflito", value = OpenApiExamples.ERROR_CONFLICT_GENERIC)
+                    )
             )
     })
-    public ResponseEntity<EntityModel<EstadoResponseDTO>> atualizarEstado(@PathVariable Long id, @Valid @RequestBody EstadoRequestDTO estadoDTO) {
+    public ResponseEntity<EntityModel<EstadoResponseDTO>> atualizarEstado(
+            @Parameter(description = "ID do estado a ser atualizado.", example = "1")
+            @PathVariable Long id,
+            @Valid @RequestBody EstadoRequestDTO estadoDTO
+    ) {
         Estado estadoAtualizado = estadoService.atualizarEstado(id, estadoDTO);
         return ResponseEntity.ok(estadoRepresentationBuilder.toModel(estadoAtualizado));
     }
@@ -141,7 +174,10 @@ public class EstadoController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<Void> deletarEstado(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarEstado(
+            @Parameter(description = "ID do estado a ser removido.", example = "1")
+            @PathVariable Long id
+    ) {
         estadoService.deletarEstado(id);
         return ResponseEntity.noContent().build();
     }

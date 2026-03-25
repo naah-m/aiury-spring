@@ -1,5 +1,6 @@
 package br.com.fiap.aiury.controller;
 
+import br.com.fiap.aiury.configs.OpenApiExamples;
 import br.com.fiap.aiury.dto.ApiErrorResponse;
 import br.com.fiap.aiury.dto.ChatRequestDTO;
 import br.com.fiap.aiury.dto.ChatResponseDTO;
@@ -10,6 +11,7 @@ import br.com.fiap.aiury.services.ChatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -43,7 +45,19 @@ public class ChatController {
     }
 
     @PostMapping
-    @Operation(summary = "Criar chat", description = "Abre um novo chat vinculando usuario e ajudante")
+    @Operation(
+            summary = "Criar chat",
+            description = "Abre um novo chat vinculando usuario e ajudante. Pre-requisitos: usuarioId e ajudanteId devem existir previamente."
+    )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Payload de criacao de chat. Campos dataInicio/dataFim devem seguir dd/MM/yyyy HH:mm:ss.",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ChatRequestDTO.class),
+                    examples = @ExampleObject(name = "ChatValido", value = OpenApiExamples.CHAT_REQUEST)
+            )
+    )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
@@ -52,12 +66,21 @@ public class ChatController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Payload invalido",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(name = "ErroValidacao", value = OpenApiExamples.ERROR_VALIDATION_GENERIC),
+                                    @ExampleObject(name = "FormatoDataHoraInvalido", value = OpenApiExamples.ERROR_INVALID_DATE_TIME)
+                            }
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Usuario ou ajudante nao encontrados",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND_GENERIC)
+                    )
             )
     })
     public ResponseEntity<EntityModel<ChatResponseDTO>> cadastrarChat(@Valid @RequestBody ChatRequestDTO chatDTO) {
@@ -80,7 +103,10 @@ public class ChatController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<ChatResponseDTO>> buscarChatPorId(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<ChatResponseDTO>> buscarChatPorId(
+            @Parameter(description = "ID do chat. Deve existir previamente.", example = "1")
+            @PathVariable Long id
+    ) {
         Chat chat = chatService.buscarPorId(id);
         return ResponseEntity.ok(chatRepresentationBuilder.toModel(chat));
     }
@@ -104,7 +130,19 @@ public class ChatController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar chat", description = "Atualiza um chat existente pelo ID")
+    @Operation(
+            summary = "Atualizar chat",
+            description = "Atualiza um chat existente. Pre-requisitos: id do chat, usuarioId e ajudanteId devem existir."
+    )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Payload de atualizacao de chat. Campos dataInicio/dataFim devem seguir dd/MM/yyyy HH:mm:ss.",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ChatRequestDTO.class),
+                    examples = @ExampleObject(name = "ChatAtualizacao", value = OpenApiExamples.CHAT_REQUEST)
+            )
+    )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
@@ -113,15 +151,28 @@ public class ChatController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Payload invalido",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(name = "ErroValidacao", value = OpenApiExamples.ERROR_VALIDATION_GENERIC),
+                                    @ExampleObject(name = "FormatoDataHoraInvalido", value = OpenApiExamples.ERROR_INVALID_DATE_TIME)
+                            }
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Chat, usuario ou ajudante nao encontrados",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND_GENERIC)
+                    )
             )
     })
-    public ResponseEntity<EntityModel<ChatResponseDTO>> atualizarChat(@PathVariable Long id, @Valid @RequestBody ChatRequestDTO chatDTO) {
+    public ResponseEntity<EntityModel<ChatResponseDTO>> atualizarChat(
+            @Parameter(description = "ID do chat a ser atualizado.", example = "1")
+            @PathVariable Long id,
+            @Valid @RequestBody ChatRequestDTO chatDTO
+    ) {
         Chat chatAtualizado = chatService.atualizarChat(id, chatDTO);
         return ResponseEntity.ok(chatRepresentationBuilder.toModel(chatAtualizado));
     }
@@ -136,7 +187,10 @@ public class ChatController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<Void> deletarChat(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarChat(
+            @Parameter(description = "ID do chat a ser removido.", example = "1")
+            @PathVariable Long id
+    ) {
         chatService.deletarChat(id);
         return ResponseEntity.noContent().build();
     }

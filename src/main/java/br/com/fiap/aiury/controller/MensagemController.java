@@ -1,5 +1,6 @@
 package br.com.fiap.aiury.controller;
 
+import br.com.fiap.aiury.configs.OpenApiExamples;
 import br.com.fiap.aiury.dto.ApiErrorResponse;
 import br.com.fiap.aiury.dto.MensagemRequestDTO;
 import br.com.fiap.aiury.dto.MensagemResponseDTO;
@@ -9,6 +10,7 @@ import br.com.fiap.aiury.services.MensagemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -42,7 +44,19 @@ public class MensagemController {
     }
 
     @PostMapping
-    @Operation(summary = "Criar mensagem", description = "Cria uma nova mensagem vinculada a um chat")
+    @Operation(
+            summary = "Criar mensagem",
+            description = "Cria uma nova mensagem vinculada a um chat. Pre-requisitos: chatId e remetenteId devem existir e o remetente deve pertencer ao chat."
+    )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Payload de criacao de mensagem. Campo dataEnvio deve seguir dd/MM/yyyy HH:mm:ss.",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = MensagemRequestDTO.class),
+                    examples = @ExampleObject(name = "MensagemValida", value = OpenApiExamples.MENSAGEM_REQUEST)
+            )
+    )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
@@ -51,12 +65,21 @@ public class MensagemController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Payload invalido",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(name = "ErroValidacao", value = OpenApiExamples.ERROR_VALIDATION_GENERIC),
+                                    @ExampleObject(name = "FormatoDataHoraInvalido", value = OpenApiExamples.ERROR_INVALID_DATE_TIME)
+                            }
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Chat ou remetente nao encontrados",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND_GENERIC)
+                    )
             )
     })
     public ResponseEntity<EntityModel<MensagemResponseDTO>> cadastrarMensagem(@Valid @RequestBody MensagemRequestDTO mensagemDTO) {
@@ -79,7 +102,10 @@ public class MensagemController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<MensagemResponseDTO>> buscarMensagemPorId(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<MensagemResponseDTO>> buscarMensagemPorId(
+            @Parameter(description = "ID da mensagem. Deve existir previamente.", example = "1")
+            @PathVariable Long id
+    ) {
         Mensagem mensagem = mensagemService.buscarPorId(id);
         return ResponseEntity.ok(mensagemRepresentationBuilder.toModel(mensagem));
     }
@@ -101,7 +127,19 @@ public class MensagemController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar mensagem", description = "Atualiza uma mensagem existente")
+    @Operation(
+            summary = "Atualizar mensagem",
+            description = "Atualiza uma mensagem existente. Pre-requisitos: id da mensagem, chatId e remetenteId devem existir."
+    )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Payload de atualizacao de mensagem. Campo dataEnvio deve seguir dd/MM/yyyy HH:mm:ss.",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = MensagemRequestDTO.class),
+                    examples = @ExampleObject(name = "MensagemAtualizacao", value = OpenApiExamples.MENSAGEM_REQUEST)
+            )
+    )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
@@ -110,15 +148,28 @@ public class MensagemController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Payload invalido",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(name = "ErroValidacao", value = OpenApiExamples.ERROR_VALIDATION_GENERIC),
+                                    @ExampleObject(name = "FormatoDataHoraInvalido", value = OpenApiExamples.ERROR_INVALID_DATE_TIME)
+                            }
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Mensagem, chat ou remetente nao encontrados",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND_GENERIC)
+                    )
             )
     })
-    public ResponseEntity<EntityModel<MensagemResponseDTO>> atualizarMensagem(@PathVariable Long id, @Valid @RequestBody MensagemRequestDTO mensagemDTO) {
+    public ResponseEntity<EntityModel<MensagemResponseDTO>> atualizarMensagem(
+            @Parameter(description = "ID da mensagem a ser atualizada.", example = "1")
+            @PathVariable Long id,
+            @Valid @RequestBody MensagemRequestDTO mensagemDTO
+    ) {
         Mensagem mensagemAtualizada = mensagemService.atualizarMensagem(id, mensagemDTO);
         return ResponseEntity.ok(mensagemRepresentationBuilder.toModel(mensagemAtualizada));
     }
@@ -133,7 +184,10 @@ public class MensagemController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<Void> deletarMensagem(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarMensagem(
+            @Parameter(description = "ID da mensagem a ser removida.", example = "1")
+            @PathVariable Long id
+    ) {
         mensagemService.deletarMensagem(id);
         return ResponseEntity.noContent().build();
     }

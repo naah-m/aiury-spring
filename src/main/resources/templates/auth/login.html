@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Aiury | Login</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="auth-page">
+<main class="auth-card">
+    <h1>Aiury</h1>
+    <p>Base web da Sprint 3</p>
+
+    <p class="alert success" th:if="${param.logout}">Sessao encerrada.</p>
+    <p class="alert error" th:if="${param.error}">Credenciais invalidas.</p>
+
+    <form th:action="@{/login}" method="post">
+        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+        <label for="username">Usuario</label>
+        <input id="username" name="username" type="text" required autocomplete="username">
+
+        <label for="password">Senha</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password">
+
+        <button type="submit">Entrar</button>
+    </form>
+
+    <small>Credencial inicial: admin / admin123</small>
+</main>
+</body>
+</html>

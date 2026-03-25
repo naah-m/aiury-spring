@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Aiury | Erro</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<main class="container error-page">
+    <h1 th:text="${status}">500</h1>
+    <h2 th:text="${error}">Erro</h2>
+    <p th:text="${message}">Nao foi possivel concluir a operacao.</p>
+    <a class="button" th:href="@{/app}">Voltar ao dashboard</a>
+</main>
+</body>
+</html>

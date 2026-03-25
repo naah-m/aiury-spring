@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Aiury | Usuarios</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topbar('usuarios')}"></div>
+
+<main class="container">
+    <section class="section-header">
+        <h1>Usuarios</h1>
+        <a class="button" th:href="@{/app/usuarios/novo}">Novo usuario</a>
+    </section>
+
+    <p class="alert success" th:if="${mensagemSucesso}" th:text="${mensagemSucesso}"></p>
+
+    <form class="filter-form" method="get" th:action="@{/app/usuarios}">
+        <label for="cidadeId">Filtrar por cidade</label>
+        <select id="cidadeId" name="cidadeId">
+            <option value="">Todas</option>
+            <option th:each="cidade : ${cidades}"
+                    th:value="${cidade.id}"
+                    th:selected="${filtroCidadeId != null and filtroCidadeId == cidade.id}"
+                    th:text="${cidade.nomeCidade + ' - ' + cidade.estado.uf}">
+            </option>
+        </select>
+        <button type="submit">Aplicar</button>
+    </form>
+
+    <section class="table-wrapper">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome real</th>
+                <th>Nome anonimo</th>
+                <th>Cidade</th>
+                <th>UF</th>
+                <th>Cadastro</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(usuarios)}">
+                <td colspan="6">Nenhum usuario encontrado.</td>
+            </tr>
+            <tr th:each="usuario : ${usuarios}">
+                <td th:text="${usuario.id}">1</td>
+                <td th:text="${usuario.nomeReal}">Nome</td>
+                <td th:text="${usuario.nomeAnonimo != null and !#strings.isEmpty(usuario.nomeAnonimo) ? usuario.nomeAnonimo : '-'}">-</td>
+                <td th:text="${usuario.cidadeNome}">Cidade</td>
+                <td th:text="${usuario.estadoUf}">UF</td>
+                <td th:text="${usuario.dataCadastro != null ? #temporals.format(usuario.dataCadastro, 'dd/MM/yyyy') : '-'}">-</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

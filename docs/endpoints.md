@@ -6,6 +6,8 @@
 - Media type: `application/json`
 - Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+- Formato de data (`LocalDate`): `dd/MM/yyyy`
+- Formato de data/hora (`LocalDateTime`): `dd/MM/yyyy HH:mm:ss`
 
 As respostas `GET`, `POST` e `PUT` retornam representacoes HATEOAS com `_links`.
 
@@ -18,7 +20,7 @@ Estrutura padrao de erro:
 
 ```json
 {
-  "timestamp": "2026-03-25T00:10:00",
+  "timestamp": "25/03/2026 00:10:00",
   "status": 400,
   "error": "Bad Request",
   "message": "Erro de validacao nos campos informados.",
@@ -29,7 +31,30 @@ Estrutura padrao de erro:
 }
 ```
 
-## 2. Resumo executivo de recursos
+Exemplo de erro de formato de data:
+
+```json
+{
+  "timestamp": "25/03/2026 00:10:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Formato de data/hora invalido no corpo da requisicao.",
+  "path": "/api/chats",
+  "validationErrors": {
+    "dataInicio": "Formato de data/hora invalido. Use dd/MM/yyyy HH:mm:ss."
+  }
+}
+```
+
+## 2. Fluxo recomendado para testes
+1. Criar estado
+2. Criar cidade com `estadoId` existente
+3. Criar usuario com `cidadeId` existente
+4. Criar ajudante
+5. Criar chat com `usuarioId` e `ajudanteId` existentes
+6. Criar mensagem com `chatId` existente e `remetenteId` igual ao usuario dono do chat
+
+## 3. Resumo executivo de recursos
 
 | Recurso | Base path | Filtros suportados |
 |---|---|---|
@@ -41,7 +66,7 @@ Estrutura padrao de erro:
 | Chats | `/api/chats` | `usuarioId`, `ajudanteId`, `status` |
 | Mensagens | `/api/mensagens` | `chatId`, `remetenteId` |
 
-## 3. Root (entrypoint HATEOAS)
+## 4. Root (entrypoint HATEOAS)
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -56,7 +81,7 @@ Exemplo de relacoes retornadas:
 - `cidades`
 - `estados`
 
-## 4. Estados
+## 5. Estados
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -75,7 +100,7 @@ Exemplo `POST /api/estados`:
 }
 ```
 
-## 5. Cidades
+## 6. Cidades
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -94,7 +119,10 @@ Exemplo `POST /api/cidades`:
 }
 ```
 
-## 6. Usuarios
+Pre-requisito:
+- `estadoId` deve existir.
+
+## 7. Usuarios
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -110,14 +138,17 @@ Exemplo `POST /api/usuarios`:
 {
   "nomeReal": "Maria Silva",
   "nomeAnonimo": "LuzInterior",
-  "dataNascimento": "15-08-1998",
+  "dataNascimento": "15/08/1998",
   "celular": "11999998888",
   "senha": "segredo123",
   "cidadeId": 1
 }
 ```
 
-## 7. Ajudantes
+Pre-requisito:
+- `cidadeId` deve existir.
+
+## 8. Ajudantes
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -138,7 +169,7 @@ Exemplo `POST /api/ajudantes`:
 }
 ```
 
-## 8. Chats
+## 9. Chats
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -161,7 +192,7 @@ Exemplo `POST /api/chats`:
 {
   "usuarioId": 10,
   "ajudanteId": 3,
-  "dataInicio": "2026-03-24T14:00:00",
+  "dataInicio": "25/03/2026 14:00:00",
   "dataFim": null,
   "status": "INICIADO"
 }
@@ -171,7 +202,11 @@ Regra adicional de negocio:
 - `dataFim` nao pode ser anterior a `dataInicio`.
 - status finalizado exige `dataFim`.
 
-## 9. Mensagens
+Pre-requisitos:
+- `usuarioId` deve existir.
+- `ajudanteId` deve existir.
+
+## 10. Mensagens
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -188,7 +223,7 @@ Exemplo `POST /api/mensagens`:
   "chatId": 101,
   "remetenteId": 10,
   "texto": "Obrigado pela escuta de hoje.",
-  "dataEnvio": "2026-03-24T14:15:00"
+  "dataEnvio": "25/03/2026 14:15:00"
 }
 ```
 
@@ -196,7 +231,11 @@ Regras adicionais de negocio:
 - `remetenteId` deve pertencer ao usuario dono do chat.
 - `dataEnvio` deve estar entre inicio e fim do chat.
 
-## 10. Status HTTP usados na API
+Pre-requisitos:
+- `chatId` deve existir.
+- `remetenteId` deve existir e corresponder ao usuario do chat.
+
+## 11. Status HTTP usados na API
 
 | Status | Uso |
 |---|---|

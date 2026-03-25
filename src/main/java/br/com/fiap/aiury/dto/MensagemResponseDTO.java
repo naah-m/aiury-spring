@@ -1,5 +1,7 @@
 package br.com.fiap.aiury.dto;
 
+import br.com.fiap.aiury.configs.DateTimePatterns;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -24,6 +26,12 @@ public class MensagemResponseDTO {
     @Schema(description = "Texto enviado", example = "Obrigado pela escuta de hoje.")
     private String texto;
 
-    @Schema(description = "Data e hora de envio", example = "2026-03-24T14:15:00")
+    @JsonFormat(pattern = DateTimePatterns.DATE_TIME)
+    @Schema(
+            description = "Data e hora de envio no formato DD/MM/AAAA HH:mm:ss",
+            example = "25/03/2026 14:15:00",
+            type = "string",
+            pattern = DateTimePatterns.DATE_TIME
+    )
     private LocalDateTime dataEnvio;
 }

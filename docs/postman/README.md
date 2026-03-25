@@ -30,14 +30,29 @@
 7. Requests de listagem com filtros
 8. Pasta `Erros Controlados`
 
-## 5. Cenarios cobertos na collection
+## 5. Padrao de data para requests
+- `dataNascimento` (`Usuario`): `dd/MM/yyyy`
+- `dataInicio` e `dataFim` (`Chat`): `dd/MM/yyyy HH:mm:ss`
+- `dataEnvio` (`Mensagem`): `dd/MM/yyyy HH:mm:ss`
+
+Exemplos validos:
+- `15/08/1998`
+- `25/03/2026 14:00:00`
+
+## 6. Cenarios cobertos na collection
 - Fluxo completo de cadastro e vinculacao entre recursos.
 - Filtros por `estadoId`, `cidadeId`, `usuarioId`, `chatId`.
 - Captura automatica de IDs para as proximas requests.
 - Validacao de erro `400` (payload invalido).
 - Validacao de erro `404` (recurso inexistente).
+- Validacao de erro `400` para formato de data invalido.
 
-## 6. Evidencias que devem ser salvas para avaliacao
+## 7. Erros mais comuns ao testar
+- `404`: tentar criar `Usuario` sem `cidadeId` existente, ou `Chat` sem `usuarioId/ajudanteId` existentes.
+- `409`: cadastrar `Usuario` com celular repetido.
+- `400`: enviar data no formato ISO (`2026-03-25T14:00:00`) em vez de `25/03/2026 14:00:00`.
+
+## 8. Evidencias que devem ser salvas para avaliacao
 - Print de `201` para cada recurso criado.
 - Print de `200` em listagens com filtro.
 - Print de `400` com `validationErrors`.

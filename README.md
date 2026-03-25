@@ -12,6 +12,7 @@ Atendimentos informais sem registro dificultam continuidade e analise de qualida
 - Registrar mensagens vinculadas ao chat.
 - Entregar API REST nivel 3 com HATEOAS, tratamento padrao de erros e OpenAPI.
 - Padronizar relacoes HATEOAS (`criar`, `atualizar`, `excluir`, relacionamentos de dominio).
+- Padronizar datas em toda a API (`dd/MM/yyyy` e `dd/MM/yyyy HH:mm:ss`).
 
 ## 3. Publico-alvo
 - Equipe academica avaliadora.
@@ -102,6 +103,12 @@ $env:DB_PASSWORD="SUA_SENHA"
 - Alias: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
+### 9.1 Padrao oficial de data/hora na API
+- Campos de data sem hora (`LocalDate`): `dd/MM/yyyy` (ex.: `15/08/1998`).
+- Campos de data/hora (`LocalDateTime`): `dd/MM/yyyy HH:mm:ss` (ex.: `25/03/2026 14:00:00`).
+- O mesmo formato vale para request e response.
+- Payload com data fora desse padrao retorna `400 Bad Request` com mensagem de formato invalido.
+
 ## 10. Endpoints da API
 
 | Recurso | Base path | Operacoes |
@@ -141,6 +148,14 @@ Detalhes: `docs/modelagem.md`.
 - Collection: `docs/postman/Aiury-Sprint3.postman_collection.json`
 - Environment: `docs/postman/Aiury-local.postman_environment.json`
 - Guia: `docs/postman/README.md`
+
+Fluxo recomendado para evitar erros de ID inexistente:
+1. Criar `Estado`
+2. Criar `Cidade` usando `estadoId`
+3. Criar `Usuario` usando `cidadeId`
+4. Criar `Ajudante`
+5. Criar `Chat` usando `usuarioId` e `ajudanteId`
+6. Criar `Mensagem` usando `chatId` e `remetenteId` (usuario do chat)
 
 Documento de evidencias: `docs/testes.md`.
 

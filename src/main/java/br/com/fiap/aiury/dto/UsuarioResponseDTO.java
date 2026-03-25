@@ -1,5 +1,7 @@
 package br.com.fiap.aiury.dto;
 
+import br.com.fiap.aiury.configs.DateTimePatterns;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -21,13 +23,25 @@ public class UsuarioResponseDTO {
     @Schema(description = "Nome anonimo exibido no chat", example = "LuzInterior")
     private String nomeAnonimo;
 
-    @Schema(description = "Data de nascimento em formato ISO", example = "1998-08-15")
+    @JsonFormat(pattern = DateTimePatterns.DATE)
+    @Schema(
+            description = "Data de nascimento no formato DD/MM/AAAA",
+            example = "15/08/1998",
+            type = "string",
+            pattern = DateTimePatterns.DATE
+    )
     private LocalDate dataNascimento;
 
     @Schema(description = "Telefone celular", example = "11999998888")
     private String celular;
 
-    @Schema(description = "Data de cadastro em formato ISO", example = "2026-03-24")
+    @JsonFormat(pattern = DateTimePatterns.DATE)
+    @Schema(
+            description = "Data de cadastro no formato DD/MM/AAAA",
+            example = "24/03/2026",
+            type = "string",
+            pattern = DateTimePatterns.DATE
+    )
     private LocalDate dataCadastro;
 
     @Schema(description = "Identificador da cidade vinculada", example = "1")

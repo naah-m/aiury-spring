@@ -142,7 +142,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nomeReal\": \"Maria Silva\",\n  \"nomeAnonimo\": \"LuzInterior\",\n  \"dataNascimento\": \"15-08-1998\",\n  \"celular\": \"11999998888\",\n  \"senha\": \"segredo123\",\n  \"cidadeId\": {{cidadeId}}\n}"
+              "raw": "{\n  \"nomeReal\": \"Maria Silva\",\n  \"nomeAnonimo\": \"LuzInterior\",\n  \"dataNascimento\": \"15/08/1998\",\n  \"celular\": \"11999998888\",\n  \"senha\": \"segredo123\",\n  \"cidadeId\": {{cidadeId}}\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/usuarios",
@@ -274,7 +274,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"usuarioId\": {{usuarioId}},\n  \"ajudanteId\": {{ajudanteId}},\n  \"dataInicio\": \"2026-03-24T14:00:00\",\n  \"dataFim\": null,\n  \"status\": \"INICIADO\"\n}"
+              "raw": "{\n  \"usuarioId\": {{usuarioId}},\n  \"ajudanteId\": {{ajudanteId}},\n  \"dataInicio\": \"25/03/2026 14:00:00\",\n  \"dataFim\": null,\n  \"status\": \"INICIADO\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/chats",
@@ -340,7 +340,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"chatId\": {{chatId}},\n  \"remetenteId\": {{usuarioId}},\n  \"texto\": \"Obrigado pela escuta.\",\n  \"dataEnvio\": \"2026-03-24T14:15:00\"\n}"
+              "raw": "{\n  \"chatId\": {{chatId}},\n  \"remetenteId\": {{usuarioId}},\n  \"texto\": \"Obrigado pela escuta.\",\n  \"dataEnvio\": \"25/03/2026 14:15:00\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/mensagens",

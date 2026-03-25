@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Aiury | Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topbar('dashboard')}"></div>
+
+<main class="container">
+    <section class="hero">
+        <h1>Dashboard</h1>
+        <p>Visao inicial da camada web com Thymeleaf.</p>
+    </section>
+
+    <section class="cards">
+        <article class="card">
+            <h2>Usuarios</h2>
+            <p th:text="${summary.totalUsuarios}">0</p>
+        </article>
+        <article class="card">
+            <h2>Ajudantes</h2>
+            <p th:text="${summary.totalAjudantes}">0</p>
+        </article>
+        <article class="card">
+            <h2>Chats</h2>
+            <p th:text="${summary.totalChats}">0</p>
+        </article>
+        <article class="card">
+            <h2>Mensagens</h2>
+            <p th:text="${summary.totalMensagens}">0</p>
+        </article>
+    </section>
+</main>
+</body>
+</html>

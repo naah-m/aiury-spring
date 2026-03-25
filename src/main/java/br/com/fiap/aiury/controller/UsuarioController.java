@@ -1,5 +1,6 @@
 package br.com.fiap.aiury.controller;
 
+import br.com.fiap.aiury.configs.OpenApiExamples;
 import br.com.fiap.aiury.dto.ApiErrorResponse;
 import br.com.fiap.aiury.dto.UsuarioRequestDTO;
 import br.com.fiap.aiury.dto.UsuarioResponseDTO;
@@ -9,6 +10,7 @@ import br.com.fiap.aiury.services.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -42,7 +44,19 @@ public class UsuarioController {
     }
 
     @PostMapping
-    @Operation(summary = "Criar usuario", description = "Cadastra um novo usuario")
+    @Operation(
+            summary = "Criar usuario",
+            description = "Cadastra um novo usuario. Pre-requisito: cidadeId informado deve existir previamente."
+    )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Payload de criacao de usuario. Campo dataNascimento deve seguir o formato dd/MM/yyyy.",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = UsuarioRequestDTO.class),
+                    examples = @ExampleObject(name = "UsuarioValido", value = OpenApiExamples.USUARIO_REQUEST)
+            )
+    )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
@@ -51,17 +65,29 @@ public class UsuarioController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Payload invalido",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(name = "ErroValidacao", value = OpenApiExamples.ERROR_VALIDATION),
+                                    @ExampleObject(name = "FormatoDataInvalido", value = OpenApiExamples.ERROR_INVALID_DATE)
+                            }
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Cidade nao encontrada",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND)
+                    )
             ),
             @ApiResponse(
                     responseCode = "409",
                     description = "Celular ja cadastrado",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = @ExampleObject(name = "Conflito", value = OpenApiExamples.ERROR_CONFLICT)
+                    )
             )
     })
     public ResponseEntity<EntityModel<UsuarioResponseDTO>> cadastrarUsuario(@Valid @RequestBody UsuarioRequestDTO usuarioDTO) {
@@ -84,7 +110,10 @@ public class UsuarioController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<UsuarioResponseDTO>> buscarUsuarioPorId(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<UsuarioResponseDTO>> buscarUsuarioPorId(
+            @Parameter(description = "ID do usuario. Deve existir previamente.", example = "1")
+            @PathVariable Long id
+    ) {
         Usuario usuario = usuarioService.buscarPorId(id);
         return ResponseEntity.ok(usuarioRepresentationBuilder.toModel(usuario));
     }
@@ -104,7 +133,19 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar usuario", description = "Atualiza um usuario existente")
+    @Operation(
+            summary = "Atualizar usuario",
+            description = "Atualiza um usuario existente. Pre-requisitos: id do usuario e cidadeId (quando informado) devem existir."
+    )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Payload de atualizacao. Campo dataNascimento deve seguir o formato dd/MM/yyyy.",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = UsuarioRequestDTO.class),
+                    examples = @ExampleObject(name = "UsuarioAtualizacao", value = OpenApiExamples.USUARIO_REQUEST)
+            )
+    )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
@@ -113,20 +154,36 @@ public class UsuarioController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Payload invalido",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(name = "ErroValidacao", value = OpenApiExamples.ERROR_VALIDATION),
+                                    @ExampleObject(name = "FormatoDataInvalido", value = OpenApiExamples.ERROR_INVALID_DATE)
+                            }
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Usuario ou cidade nao encontrados",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND)
+                    )
             ),
             @ApiResponse(
                     responseCode = "409",
                     description = "Celular ja cadastrado",
-                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+                    content = @Content(
+                            schema = @Schema(implementation = ApiErrorResponse.class),
+                            examples = @ExampleObject(name = "Conflito", value = OpenApiExamples.ERROR_CONFLICT)
+                    )
             )
     })
-    public ResponseEntity<EntityModel<UsuarioResponseDTO>> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioRequestDTO usuarioDTO) {
+    public ResponseEntity<EntityModel<UsuarioResponseDTO>> atualizarUsuario(
+            @Parameter(description = "ID do usuario a ser atualizado.", example = "1")
+            @PathVariable Long id,
+            @Valid @RequestBody UsuarioRequestDTO usuarioDTO
+    ) {
         Usuario usuarioAtualizado = usuarioService.atualizarUsuario(id, usuarioDTO);
         return ResponseEntity.ok(usuarioRepresentationBuilder.toModel(usuarioAtualizado));
     }
@@ -146,7 +203,10 @@ public class UsuarioController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarUsuario(
+            @Parameter(description = "ID do usuario a ser removido.", example = "1")
+            @PathVariable Long id
+    ) {
         usuarioService.deletarUsuario(id);
         return ResponseEntity.noContent().build();
     }

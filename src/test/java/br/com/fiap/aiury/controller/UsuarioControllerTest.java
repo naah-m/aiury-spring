@@ -6,6 +6,7 @@ import br.com.fiap.aiury.representation.UsuarioRepresentationBuilder;
 import br.com.fiap.aiury.services.UsuarioService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UsuarioController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 class UsuarioControllerTest {
 
@@ -78,5 +80,29 @@ class UsuarioControllerTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.validationErrors.nomeReal").exists())
                 .andExpect(jsonPath("$.validationErrors.senha").exists());
+    }
+
+    @Test
+    void deveRetornar400QuandoFormatoDeDataForInvalido() throws Exception {
+        String bodyDataInvalida = """
+                {
+                  "nomeReal": "Maria Silva",
+                  "nomeAnonimo": "LuzInterior",
+                  "dataNascimento": "1998-08-15",
+                  "celular": "11999998888",
+                  "senha": "segredo123",
+                  "cidadeId": 1
+                }
+                """;
+
+        mockMvc.perform(
+                        post("/api/usuarios")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(bodyDataInvalida)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Formato de data invalido no corpo da requisicao."))
+                .andExpect(jsonPath("$.validationErrors.dataNascimento").value("Formato de data invalido. Use dd/MM/yyyy."));
     }
 }

@@ -1,11 +1,16 @@
 package br.com.fiap.aiury.controller;
 
+import br.com.fiap.aiury.entities.Ajudante;
 import br.com.fiap.aiury.entities.Cidade;
 import br.com.fiap.aiury.entities.Estado;
 import br.com.fiap.aiury.entities.Usuario;
+import br.com.fiap.aiury.repositories.AjudanteRepository;
+import br.com.fiap.aiury.repositories.ChatRepository;
 import br.com.fiap.aiury.repositories.CidadeRepository;
 import br.com.fiap.aiury.repositories.EstadoRepository;
+import br.com.fiap.aiury.repositories.MensagemRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
+import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -32,6 +39,15 @@ class HateoasRuntimeIntegrationTest {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
+    private AjudanteRepository ajudanteRepository;
+
+    @Autowired
+    private ChatRepository chatRepository;
+
+    @Autowired
+    private MensagemRepository mensagemRepository;
+
+    @Autowired
     private CidadeRepository cidadeRepository;
 
     @Autowired
@@ -39,7 +55,10 @@ class HateoasRuntimeIntegrationTest {
 
     @BeforeEach
     void limparBase() {
+        mensagemRepository.deleteAll();
+        chatRepository.deleteAll();
         usuarioRepository.deleteAll();
+        ajudanteRepository.deleteAll();
         cidadeRepository.deleteAll();
         estadoRepository.deleteAll();
     }
@@ -70,6 +89,56 @@ class HateoasRuntimeIntegrationTest {
                 .andExpect(jsonPath("$._links.estado.href").exists());
     }
 
+    @Test
+    void deveAceitarFormatoDeDataHoraAmigavelNosEndpointsDeChatEMensagem() throws Exception {
+        Estado estado = criarEstado();
+        Cidade cidade = criarCidade(estado);
+        Usuario usuario = criarUsuario(cidade);
+        Ajudante ajudante = criarAjudante();
+
+        String chatBody = """
+                {
+                  "usuarioId": %d,
+                  "ajudanteId": %d,
+                  "dataInicio": "25/03/2026 14:00:00",
+                  "dataFim": "25/03/2026 15:05:00",
+                  "status": "EM_ANDAMENTO"
+                }
+                """.formatted(usuario.getId(), ajudante.getId());
+
+        String chatResponse = mockMvc.perform(
+                        post("/api/chats")
+                                .contentType(APPLICATION_JSON)
+                                .content(chatBody)
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.dataInicio").value("25/03/2026 14:00:00"))
+                .andExpect(jsonPath("$.dataFim").value("25/03/2026 15:05:00"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Number chatIdValue = JsonPath.read(chatResponse, "$.id");
+        Long chatId = chatIdValue.longValue();
+
+        String mensagemBody = """
+                {
+                  "chatId": %d,
+                  "remetenteId": %d,
+                  "texto": "Obrigado pela escuta de hoje.",
+                  "dataEnvio": "25/03/2026 14:15:00"
+                }
+                """.formatted(chatId, usuario.getId());
+
+        mockMvc.perform(
+                        post("/api/mensagens")
+                                .contentType(APPLICATION_JSON)
+                                .content(mensagemBody)
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.dataEnvio").value("25/03/2026 14:15:00"));
+    }
+
     private Estado criarEstado() {
         Estado estado = new Estado();
         estado.setNomeEstado("Parana");
@@ -94,5 +163,13 @@ class HateoasRuntimeIntegrationTest {
         usuario.setCidade(cidade);
         return usuarioRepository.save(usuario);
     }
-}
 
+    private Ajudante criarAjudante() {
+        Ajudante ajudante = new Ajudante();
+        ajudante.setAreaAtuacao("Escuta ativa");
+        ajudante.setMotivacao("Acolhimento voluntario");
+        ajudante.setDisponivel(true);
+        ajudante.setRating(4.8);
+        return ajudanteRepository.save(ajudante);
+    }
+}

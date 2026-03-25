@@ -1,6 +1,8 @@
 package br.com.fiap.aiury.dto;
 
+import br.com.fiap.aiury.configs.DateTimePatterns;
 import br.com.fiap.aiury.entities.ChatStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -22,10 +24,23 @@ public class ChatResponseDTO {
     @Schema(description = "ID do ajudante do chat", example = "3")
     private Long ajudanteId;
 
-    @Schema(description = "Data/hora de inicio", example = "2026-03-24T14:00:00")
+    @JsonFormat(pattern = DateTimePatterns.DATE_TIME)
+    @Schema(
+            description = "Data/hora de inicio no formato DD/MM/AAAA HH:mm:ss",
+            example = "25/03/2026 14:00:00",
+            type = "string",
+            pattern = DateTimePatterns.DATE_TIME
+    )
     private LocalDateTime dataInicio;
 
-    @Schema(description = "Data/hora de encerramento", example = "2026-03-24T15:05:00", nullable = true)
+    @JsonFormat(pattern = DateTimePatterns.DATE_TIME)
+    @Schema(
+            description = "Data/hora de encerramento no formato DD/MM/AAAA HH:mm:ss",
+            example = "25/03/2026 15:05:00",
+            nullable = true,
+            type = "string",
+            pattern = DateTimePatterns.DATE_TIME
+    )
     private LocalDateTime dataFim;
 
     @Schema(description = "Status atual do chat", example = "EM_ANDAMENTO")

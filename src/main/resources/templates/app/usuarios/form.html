@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Aiury | Novo Usuario</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topbar('usuarios')}"></div>
+
+<main class="container">
+    <section class="section-header">
+        <h1>Novo usuario</h1>
+        <a class="button button--ghost" th:href="@{/app/usuarios}">Voltar</a>
+    </section>
+
+    <form th:action="@{/app/usuarios}" th:object="${usuarioForm}" method="post" class="form-grid">
+        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+        <label for="nomeReal">Nome real</label>
+        <input id="nomeReal" type="text" th:field="*{nomeReal}" maxlength="100" required>
+        <p class="field-error" th:if="${#fields.hasErrors('nomeReal')}" th:errors="*{nomeReal}"></p>
+
+        <label for="nomeAnonimo">Nome anonimo</label>
+        <input id="nomeAnonimo" type="text" th:field="*{nomeAnonimo}" maxlength="50">
+        <p class="field-error" th:if="${#fields.hasErrors('nomeAnonimo')}" th:errors="*{nomeAnonimo}"></p>
+
+        <label for="dataNascimento">Data de nascimento</label>
+        <input id="dataNascimento" type="date" th:field="*{dataNascimento}" required>
+        <p class="field-error" th:if="${#fields.hasErrors('dataNascimento')}" th:errors="*{dataNascimento}"></p>
+
+        <label for="celular">Celular</label>
+        <input id="celular" type="text" th:field="*{celular}" placeholder="11999998888" maxlength="11">
+        <p class="field-error" th:if="${#fields.hasErrors('celular')}" th:errors="*{celular}"></p>
+
+        <label for="senha">Senha</label>
+        <input id="senha" type="password" th:field="*{senha}" minlength="8" maxlength="255" required>
+        <p class="field-error" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></p>
+
+        <label for="cidadeId">Cidade</label>
+        <select id="cidadeId" th:field="*{cidadeId}" required>
+            <option value="">Selecione</option>
+            <option th:each="cidade : ${cidades}"
+                    th:value="${cidade.id}"
+                    th:text="${cidade.nomeCidade + ' - ' + cidade.estado.uf}">
+            </option>
+        </select>
+        <p class="field-error" th:if="${#fields.hasErrors('cidadeId')}" th:errors="*{cidadeId}"></p>
+
+        <div class="form-actions">
+            <button type="submit">Salvar</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package br.com.fiap.aiury.controller;
 
+import br.com.fiap.aiury.configs.OpenApiExamples;
 import br.com.fiap.aiury.dto.AjudanteRequestDTO;
 import br.com.fiap.aiury.dto.AjudanteResponseDTO;
 import br.com.fiap.aiury.dto.ApiErrorResponse;
@@ -9,6 +10,7 @@ import br.com.fiap.aiury.services.AjudanteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -43,6 +45,15 @@ public class AjudanteController {
 
     @PostMapping
     @Operation(summary = "Criar ajudante", description = "Cadastra um novo ajudante")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Payload de criacao de ajudante.",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AjudanteRequestDTO.class),
+                    examples = @ExampleObject(name = "AjudanteValido", value = OpenApiExamples.AJUDANTE_REQUEST)
+            )
+    )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
@@ -74,7 +85,10 @@ public class AjudanteController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<AjudanteResponseDTO>> buscarAjudantePorId(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<AjudanteResponseDTO>> buscarAjudantePorId(
+            @Parameter(description = "ID do ajudante. Deve existir previamente.", example = "1")
+            @PathVariable Long id
+    ) {
         Ajudante ajudante = ajudanteService.buscarPorId(id);
         return ResponseEntity.ok(ajudanteRepresentationBuilder.toModel(ajudante));
     }
@@ -95,6 +109,15 @@ public class AjudanteController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar ajudante", description = "Atualiza um ajudante existente")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "Payload de atualizacao de ajudante.",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AjudanteRequestDTO.class),
+                    examples = @ExampleObject(name = "AjudanteAtualizacao", value = OpenApiExamples.AJUDANTE_REQUEST)
+            )
+    )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
@@ -111,7 +134,11 @@ public class AjudanteController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<AjudanteResponseDTO>> atualizarAjudante(@PathVariable Long id, @Valid @RequestBody AjudanteRequestDTO ajudanteDTO) {
+    public ResponseEntity<EntityModel<AjudanteResponseDTO>> atualizarAjudante(
+            @Parameter(description = "ID do ajudante a ser atualizado.", example = "1")
+            @PathVariable Long id,
+            @Valid @RequestBody AjudanteRequestDTO ajudanteDTO
+    ) {
         Ajudante ajudanteAtualizado = ajudanteService.atualizarAjudante(id, ajudanteDTO);
         return ResponseEntity.ok(ajudanteRepresentationBuilder.toModel(ajudanteAtualizado));
     }
@@ -131,7 +158,10 @@ public class AjudanteController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<Void> deletarAjudante(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarAjudante(
+            @Parameter(description = "ID do ajudante a ser removido.", example = "1")
+            @PathVariable Long id
+    ) {
         ajudanteService.deletarAjudante(id);
         return ResponseEntity.noContent().build();
     }

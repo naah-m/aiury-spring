@@ -1,6 +1,8 @@
 package br.com.fiap.aiury.dto;
 
+import br.com.fiap.aiury.configs.DateTimePatterns;
 import br.com.fiap.aiury.entities.ChatStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -23,10 +25,23 @@ public class ChatRequestDTO {
     private Long ajudanteId;
 
     @NotNull(message = "A data de inicio e obrigatoria")
-    @Schema(description = "Data e hora de inicio do chat", example = "2026-03-24T14:00:00")
+    @JsonFormat(pattern = DateTimePatterns.DATE_TIME)
+    @Schema(
+            description = "Data e hora de inicio no formato DD/MM/AAAA HH:mm:ss",
+            example = "25/03/2026 14:00:00",
+            type = "string",
+            pattern = DateTimePatterns.DATE_TIME
+    )
     private LocalDateTime dataInicio;
 
-    @Schema(description = "Data e hora de encerramento", example = "2026-03-24T15:05:00", nullable = true)
+    @JsonFormat(pattern = DateTimePatterns.DATE_TIME)
+    @Schema(
+            description = "Data e hora de encerramento no formato DD/MM/AAAA HH:mm:ss",
+            example = "25/03/2026 15:05:00",
+            nullable = true,
+            type = "string",
+            pattern = DateTimePatterns.DATE_TIME
+    )
     private LocalDateTime dataFim;
 
     @NotNull(message = "O status do chat e obrigatorio")

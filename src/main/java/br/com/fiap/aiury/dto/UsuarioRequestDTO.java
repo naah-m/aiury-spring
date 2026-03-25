@@ -1,5 +1,6 @@
 package br.com.fiap.aiury.dto;
 
+import br.com.fiap.aiury.configs.DateTimePatterns;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -29,8 +30,13 @@ public class UsuarioRequestDTO {
 
     @NotNull(message = "A data de nascimento e obrigatoria")
     @Past(message = "A data de nascimento deve ser anterior a data atual")
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    @Schema(description = "Data de nascimento no formato DD-MM-AAAA", example = "15-08-1998")
+    @JsonFormat(pattern = DateTimePatterns.DATE)
+    @Schema(
+            description = "Data de nascimento no formato DD/MM/AAAA",
+            example = "15/08/1998",
+            type = "string",
+            pattern = DateTimePatterns.DATE
+    )
     private LocalDate dataNascimento;
 
     @Pattern(
