@@ -1,57 +1,73 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Aiury | Novo Usuario</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-</head>
-<body>
-<div th:replace="~{fragments/nav :: topbar('usuarios')}"></div>
-
-<main class="container">
-    <section class="section-header">
-        <h1>Novo usuario</h1>
-        <a class="button button--ghost" th:href="@{/app/usuarios}">Voltar</a>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base('Novo usuario', 'usuarios', ~{::content})}">
+<th:block th:fragment="content">
+    <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">Novo usuario</h1>
+            <p class="text-secondary mb-0">Preencha os dados abaixo para cadastrar um novo usuario no sistema.</p>
+        </div>
+        <a class="btn btn-outline-secondary px-4" th:href="@{/app/usuarios}">Voltar para lista</a>
     </section>
 
-    <form th:action="@{/app/usuarios}" th:object="${usuarioForm}" method="post" class="form-grid">
-        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    <section class="form-card rounded-4 p-3 p-lg-4">
+        <form th:action="@{/app/usuarios}" th:object="${usuarioForm}" method="post" class="row g-3">
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-        <label for="nomeReal">Nome real</label>
-        <input id="nomeReal" type="text" th:field="*{nomeReal}" maxlength="100" required>
-        <p class="field-error" th:if="${#fields.hasErrors('nomeReal')}" th:errors="*{nomeReal}"></p>
+            <div class="col-12 col-lg-6">
+                <label for="nomeReal" class="form-label">Nome real</label>
+                <input id="nomeReal" type="text" th:field="*{nomeReal}" maxlength="100" required class="form-control"
+                       th:classappend="${#fields.hasErrors('nomeReal')} ? ' is-invalid' : ''">
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('nomeReal')}" th:errors="*{nomeReal}"></div>
+            </div>
 
-        <label for="nomeAnonimo">Nome anonimo</label>
-        <input id="nomeAnonimo" type="text" th:field="*{nomeAnonimo}" maxlength="50">
-        <p class="field-error" th:if="${#fields.hasErrors('nomeAnonimo')}" th:errors="*{nomeAnonimo}"></p>
+            <div class="col-12 col-lg-6">
+                <label for="nomeAnonimo" class="form-label">Nome anonimo</label>
+                <input id="nomeAnonimo" type="text" th:field="*{nomeAnonimo}" maxlength="50" class="form-control"
+                       th:classappend="${#fields.hasErrors('nomeAnonimo')} ? ' is-invalid' : ''">
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('nomeAnonimo')}" th:errors="*{nomeAnonimo}"></div>
+            </div>
 
-        <label for="dataNascimento">Data de nascimento</label>
-        <input id="dataNascimento" type="date" th:field="*{dataNascimento}" required>
-        <p class="field-error" th:if="${#fields.hasErrors('dataNascimento')}" th:errors="*{dataNascimento}"></p>
+            <div class="col-12 col-lg-4">
+                <label for="dataNascimento" class="form-label">Data de nascimento</label>
+                <input id="dataNascimento" type="date" th:field="*{dataNascimento}" required class="form-control"
+                       th:classappend="${#fields.hasErrors('dataNascimento')} ? ' is-invalid' : ''">
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('dataNascimento')}" th:errors="*{dataNascimento}"></div>
+            </div>
 
-        <label for="celular">Celular</label>
-        <input id="celular" type="text" th:field="*{celular}" placeholder="11999998888" maxlength="11">
-        <p class="field-error" th:if="${#fields.hasErrors('celular')}" th:errors="*{celular}"></p>
+            <div class="col-12 col-lg-4">
+                <label for="celular" class="form-label">Celular</label>
+                <input id="celular" type="text" th:field="*{celular}" maxlength="11" class="form-control"
+                       th:classappend="${#fields.hasErrors('celular')} ? ' is-invalid' : ''">
+                <div class="form-text">Informe apenas numeros, exemplo: 11999998888.</div>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('celular')}" th:errors="*{celular}"></div>
+            </div>
 
-        <label for="senha">Senha</label>
-        <input id="senha" type="password" th:field="*{senha}" minlength="8" maxlength="255" required>
-        <p class="field-error" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></p>
+            <div class="col-12 col-lg-4">
+                <label for="senha" class="form-label">Senha</label>
+                <input id="senha" type="password" th:field="*{senha}" minlength="8" maxlength="255" required class="form-control"
+                       th:classappend="${#fields.hasErrors('senha')} ? ' is-invalid' : ''">
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
+            </div>
 
-        <label for="cidadeId">Cidade</label>
-        <select id="cidadeId" th:field="*{cidadeId}" required>
-            <option value="">Selecione</option>
-            <option th:each="cidade : ${cidades}"
-                    th:value="${cidade.id}"
-                    th:text="${cidade.nomeCidade + ' - ' + cidade.estado.uf}">
-            </option>
-        </select>
-        <p class="field-error" th:if="${#fields.hasErrors('cidadeId')}" th:errors="*{cidadeId}"></p>
+            <div class="col-12">
+                <label for="cidadeId" class="form-label">Cidade</label>
+                <select id="cidadeId" th:field="*{cidadeId}" required class="form-select"
+                        th:classappend="${#fields.hasErrors('cidadeId')} ? ' is-invalid' : ''">
+                    <option value="">Selecione uma cidade</option>
+                    <option th:each="cidade : ${cidades}"
+                            th:value="${cidade.id}"
+                            th:text="${cidade.nomeCidade + ' - ' + cidade.estado.uf}">
+                    </option>
+                </select>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('cidadeId')}" th:errors="*{cidadeId}"></div>
+            </div>
 
-        <div class="form-actions">
-            <button type="submit">Salvar</button>
-        </div>
-    </form>
-</main>
-</body>
+            <div class="col-12 d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary px-4">Salvar usuario</button>
+            </div>
+        </form>
+    </section>
+</th:block>
 </html>

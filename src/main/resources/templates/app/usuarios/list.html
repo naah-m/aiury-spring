@@ -1,62 +1,65 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Aiury | Usuarios</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-</head>
-<body>
-<div th:replace="~{fragments/nav :: topbar('usuarios')}"></div>
-
-<main class="container">
-    <section class="section-header">
-        <h1>Usuarios</h1>
-        <a class="button" th:href="@{/app/usuarios/novo}">Novo usuario</a>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base('Usuarios', 'usuarios', ~{::content})}">
+<th:block th:fragment="content">
+    <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">Usuarios</h1>
+            <p class="text-secondary mb-0">Consulta, filtros e acompanhamento dos usuarios cadastrados na plataforma.</p>
+        </div>
+        <a class="btn btn-primary px-4" th:href="@{/app/usuarios/novo}">Novo usuario</a>
     </section>
 
-    <p class="alert success" th:if="${mensagemSucesso}" th:text="${mensagemSucesso}"></p>
+    <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
 
-    <form class="filter-form" method="get" th:action="@{/app/usuarios}">
-        <label for="cidadeId">Filtrar por cidade</label>
-        <select id="cidadeId" name="cidadeId">
-            <option value="">Todas</option>
-            <option th:each="cidade : ${cidades}"
-                    th:value="${cidade.id}"
-                    th:selected="${filtroCidadeId != null and filtroCidadeId == cidade.id}"
-                    th:text="${cidade.nomeCidade + ' - ' + cidade.estado.uf}">
-            </option>
-        </select>
-        <button type="submit">Aplicar</button>
-    </form>
-
-    <section class="table-wrapper">
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome real</th>
-                <th>Nome anonimo</th>
-                <th>Cidade</th>
-                <th>UF</th>
-                <th>Cadastro</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:if="${#lists.isEmpty(usuarios)}">
-                <td colspan="6">Nenhum usuario encontrado.</td>
-            </tr>
-            <tr th:each="usuario : ${usuarios}">
-                <td th:text="${usuario.id}">1</td>
-                <td th:text="${usuario.nomeReal}">Nome</td>
-                <td th:text="${usuario.nomeAnonimo != null and !#strings.isEmpty(usuario.nomeAnonimo) ? usuario.nomeAnonimo : '-'}">-</td>
-                <td th:text="${usuario.cidadeNome}">Cidade</td>
-                <td th:text="${usuario.estadoUf}">UF</td>
-                <td th:text="${usuario.dataCadastro != null ? #temporals.format(usuario.dataCadastro, 'dd/MM/yyyy') : '-'}">-</td>
-            </tr>
-            </tbody>
-        </table>
+    <section class="page-card rounded-4 p-3 p-lg-4 mb-4">
+        <form class="row g-3 align-items-end" method="get" th:action="@{/app/usuarios}">
+            <div class="col-12 col-lg-8">
+                <label class="form-label" for="cidadeId">Filtrar por cidade</label>
+                <select id="cidadeId" name="cidadeId" class="form-select">
+                    <option value="">Todas</option>
+                    <option th:each="cidade : ${cidades}"
+                            th:value="${cidade.id}"
+                            th:selected="${filtroCidadeId != null and filtroCidadeId == cidade.id}"
+                            th:text="${cidade.nomeCidade + ' - ' + cidade.estado.uf}">
+                    </option>
+                </select>
+            </div>
+            <div class="col-12 col-lg-4 d-grid d-lg-flex justify-content-lg-end">
+                <button type="submit" class="btn btn-outline-primary px-4">Aplicar filtro</button>
+            </div>
+        </form>
     </section>
-</main>
-</body>
+
+    <section class="page-card rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Nome real</th>
+                    <th scope="col">Nome anonimo</th>
+                    <th scope="col">Cidade</th>
+                    <th scope="col">UF</th>
+                    <th scope="col">Cadastro</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(usuarios)}">
+                    <td colspan="6" class="text-center py-4">Nenhum usuario encontrado para o filtro informado.</td>
+                </tr>
+                <tr th:each="usuario : ${usuarios}">
+                    <td th:text="${usuario.id}">1</td>
+                    <td th:text="${usuario.nomeReal}">Nome</td>
+                    <td th:text="${usuario.nomeAnonimo != null and !#strings.isEmpty(usuario.nomeAnonimo) ? usuario.nomeAnonimo : '-'}">-</td>
+                    <td th:text="${usuario.cidadeNome}">Cidade</td>
+                    <td th:text="${usuario.estadoUf}">UF</td>
+                    <td th:text="${usuario.dataCadastro != null ? #temporals.format(usuario.dataCadastro, 'dd/MM/yyyy') : '-'}">-</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</th:block>
 </html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: base('Inicio', 'home', ~{::content})}">
+<th:block th:fragment="content">
+    <section class="home-hero rounded-4 p-4 p-lg-5 mb-4 mb-lg-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <span class="home-chip">Plataforma Aiury</span>
+                <h1 class="display-6 fw-bold mt-3 mb-3">Base web pronta para evolucao com Spring Security e Thymeleaf.</h1>
+                <p class="lead mb-4">
+                    Navegacao inicial estruturada, layout modular com fragments reutilizaveis e experiencia visual
+                    consistente para acelerar as proximas entregas.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-primary btn-lg px-4" sec:authorize="isAnonymous()" th:href="@{/login}">
+                        Entrar no painel
+                    </a>
+                    <a class="btn btn-primary btn-lg px-4" sec:authorize="isAuthenticated()" th:href="@{/app}">
+                        Ir para dashboard
+                    </a>
+                    <a class="btn btn-outline-light btn-lg px-4" th:href="@{/swagger-ui.html}" target="_blank" rel="noopener">
+                        Ver API Docs
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="home-highlight rounded-4 p-4">
+                    <h2 class="h5 fw-bold mb-3">O que ja esta pronto</h2>
+                    <ul class="list-unstyled m-0 d-grid gap-2">
+                        <li>Layout principal reutilizavel</li>
+                        <li>Fragments de head, navbar, footer e alertas</li>
+                        <li>Paginas MVC integradas com Bootstrap 5</li>
+                        <li>Estrutura preparada para regras de acesso futuras</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="row g-3 g-lg-4">
+        <div class="col-md-6 col-xl-3">
+            <article class="feature-card h-100 rounded-4 p-4">
+                <h2 class="h5 fw-bold">Templates organizados</h2>
+                <p class="mb-0 text-secondary">Separacao clara entre layout, fragments, paginas e telas de autenticacao.</p>
+            </article>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <article class="feature-card h-100 rounded-4 p-4">
+                <h2 class="h5 fw-bold">Navegacao funcional</h2>
+                <p class="mb-0 text-secondary">Fluxo inicial pronto com links para inicio, painel, usuarios e documentacao.</p>
+            </article>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <article class="feature-card h-100 rounded-4 p-4">
+                <h2 class="h5 fw-bold">Mensagens reutilizaveis</h2>
+                <p class="mb-0 text-secondary">Fragment unico para feedback de sucesso e erro nas paginas MVC.</p>
+            </article>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <article class="feature-card h-100 rounded-4 p-4">
+                <h2 class="h5 fw-bold">Escalabilidade visual</h2>
+                <p class="mb-0 text-secondary">Base estilistica limpa para novas views sem retrabalho de front-end.</p>
+            </article>
+        </div>
+    </section>
+</th:block>
+</html>

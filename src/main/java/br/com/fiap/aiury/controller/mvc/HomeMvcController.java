@@ -16,7 +16,7 @@ public class HomeMvcController {
 
     @GetMapping("/")
     public String root() {
-        return "redirect:/app";
+        return "home/index";
     }
 
     @GetMapping("/app")

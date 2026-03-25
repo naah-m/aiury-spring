@@ -1,38 +1,41 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Aiury | Dashboard</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-</head>
-<body>
-<div th:replace="~{fragments/nav :: topbar('dashboard')}"></div>
-
-<main class="container">
-    <section class="hero">
-        <h1>Dashboard</h1>
-        <p>Visao inicial da camada web com Thymeleaf.</p>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base('Dashboard', 'dashboard', ~{::content})}">
+<th:block th:fragment="content">
+    <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">Dashboard</h1>
+            <p class="text-secondary mb-0">Acompanhamento rapido dos principais indicadores operacionais da plataforma.</p>
+        </div>
+        <a class="btn btn-primary px-4" th:href="@{/app/usuarios}">Gerenciar usuarios</a>
     </section>
 
-    <section class="cards">
-        <article class="card">
-            <h2>Usuarios</h2>
-            <p th:text="${summary.totalUsuarios}">0</p>
-        </article>
-        <article class="card">
-            <h2>Ajudantes</h2>
-            <p th:text="${summary.totalAjudantes}">0</p>
-        </article>
-        <article class="card">
-            <h2>Chats</h2>
-            <p th:text="${summary.totalChats}">0</p>
-        </article>
-        <article class="card">
-            <h2>Mensagens</h2>
-            <p th:text="${summary.totalMensagens}">0</p>
-        </article>
+    <section class="row g-3 g-lg-4">
+        <div class="col-sm-6 col-xl-3">
+            <article class="metric-card rounded-4 p-4 h-100">
+                <h2 class="h6 text-uppercase text-secondary mb-2">Usuarios</h2>
+                <p class="display-6 fw-bold mb-0" th:text="${summary.totalUsuarios}">0</p>
+            </article>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <article class="metric-card rounded-4 p-4 h-100">
+                <h2 class="h6 text-uppercase text-secondary mb-2">Ajudantes</h2>
+                <p class="display-6 fw-bold mb-0" th:text="${summary.totalAjudantes}">0</p>
+            </article>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <article class="metric-card rounded-4 p-4 h-100">
+                <h2 class="h6 text-uppercase text-secondary mb-2">Chats</h2>
+                <p class="display-6 fw-bold mb-0" th:text="${summary.totalChats}">0</p>
+            </article>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <article class="metric-card rounded-4 p-4 h-100">
+                <h2 class="h6 text-uppercase text-secondary mb-2">Mensagens</h2>
+                <p class="display-6 fw-bold mb-0" th:text="${summary.totalMensagens}">0</p>
+            </article>
+        </div>
     </section>
-</main>
-</body>
+</th:block>
 </html>

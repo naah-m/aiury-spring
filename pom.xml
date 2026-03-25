@@ -55,6 +55,12 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
+        <!-- Thymeleaf Extras para expressoes de seguranca nas views -->
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+        </dependency>
+
         <!-- Security (base para autenticacao/autorizacao da camada web) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

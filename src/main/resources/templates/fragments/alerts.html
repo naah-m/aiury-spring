@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="feedback(successMessage, errorMessage)">
+    <div class="alert alert-success border-0 shadow-sm" role="alert"
+         th:if="${successMessage != null and !#strings.isEmpty(successMessage)}"
+         th:text="${successMessage}">
+        Operacao concluida com sucesso.
+    </div>
+    <div class="alert alert-danger border-0 shadow-sm" role="alert"
+         th:if="${errorMessage != null and !#strings.isEmpty(errorMessage)}"
+         th:text="${errorMessage}">
+        Nao foi possivel concluir a operacao.
+    </div>
+</div>
+</body>
+</html>
