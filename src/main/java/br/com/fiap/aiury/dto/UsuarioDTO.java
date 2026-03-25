@@ -1,5 +1,6 @@
 package br.com.fiap.aiury.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -8,51 +9,32 @@ import lombok.Data;
 
 /**
  * DTO de entrada para operacoes de cadastro e atualizacao de usuario.
- *
- * Papel na arquitetura:
- * - define contrato HTTP recebido pelos endpoints de usuario;
- * - concentra validacoes de formato e obrigatoriedade no limite da API.
- *
- * Observacao:
- * - dataNascimento utiliza formato textual DD-MM-AAAA por compatibilidade
- *   com o contrato atual do endpoint.
  */
 @Data
+@Schema(name = "UsuarioRequest", description = "Payload para criacao/atualizacao de usuario")
 public class UsuarioDTO {
 
-    /**
-     * Nome civil do usuario.
-     */
-    @NotBlank(message = "O nome Ã© obrigatÃ³rio")
+    @NotBlank(message = "O nome e obrigatorio")
+    @Schema(description = "Nome real da pessoa usuaria", example = "Maria Silva")
     private String nomeReal;
 
-    /**
-     * Nome de exibicao opcional para contexto de acolhimento.
-     */
+    @Schema(description = "Nome anonimo exibido no chat", example = "LuzInterior")
     private String nomeAnonimo;
 
-    /**
-     * Data de nascimento em formato DD-MM-AAAA.
-     */
-    @NotBlank(message = "A data de nascimento Ã© obrigatÃ³ria")
-    @Pattern(regexp = "^\\d{2}-\\d{2}-\\d{4}$", message = "Formato invÃ¡lido para data de nascimento. Use DD-MM-AAAA")
+    @NotBlank(message = "A data de nascimento e obrigatoria")
+    @Pattern(regexp = "^\\d{2}-\\d{2}-\\d{4}$", message = "Formato invalido para data de nascimento. Use DD-MM-AAAA")
+    @Schema(description = "Data de nascimento no formato DD-MM-AAAA", example = "15-08-1998")
     private String dataNascimento;
 
-    /**
-     * Celular de contato do usuario.
-     */
+    @Schema(description = "Telefone celular para contato", example = "11999998888")
     private String celular;
 
-    /**
-     * Senha de autenticacao com tamanho minimo definido por validacao.
-     */
-    @NotBlank(message = "A senha Ã© obrigatÃ³ria")
-    @Size(min = 8, message = "A senha deve ter no mÃ­nimo 8 caracteres")
+    @NotBlank(message = "A senha e obrigatoria")
+    @Size(min = 8, message = "A senha deve ter no minimo 8 caracteres")
+    @Schema(description = "Senha de autenticacao", example = "segredo123")
     private String senha;
 
-    /**
-     * Referencia da cidade do usuario.
-     */
-    @NotNull(message = "O ID da cidade Ã© necessÃ¡rio para a localizaÃ§Ã£o")
+    @NotNull(message = "O ID da cidade e necessario para a localizacao")
+    @Schema(description = "ID da cidade vinculada ao usuario", example = "1")
     private Long cidadeId;
 }

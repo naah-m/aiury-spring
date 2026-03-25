@@ -32,11 +32,12 @@ public interface UsuarioService {
     Usuario buscarPorId(Long id);
 
     /**
-     * Lista todos os usuarios cadastrados.
+     * Lista usuarios com filtro opcional por cidade.
      *
+     * @param cidadeId filtro opcional por cidade
      * @return colecao de usuarios
      */
-    List<Usuario> buscarTodos();
+    List<Usuario> buscarTodos(Long cidadeId);
 
     /**
      * Atualiza dados do usuario existente.

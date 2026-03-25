@@ -28,11 +28,12 @@ public interface AjudanteService {
     Ajudante buscarPorId(Long id);
 
     /**
-     * Lista todos os ajudantes.
+     * Lista ajudantes com filtro opcional por disponibilidade.
      *
+     * @param disponivel filtro opcional por disponibilidade
      * @return colecao de ajudantes
      */
-    List<Ajudante> buscarTodos();
+    List<Ajudante> buscarTodos(Boolean disponivel);
 
     /**
      * Atualiza dados de ajudante existente.

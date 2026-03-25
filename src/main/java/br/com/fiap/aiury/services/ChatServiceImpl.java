@@ -3,6 +3,7 @@ package br.com.fiap.aiury.services;
 import br.com.fiap.aiury.dto.ChatDTO;
 import br.com.fiap.aiury.entities.Ajudante;
 import br.com.fiap.aiury.entities.Chat;
+import br.com.fiap.aiury.entities.ChatStatus;
 import br.com.fiap.aiury.entities.Usuario;
 import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.ChatMapper;
@@ -11,6 +12,7 @@ import br.com.fiap.aiury.repositories.ChatRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -65,11 +67,31 @@ public class ChatServiceImpl implements ChatService {
     }
 
     /**
-     * Lista todos os chats persistidos.
+     * Lista chats com filtros opcionais.
      */
     @Override
-    public List<Chat> buscarTodos() {
-        return chatRepository.findAll();
+    public List<Chat> buscarTodos(Long usuarioId, Long ajudanteId, ChatStatus status) {
+        Specification<Chat> specification = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+
+        if (usuarioId != null) {
+            specification = specification.and(
+                    (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("usuario").get("id"), usuarioId)
+            );
+        }
+
+        if (ajudanteId != null) {
+            specification = specification.and(
+                    (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("ajudante").get("id"), ajudanteId)
+            );
+        }
+
+        if (status != null) {
+            specification = specification.and(
+                    (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status)
+            );
+        }
+
+        return chatRepository.findAll(specification);
     }
 
     /**

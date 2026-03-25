@@ -2,6 +2,7 @@ package br.com.fiap.aiury.services;
 
 import br.com.fiap.aiury.dto.ChatDTO;
 import br.com.fiap.aiury.entities.Chat;
+import br.com.fiap.aiury.entities.ChatStatus;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -28,11 +29,14 @@ public interface ChatService {
     Chat buscarPorId(Long id);
 
     /**
-     * Lista todos os chats.
+     * Lista chats com filtros opcionais.
      *
+     * @param usuarioId filtro opcional por usuario
+     * @param ajudanteId filtro opcional por ajudante
+     * @param status filtro opcional por status
      * @return colecao de chats
      */
-    List<Chat> buscarTodos();
+    List<Chat> buscarTodos(Long usuarioId, Long ajudanteId, ChatStatus status);
 
     /**
      * Atualiza chat existente.

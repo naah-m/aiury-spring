@@ -21,5 +21,5 @@ public interface AjudanteRepository extends JpaRepository<Ajudante, Long> {
      * @param disponivel indicador de disponibilidade
      * @return lista de ajudantes com o status informado
      */
-    List<Ajudante> findByDisponivel(boolean disponivel);
+    List<Ajudante> findByDisponivel(Boolean disponivel);
 }

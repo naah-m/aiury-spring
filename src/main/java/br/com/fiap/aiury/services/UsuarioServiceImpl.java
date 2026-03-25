@@ -58,11 +58,14 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     /**
-     * Retorna lista completa de usuarios.
+     * Retorna usuarios com filtro opcional por cidade.
      */
     @Override
-    public List<Usuario> buscarTodos() {
-        return usuarioRepository.findAll();
+    public List<Usuario> buscarTodos(Long cidadeId) {
+        if (cidadeId == null) {
+            return usuarioRepository.findAll();
+        }
+        return usuarioRepository.findByCidade_Id(cidadeId);
     }
 
     /**

@@ -1,24 +1,35 @@
-# Endpoints Atuais da API
+# Documentacao de Endpoints - Aiury API
 
-## Base
-- Base path geral: `/api`
-- Controllers implementados:
-  - `UsuarioController`
-  - `AjudanteController`
-  - `ChatController`
-  - `MensagemController`
-- Formato de conteudo: `application/json`
+## Base da API
+- Base URL local: `http://localhost:8080`
+- Base path: `/api`
+- Content-Type: `application/json`
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+
+## Convencao de Resposta
+- Recursos principais retornam HATEOAS (`_links`) em `GET`, `POST` e `PUT`.
+- `DELETE` retorna `204 No Content`.
+- Erros seguem estrutura `ApiErrorResponse`.
 
 ---
 
-## Usuario
+## 1) Usuarios (`/api/usuarios`)
 
-### 1) Criar usuario
-- **HTTP:** `POST`
-- **Rota:** `/api/usuarios`
-- **Descricao:** cria um novo usuario e retorna o recurso com links HATEOAS.
+### Endpoints
 
-#### Payload de exemplo
+| Metodo | Rota | Descricao | Status esperados |
+|---|---|---|---|
+| GET | `/api/usuarios` | Lista usuarios (filtro opcional por cidade) | `200` |
+| GET | `/api/usuarios/{id}` | Busca usuario por ID | `200`, `404` |
+| POST | `/api/usuarios` | Cria usuario | `201`, `400`, `404` |
+| PUT | `/api/usuarios/{id}` | Atualiza usuario | `200`, `400`, `404` |
+| DELETE | `/api/usuarios/{id}` | Remove usuario | `204`, `404` |
+
+### Filtros
+- `GET /api/usuarios?cidadeId=1`
+
+### Exemplo de payload (POST/PUT)
+
 ```json
 {
   "nomeReal": "Maria Silva",
@@ -30,7 +41,8 @@
 }
 ```
 
-#### Resposta esperada (201)
+### Exemplo de resposta (200/201)
+
 ```json
 {
   "id": 10,
@@ -38,488 +50,218 @@
   "nomeAnonimo": "LuzInterior",
   "dataNascimento": "1998-08-15",
   "celular": "11999998888",
-  "senha": "segredo123",
   "dataCadastro": "2026-03-24",
-  "cidade": {
-    "id": 1
-  },
+  "cidadeId": 1,
   "_links": {
-    "self": {
-      "href": "http://localhost:8080/api/usuarios/10"
-    },
-    "todos-usuarios": {
-      "href": "http://localhost:8080/api/usuarios"
-    }
+    "self": { "href": "http://localhost:8080/api/usuarios/10" },
+    "usuarios": { "href": "http://localhost:8080/api/usuarios" },
+    "atualizar": { "href": "http://localhost:8080/api/usuarios/10" },
+    "excluir": { "href": "http://localhost:8080/api/usuarios/10" },
+    "chats": { "href": "http://localhost:8080/api/chats?usuarioId=10" },
+    "mensagens-enviadas": { "href": "http://localhost:8080/api/mensagens?remetenteId=10" }
   }
 }
 ```
-
-### 2) Buscar usuario por ID
-- **HTTP:** `GET`
-- **Rota:** `/api/usuarios/{id}`
-- **Descricao:** retorna um usuario por identificador com links HATEOAS.
-
-#### Payload de exemplo
-- Nao se aplica.
-
-#### Resposta esperada (200)
-```json
-{
-  "id": 10,
-  "nomeReal": "Maria Silva",
-  "nomeAnonimo": "LuzInterior",
-  "dataNascimento": "1998-08-15",
-  "celular": "11999998888",
-  "senha": "segredo123",
-  "dataCadastro": "2026-03-24",
-  "cidade": {
-    "id": 1
-  },
-  "_links": {
-    "self": {
-      "href": "http://localhost:8080/api/usuarios/10"
-    },
-    "todos-usuarios": {
-      "href": "http://localhost:8080/api/usuarios"
-    }
-  }
-}
-```
-
-### 3) Listar usuarios
-- **HTTP:** `GET`
-- **Rota:** `/api/usuarios`
-- **Descricao:** retorna colecao de usuarios com links HATEOAS.
-
-#### Payload de exemplo
-- Nao se aplica.
-
-#### Resposta esperada (200)
-```json
-{
-  "_embedded": {
-    "<rel-da-colecao>": [
-      {
-        "id": 10,
-        "nomeReal": "Maria Silva",
-        "nomeAnonimo": "LuzInterior",
-        "dataNascimento": "1998-08-15",
-        "celular": "11999998888",
-        "senha": "segredo123",
-        "dataCadastro": "2026-03-24",
-        "cidade": {
-          "id": 1
-        }
-      }
-    ]
-  },
-  "_links": {
-    "self": {
-      "href": "http://localhost:8080/api/usuarios"
-    }
-  }
-}
-```
-
-### 4) Atualizar usuario
-- **HTTP:** `PUT`
-- **Rota:** `/api/usuarios/{id}`
-- **Descricao:** atualiza usuario existente e retorna recurso com links HATEOAS.
-
-#### Payload de exemplo
-```json
-{
-  "nomeReal": "Maria Silva Atualizada",
-  "nomeAnonimo": "LuzInterior",
-  "dataNascimento": "15-08-1998",
-  "celular": "11999990000",
-  "senha": "novaSenha123",
-  "cidadeId": 2
-}
-```
-
-#### Resposta esperada (200)
-```json
-{
-  "id": 10,
-  "nomeReal": "Maria Silva Atualizada",
-  "nomeAnonimo": "LuzInterior",
-  "dataNascimento": "1998-08-15",
-  "celular": "11999990000",
-  "senha": "novaSenha123",
-  "dataCadastro": "2026-03-24",
-  "cidade": {
-    "id": 2
-  },
-  "_links": {
-    "self": {
-      "href": "http://localhost:8080/api/usuarios/10"
-    },
-    "todos-usuarios": {
-      "href": "http://localhost:8080/api/usuarios"
-    }
-  }
-}
-```
-
-### 5) Deletar usuario
-- **HTTP:** `DELETE`
-- **Rota:** `/api/usuarios/{id}`
-- **Descricao:** remove usuario por ID.
-
-#### Payload de exemplo
-- Nao se aplica.
-
-#### Resposta esperada
-- `204 No Content` sem corpo.
 
 ---
 
-## Ajudante
+## 2) Ajudantes (`/api/ajudantes`)
 
-### 6) Criar ajudante
-- **HTTP:** `POST`
-- **Rota:** `/api/ajudantes`
-- **Descricao:** cria um novo ajudante.
+### Endpoints
 
-#### Payload de exemplo
+| Metodo | Rota | Descricao | Status esperados |
+|---|---|---|---|
+| GET | `/api/ajudantes` | Lista ajudantes (filtro opcional por disponibilidade) | `200` |
+| GET | `/api/ajudantes/{id}` | Busca ajudante por ID | `200`, `404` |
+| POST | `/api/ajudantes` | Cria ajudante | `201`, `400` |
+| PUT | `/api/ajudantes/{id}` | Atualiza ajudante | `200`, `400`, `404` |
+| DELETE | `/api/ajudantes/{id}` | Remove ajudante | `204`, `404` |
+
+### Filtros
+- `GET /api/ajudantes?disponivel=true`
+
+### Exemplo de payload (POST/PUT)
+
 ```json
 {
-  "areaAtuacao": "Apoio emocional",
-  "motivacao": "Quero ajudar pessoas em momentos dificeis",
+  "areaAtuacao": "Escuta ativa",
+  "motivacao": "Acolho pessoas em situacoes de crise",
   "disponivel": true,
   "rating": 4.8
 }
 ```
 
-#### Resposta esperada (201)
+### Exemplo de resposta (200/201)
+
 ```json
 {
-  "id": 1,
-  "areaAtuacao": "Apoio emocional",
-  "motivacao": "Quero ajudar pessoas em momentos dificeis",
+  "id": 3,
+  "areaAtuacao": "Escuta ativa",
+  "motivacao": "Acolho pessoas em situacoes de crise",
   "disponivel": true,
-  "rating": 4.8
-}
-```
-
-### 7) Buscar ajudante por ID
-- **HTTP:** `GET`
-- **Rota:** `/api/ajudantes/{id}`
-- **Descricao:** retorna um ajudante por identificador.
-
-#### Payload de exemplo
-- Nao se aplica.
-
-#### Resposta esperada (200)
-```json
-{
-  "id": 1,
-  "areaAtuacao": "Apoio emocional",
-  "motivacao": "Quero ajudar pessoas em momentos dificeis",
-  "disponivel": true,
-  "rating": 4.8
-}
-```
-
-### 8) Listar ajudantes
-- **HTTP:** `GET`
-- **Rota:** `/api/ajudantes`
-- **Descricao:** retorna lista de ajudantes.
-
-#### Payload de exemplo
-- Nao se aplica.
-
-#### Resposta esperada (200)
-```json
-[
-  {
-    "id": 1,
-    "areaAtuacao": "Apoio emocional",
-    "motivacao": "Quero ajudar pessoas em momentos dificeis",
-    "disponivel": true,
-    "rating": 4.8
+  "rating": 4.8,
+  "_links": {
+    "self": { "href": "http://localhost:8080/api/ajudantes/3" },
+    "ajudantes": { "href": "http://localhost:8080/api/ajudantes" },
+    "atualizar": { "href": "http://localhost:8080/api/ajudantes/3" },
+    "excluir": { "href": "http://localhost:8080/api/ajudantes/3" },
+    "chats-do-ajudante": { "href": "http://localhost:8080/api/chats?ajudanteId=3" }
   }
-]
-```
-
-### 9) Atualizar ajudante
-- **HTTP:** `PUT`
-- **Rota:** `/api/ajudantes/{id}`
-- **Descricao:** atualiza um ajudante existente.
-
-#### Payload de exemplo
-```json
-{
-  "areaAtuacao": "Escuta ativa",
-  "motivacao": "Atendimento voluntario",
-  "disponivel": false,
-  "rating": 4.9
 }
 ```
-
-#### Resposta esperada (200)
-```json
-{
-  "id": 1,
-  "areaAtuacao": "Escuta ativa",
-  "motivacao": "Atendimento voluntario",
-  "disponivel": false,
-  "rating": 4.9
-}
-```
-
-### 10) Deletar ajudante
-- **HTTP:** `DELETE`
-- **Rota:** `/api/ajudantes/{id}`
-- **Descricao:** remove ajudante por ID.
-
-#### Payload de exemplo
-- Nao se aplica.
-
-#### Resposta esperada
-- `204 No Content` sem corpo.
 
 ---
 
-## Chat
+## 3) Chats (`/api/chats`)
 
-`status` aceito no payload: `INICIADO`, `EM_ANDAMENTO`, `FINALIZADO_USUARIO`, `FINALIZADO_AJUDANTE`, `FINALIZADO_SISTEMA`.
+### Endpoints
 
-### 11) Criar chat
-- **HTTP:** `POST`
-- **Rota:** `/api/chats`
-- **Descricao:** cria um chat vinculado a usuario e ajudante por ID.
+| Metodo | Rota | Descricao | Status esperados |
+|---|---|---|---|
+| GET | `/api/chats` | Lista chats com filtros opcionais | `200` |
+| GET | `/api/chats/{id}` | Busca chat por ID | `200`, `404` |
+| POST | `/api/chats` | Cria chat | `201`, `400`, `404` |
+| PUT | `/api/chats/{id}` | Atualiza chat | `200`, `400`, `404` |
+| DELETE | `/api/chats/{id}` | Remove chat | `204`, `404` |
 
-#### Payload de exemplo
+### Filtros
+- `GET /api/chats?usuarioId=10`
+- `GET /api/chats?ajudanteId=3`
+- `GET /api/chats?status=EM_ANDAMENTO`
+- `GET /api/chats?usuarioId=10&status=EM_ANDAMENTO`
+
+### Status validos de chat
+- `INICIADO`
+- `EM_ANDAMENTO`
+- `FINALIZADO_USUARIO`
+- `FINALIZADO_AJUDANTE`
+- `FINALIZADO_SISTEMA`
+
+### Exemplo de payload (POST/PUT)
+
 ```json
 {
   "usuarioId": 10,
-  "ajudanteId": 1,
-  "dataInicio": "2026-03-24T13:30:00",
+  "ajudanteId": 3,
+  "dataInicio": "2026-03-24T14:00:00",
   "dataFim": null,
   "status": "INICIADO"
 }
 ```
 
-#### Resposta esperada (201)
+### Exemplo de resposta (200/201)
+
 ```json
 {
-  "id": 100,
+  "id": 101,
   "usuarioId": 10,
-  "ajudanteId": 1,
-  "dataInicio": "2026-03-24T13:30:00",
+  "ajudanteId": 3,
+  "dataInicio": "2026-03-24T14:00:00",
   "dataFim": null,
-  "status": "INICIADO"
-}
-```
-
-### 12) Buscar chat por ID
-- **HTTP:** `GET`
-- **Rota:** `/api/chats/{id}`
-- **Descricao:** retorna um chat por identificador.
-
-#### Payload de exemplo
-- Nao se aplica.
-
-#### Resposta esperada (200)
-```json
-{
-  "id": 100,
-  "usuarioId": 10,
-  "ajudanteId": 1,
-  "dataInicio": "2026-03-24T13:30:00",
-  "dataFim": null,
-  "status": "EM_ANDAMENTO"
-}
-```
-
-### 13) Listar chats
-- **HTTP:** `GET`
-- **Rota:** `/api/chats`
-- **Descricao:** retorna lista de chats.
-
-#### Payload de exemplo
-- Nao se aplica.
-
-#### Resposta esperada (200)
-```json
-[
-  {
-    "id": 100,
-    "usuarioId": 10,
-    "ajudanteId": 1,
-    "dataInicio": "2026-03-24T13:30:00",
-    "dataFim": null,
-    "status": "EM_ANDAMENTO"
+  "status": "EM_ANDAMENTO",
+  "_links": {
+    "self": { "href": "http://localhost:8080/api/chats/101" },
+    "chats": { "href": "http://localhost:8080/api/chats" },
+    "atualizar": { "href": "http://localhost:8080/api/chats/101" },
+    "excluir": { "href": "http://localhost:8080/api/chats/101" },
+    "mensagens": { "href": "http://localhost:8080/api/mensagens?chatId=101" },
+    "usuario": { "href": "http://localhost:8080/api/usuarios/10" },
+    "ajudante": { "href": "http://localhost:8080/api/ajudantes/3" }
   }
-]
-```
-
-### 14) Atualizar chat
-- **HTTP:** `PUT`
-- **Rota:** `/api/chats/{id}`
-- **Descricao:** atualiza chat existente.
-
-#### Payload de exemplo
-```json
-{
-  "usuarioId": 10,
-  "ajudanteId": 1,
-  "dataInicio": "2026-03-24T13:30:00",
-  "dataFim": "2026-03-24T14:10:00",
-  "status": "FINALIZADO_USUARIO"
 }
 ```
-
-#### Resposta esperada (200)
-```json
-{
-  "id": 100,
-  "usuarioId": 10,
-  "ajudanteId": 1,
-  "dataInicio": "2026-03-24T13:30:00",
-  "dataFim": "2026-03-24T14:10:00",
-  "status": "FINALIZADO_USUARIO"
-}
-```
-
-### 15) Deletar chat
-- **HTTP:** `DELETE`
-- **Rota:** `/api/chats/{id}`
-- **Descricao:** remove chat por ID.
-
-#### Payload de exemplo
-- Nao se aplica.
-
-#### Resposta esperada
-- `204 No Content` sem corpo.
 
 ---
 
-## Mensagem
+## 4) Mensagens (`/api/mensagens`)
 
-### 16) Criar mensagem
-- **HTTP:** `POST`
-- **Rota:** `/api/mensagens`
-- **Descricao:** cria mensagem vinculada a um chat por ID.
+### Endpoints
 
-#### Payload de exemplo
+| Metodo | Rota | Descricao | Status esperados |
+|---|---|---|---|
+| GET | `/api/mensagens` | Lista mensagens com filtros opcionais | `200` |
+| GET | `/api/mensagens/{id}` | Busca mensagem por ID | `200`, `404` |
+| POST | `/api/mensagens` | Cria mensagem | `201`, `400`, `404` |
+| PUT | `/api/mensagens/{id}` | Atualiza mensagem | `200`, `400`, `404` |
+| DELETE | `/api/mensagens/{id}` | Remove mensagem | `204`, `404` |
+
+### Filtros
+- `GET /api/mensagens?chatId=101`
+- `GET /api/mensagens?remetenteId=10`
+- `GET /api/mensagens?chatId=101&remetenteId=10`
+
+### Exemplo de payload (POST/PUT)
+
 ```json
 {
-  "chatId": 100,
+  "chatId": 101,
   "remetenteId": 10,
-  "texto": "Estou precisando conversar.",
-  "dataEnvio": "2026-03-24T13:35:00"
+  "texto": "Obrigado pela escuta.",
+  "dataEnvio": "2026-03-24T14:15:00"
 }
 ```
 
-#### Resposta esperada (201)
+### Exemplo de resposta (200/201)
+
 ```json
 {
-  "id": 500,
-  "chatId": 100,
+  "id": 700,
+  "chatId": 101,
   "remetenteId": 10,
-  "texto": "Estou precisando conversar.",
-  "dataEnvio": "2026-03-24T13:35:00"
-}
-```
-
-### 17) Buscar mensagem por ID
-- **HTTP:** `GET`
-- **Rota:** `/api/mensagens/{id}`
-- **Descricao:** retorna uma mensagem por identificador.
-
-#### Payload de exemplo
-- Nao se aplica.
-
-#### Resposta esperada (200)
-```json
-{
-  "id": 500,
-  "chatId": 100,
-  "remetenteId": 10,
-  "texto": "Estou precisando conversar.",
-  "dataEnvio": "2026-03-24T13:35:00"
-}
-```
-
-### 18) Listar mensagens
-- **HTTP:** `GET`
-- **Rota:** `/api/mensagens`
-- **Descricao:** retorna lista de mensagens.
-
-#### Payload de exemplo
-- Nao se aplica.
-
-#### Resposta esperada (200)
-```json
-[
-  {
-    "id": 500,
-    "chatId": 100,
-    "remetenteId": 10,
-    "texto": "Estou precisando conversar.",
-    "dataEnvio": "2026-03-24T13:35:00"
+  "texto": "Obrigado pela escuta.",
+  "dataEnvio": "2026-03-24T14:15:00",
+  "_links": {
+    "self": { "href": "http://localhost:8080/api/mensagens/700" },
+    "mensagens": { "href": "http://localhost:8080/api/mensagens" },
+    "atualizar": { "href": "http://localhost:8080/api/mensagens/700" },
+    "excluir": { "href": "http://localhost:8080/api/mensagens/700" },
+    "chat": { "href": "http://localhost:8080/api/chats/101" },
+    "remetente": { "href": "http://localhost:8080/api/usuarios/10" }
   }
-]
-```
-
-### 19) Atualizar mensagem
-- **HTTP:** `PUT`
-- **Rota:** `/api/mensagens/{id}`
-- **Descricao:** atualiza mensagem existente.
-
-#### Payload de exemplo
-```json
-{
-  "chatId": 100,
-  "remetenteId": 10,
-  "texto": "Obrigado pela escuta.",
-  "dataEnvio": "2026-03-24T13:50:00"
 }
 ```
-
-#### Resposta esperada (200)
-```json
-{
-  "id": 500,
-  "chatId": 100,
-  "remetenteId": 10,
-  "texto": "Obrigado pela escuta.",
-  "dataEnvio": "2026-03-24T13:50:00"
-}
-```
-
-### 20) Deletar mensagem
-- **HTTP:** `DELETE`
-- **Rota:** `/api/mensagens/{id}`
-- **Descricao:** remove mensagem por ID.
-
-#### Payload de exemplo
-- Nao se aplica.
-
-#### Resposta esperada
-- `204 No Content` sem corpo.
 
 ---
 
-## Formatos de erro atuais
+## Erros Padronizados
 
-### Erro de validacao (400)
+### 400 - Requisicao invalida
+
 ```json
 {
-  "campo": "mensagem de validacao"
+  "timestamp": "2026-03-24T17:00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Erro de validacao nos campos informados.",
+  "path": "/api/usuarios",
+  "validationErrors": {
+    "dataNascimento": "Formato invalido para data de nascimento. Use DD-MM-AAAA"
+  }
 }
 ```
 
-### Recurso nao encontrado (404)
+### 404 - Recurso nao encontrado
+
 ```json
 {
-  "timestamp": "2026-03-24T10:30:00",
+  "timestamp": "2026-03-24T17:00:00",
   "status": 404,
   "error": "Not Found",
-  "message": "Recurso nao encontrado com ID: 999",
-  "path": "API Endpoint"
+  "message": "Usuario nao encontrado com ID: 999",
+  "path": "/api/usuarios/999",
+  "validationErrors": null
+}
+```
+
+### 409 - Violacao de integridade
+
+```json
+{
+  "timestamp": "2026-03-24T17:00:00",
+  "status": 409,
+  "error": "Conflict",
+  "message": "Violacao de integridade de dados.",
+  "path": "/api/usuarios",
+  "validationErrors": null
 }
 ```

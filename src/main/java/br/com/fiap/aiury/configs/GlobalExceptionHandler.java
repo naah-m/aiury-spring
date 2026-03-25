@@ -1,8 +1,12 @@
 package br.com.fiap.aiury.configs;
 
+import br.com.fiap.aiury.dto.ApiErrorResponse;
 import br.com.fiap.aiury.exceptions.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,70 +17,57 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Handler global de excecoes da API.
- *
- * Papel na arquitetura:
- * - centraliza a traducao de excecoes para respostas HTTP padronizadas;
- * - evita repeticao de tratamento de erro nos controllers.
- *
- * Observacoes:
- * - erros de validacao retornam mapa simples (campo -> mensagem);
- * - erros de nao encontrado retornam estrutura detalhada com timestamp.
+ * Handler global para padronizacao de respostas de erro da API.
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
-     * Converte {@link NotFoundException} em resposta HTTP 404.
-     *
-     * @param ex excecao disparada quando recurso nao foi localizado
-     * @return payload padronizado de erro
-     */
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorDetails> handleResourceNotFoundException(NotFoundException ex) {
-        ErrorDetails details = new ErrorDetails(
-                LocalDateTime.now(),
-                HttpStatus.NOT_FOUND.value(),
-                "Not Found",
-                ex.getMessage(),
-                "API Endpoint"
-        );
-        return new ResponseEntity<>(details, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiErrorResponse> handleNotFound(NotFoundException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI(), null);
     }
 
-    /**
-     * Converte falhas de Bean Validation em HTTP 400.
-     *
-     * @param ex excecao contendo erros de validacao de request
-     * @return mapa de erros indexado pelo nome do campo invalido
-     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ApiErrorResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        Map<String, String> validationErrors = new HashMap<>();
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
+        }
+        return buildError(HttpStatus.BAD_REQUEST, "Erro de validacao nos campos informados.", request.getRequestURI(), validationErrors);
     }
 
-    // TODO: adicionar handlers para excecoes de seguranca (403), duplicacao (409), entre outros cenarios.
+    @ExceptionHandler({
+            IllegalArgumentException.class,
+            HttpMessageNotReadableException.class
+    })
+    public ResponseEntity<ApiErrorResponse> handleBadRequest(Exception ex, HttpServletRequest request) {
+        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI(), null);
+    }
 
-    /**
-     * Payload interno para padronizacao dos retornos de erro.
-     *
-     * @param timestamp instante da geracao da resposta
-     * @param status codigo HTTP
-     * @param error descricao curta do erro
-     * @param message detalhe funcional da falha
-     * @param path referencia de contexto/endpoint
-     */
-    private record ErrorDetails(
-            LocalDateTime timestamp,
-            int status,
-            String error,
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiErrorResponse> handleConflict(DataIntegrityViolationException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.CONFLICT, "Violacao de integridade de dados.", request.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleUnexpected(Exception ex, HttpServletRequest request) {
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno inesperado.", request.getRequestURI(), null);
+    }
+
+    private ResponseEntity<ApiErrorResponse> buildError(
+            HttpStatus status,
             String message,
-            String path
-    ) {}
+            String path,
+            Map<String, String> validationErrors
+    ) {
+        ApiErrorResponse response = new ApiErrorResponse(
+                LocalDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                message,
+                path,
+                validationErrors
+        );
+        return ResponseEntity.status(status).body(response);
+    }
 }

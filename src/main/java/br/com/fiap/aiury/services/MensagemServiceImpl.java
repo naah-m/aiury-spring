@@ -65,10 +65,19 @@ public class MensagemServiceImpl implements MensagemService {
     }
 
     /**
-     * Lista todas as mensagens.
+     * Lista mensagens com filtros opcionais por chat/remetente.
      */
     @Override
-    public List<Mensagem> buscarTodos() {
+    public List<Mensagem> buscarTodos(Long chatId, Long remetenteId) {
+        if (chatId != null && remetenteId != null) {
+            return mensagemRepository.findByChat_IdAndRemetente_IdOrderByDataEnvioAsc(chatId, remetenteId);
+        }
+        if (chatId != null) {
+            return mensagemRepository.findByChat_IdOrderByDataEnvioAsc(chatId);
+        }
+        if (remetenteId != null) {
+            return mensagemRepository.findByRemetente_IdOrderByDataEnvioAsc(remetenteId);
+        }
         return mensagemRepository.findAll();
     }
 

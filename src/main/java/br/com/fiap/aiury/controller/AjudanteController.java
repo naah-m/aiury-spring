@@ -1,25 +1,31 @@
 package br.com.fiap.aiury.controller;
 
 import br.com.fiap.aiury.dto.AjudanteDTO;
+import br.com.fiap.aiury.dto.AjudanteResponseDTO;
+import br.com.fiap.aiury.dto.ApiErrorResponse;
 import br.com.fiap.aiury.entities.Ajudante;
 import br.com.fiap.aiury.services.AjudanteService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Controller REST do recurso de ajudantes.
- *
- * Responsabilidades:
- * - expor operacoes CRUD do perfil de ajudante;
- * - validar payload via Bean Validation;
- * - delegar regras para a camada de servico.
  */
 @RestController
 @RequestMapping("/api/ajudantes")
@@ -27,73 +33,88 @@ import java.util.List;
 public class AjudanteController {
 
     private final AjudanteService ajudanteService;
+    private final AjudanteModelAssembler ajudanteModelAssembler;
 
-    @Autowired
-    public AjudanteController(AjudanteService ajudanteService) {
+    public AjudanteController(AjudanteService ajudanteService, AjudanteModelAssembler ajudanteModelAssembler) {
         this.ajudanteService = ajudanteService;
+        this.ajudanteModelAssembler = ajudanteModelAssembler;
     }
 
-    /**
-     * Cria um novo ajudante.
-     *
-     * @param ajudanteDTO dados validados do ajudante
-     * @return entidade persistida
-     */
     @PostMapping
     @Operation(summary = "Criar ajudante", description = "Cadastra um novo ajudante")
-    public ResponseEntity<Ajudante> cadastrarAjudante(@Valid @RequestBody AjudanteDTO ajudanteDTO) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Ajudante criado"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Payload invalido",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<EntityModel<AjudanteResponseDTO>> cadastrarAjudante(@Valid @RequestBody AjudanteDTO ajudanteDTO) {
         Ajudante novoAjudante = ajudanteService.criarAjudante(ajudanteDTO);
-        return new ResponseEntity<>(novoAjudante, HttpStatus.CREATED);
+        EntityModel<AjudanteResponseDTO> resource = ajudanteModelAssembler.toModel(novoAjudante);
+        URI location = linkTo(methodOn(AjudanteController.class).buscarAjudantePorId(novoAjudante.getId())).toUri();
+        return ResponseEntity.created(location).body(resource);
     }
 
-    /**
-     * Busca ajudante por ID.
-     *
-     * @param id identificador do ajudante
-     * @return ajudante encontrado
-     */
     @GetMapping("/{id}")
-    @Operation(summary = "Buscar ajudante por ID", description = "Busca um ajudante pelo identificador")
-    public ResponseEntity<Ajudante> buscarAjudantePorId(@PathVariable Long id) {
+    @Operation(summary = "Buscar ajudante por ID", description = "Retorna um ajudante pelo identificador")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ajudante encontrado"),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Ajudante nao encontrado",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<EntityModel<AjudanteResponseDTO>> buscarAjudantePorId(@PathVariable Long id) {
         Ajudante ajudante = ajudanteService.buscarPorId(id);
-        return ResponseEntity.ok(ajudante);
+        return ResponseEntity.ok(ajudanteModelAssembler.toModel(ajudante));
     }
 
-    /**
-     * Lista todos os ajudantes cadastrados.
-     *
-     * @return colecao de ajudantes
-     */
     @GetMapping
-    @Operation(summary = "Listar ajudantes", description = "Lista todos os ajudantes cadastrados")
-    public ResponseEntity<List<Ajudante>> listarTodos() {
-        List<Ajudante> ajudantes = ajudanteService.buscarTodos();
-        return ResponseEntity.ok(ajudantes);
+    @Operation(summary = "Listar ajudantes", description = "Lista ajudantes com filtro opcional por disponibilidade")
+    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+    public ResponseEntity<CollectionModel<EntityModel<AjudanteResponseDTO>>> listarTodos(
+            @Parameter(description = "Filtro opcional por disponibilidade")
+            @RequestParam(required = false) Boolean disponivel
+    ) {
+        List<Ajudante> ajudantes = ajudanteService.buscarTodos(disponivel);
+        return ResponseEntity.ok(ajudanteModelAssembler.toCollection(ajudantes, disponivel));
     }
 
-    /**
-     * Atualiza um ajudante existente.
-     *
-     * @param id identificador do ajudante alvo
-     * @param ajudanteDTO novos dados do registro
-     * @return ajudante atualizado
-     */
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar ajudante", description = "Atualiza um ajudante existente pelo ID")
-    public ResponseEntity<Ajudante> atualizarAjudante(@PathVariable Long id, @Valid @RequestBody AjudanteDTO ajudanteDTO) {
+    @Operation(summary = "Atualizar ajudante", description = "Atualiza um ajudante existente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Ajudante atualizado"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Payload invalido",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Ajudante nao encontrado",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<EntityModel<AjudanteResponseDTO>> atualizarAjudante(@PathVariable Long id, @Valid @RequestBody AjudanteDTO ajudanteDTO) {
         Ajudante ajudanteAtualizado = ajudanteService.atualizarAjudante(id, ajudanteDTO);
-        return ResponseEntity.ok(ajudanteAtualizado);
+        return ResponseEntity.ok(ajudanteModelAssembler.toModel(ajudanteAtualizado));
     }
 
-    /**
-     * Remove um ajudante por ID.
-     *
-     * @param id identificador do ajudante
-     */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Excluir ajudante", description = "Remove um ajudante pelo ID")
-    public void deletarAjudante(@PathVariable Long id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Ajudante removido"),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Ajudante nao encontrado",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<Void> deletarAjudante(@PathVariable Long id) {
         ajudanteService.deletarAjudante(id);
+        return ResponseEntity.noContent().build();
     }
 }

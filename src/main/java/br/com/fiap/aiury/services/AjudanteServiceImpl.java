@@ -50,11 +50,14 @@ public class AjudanteServiceImpl implements AjudanteService {
     }
 
     /**
-     * Lista todos os ajudantes.
+     * Lista ajudantes com filtro opcional de disponibilidade.
      */
     @Override
-    public List<Ajudante> buscarTodos() {
-        return ajudanteRepository.findAll();
+    public List<Ajudante> buscarTodos(Boolean disponivel) {
+        if (disponivel == null) {
+            return ajudanteRepository.findAll();
+        }
+        return ajudanteRepository.findByDisponivel(disponivel);
     }
 
     /**

@@ -1,26 +1,31 @@
 package br.com.fiap.aiury.controller;
 
+import br.com.fiap.aiury.dto.ApiErrorResponse;
 import br.com.fiap.aiury.dto.ChatDTO;
 import br.com.fiap.aiury.entities.Chat;
-import br.com.fiap.aiury.mappers.ChatMapper;
+import br.com.fiap.aiury.entities.ChatStatus;
 import br.com.fiap.aiury.services.ChatService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 /**
- * Controller REST responsavel pelo recurso de chat.
- *
- * Papel na API:
- * - expor abertura e manutencao de sessoes de acolhimento;
- * - retornar dados no formato de {@link ChatDTO} para evitar acoplamento
- *   direto da entidade com o contrato HTTP.
+ * Controller REST do recurso de chats.
  */
 @RestController
 @RequestMapping("/api/chats")
@@ -28,79 +33,97 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
-    private final ChatMapper chatMapper;
+    private final ChatModelAssembler chatModelAssembler;
 
-    @Autowired
-    public ChatController(ChatService chatService, ChatMapper chatMapper) {
+    public ChatController(ChatService chatService, ChatModelAssembler chatModelAssembler) {
         this.chatService = chatService;
-        this.chatMapper = chatMapper;
+        this.chatModelAssembler = chatModelAssembler;
     }
 
-    /**
-     * Cria um novo chat.
-     *
-     * @param chatDTO dados de entrada da sessao
-     * @return chat criado convertido para DTO
-     */
     @PostMapping
     @Operation(summary = "Criar chat", description = "Abre um novo chat vinculando usuario e ajudante")
-    public ResponseEntity<ChatDTO> cadastrarChat(@Valid @RequestBody ChatDTO chatDTO) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Chat criado"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Payload invalido",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuario ou ajudante nao encontrados",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<EntityModel<ChatDTO>> cadastrarChat(@Valid @RequestBody ChatDTO chatDTO) {
         Chat novoChat = chatService.criarChat(chatDTO);
-        return new ResponseEntity<>(chatMapper.toDto(novoChat), HttpStatus.CREATED);
+        EntityModel<ChatDTO> resource = chatModelAssembler.toModel(novoChat);
+        URI location = linkTo(methodOn(ChatController.class).buscarChatPorId(novoChat.getId())).toUri();
+        return ResponseEntity.created(location).body(resource);
     }
 
-    /**
-     * Busca chat por ID.
-     *
-     * @param id identificador do chat
-     * @return chat encontrado convertido para DTO
-     */
     @GetMapping("/{id}")
-    @Operation(summary = "Buscar chat por ID", description = "Busca um chat pelo identificador")
-    public ResponseEntity<ChatDTO> buscarChatPorId(@PathVariable Long id) {
+    @Operation(summary = "Buscar chat por ID", description = "Retorna um chat pelo identificador")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Chat encontrado"),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Chat nao encontrado",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<EntityModel<ChatDTO>> buscarChatPorId(@PathVariable Long id) {
         Chat chat = chatService.buscarPorId(id);
-        return ResponseEntity.ok(chatMapper.toDto(chat));
+        return ResponseEntity.ok(chatModelAssembler.toModel(chat));
     }
 
-    /**
-     * Lista todos os chats cadastrados.
-     *
-     * @return colecao de DTOs de chat
-     */
     @GetMapping
-    @Operation(summary = "Listar chats", description = "Lista todos os chats cadastrados")
-    public ResponseEntity<List<ChatDTO>> listarTodos() {
-        List<ChatDTO> chats = chatService.buscarTodos()
-                .stream()
-                .map(chatMapper::toDto)
-                .toList();
-
-        return ResponseEntity.ok(chats);
+    @Operation(summary = "Listar chats", description = "Lista chats com filtros opcionais")
+    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+    public ResponseEntity<CollectionModel<EntityModel<ChatDTO>>> listarTodos(
+            @Parameter(description = "Filtro opcional por usuario")
+            @RequestParam(required = false) Long usuarioId,
+            @Parameter(description = "Filtro opcional por ajudante")
+            @RequestParam(required = false) Long ajudanteId,
+            @Parameter(description = "Filtro opcional por status do chat")
+            @RequestParam(required = false) ChatStatus status
+    ) {
+        List<Chat> chats = chatService.buscarTodos(usuarioId, ajudanteId, status);
+        return ResponseEntity.ok(chatModelAssembler.toCollection(chats, usuarioId, ajudanteId, status));
     }
 
-    /**
-     * Atualiza um chat existente.
-     *
-     * @param id identificador do chat alvo
-     * @param chatDTO novos dados do chat
-     * @return chat atualizado convertido para DTO
-     */
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar chat", description = "Atualiza um chat existente pelo ID")
-    public ResponseEntity<ChatDTO> atualizarChat(@PathVariable Long id, @Valid @RequestBody ChatDTO chatDTO) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Chat atualizado"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Payload invalido",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Chat, usuario ou ajudante nao encontrados",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<EntityModel<ChatDTO>> atualizarChat(@PathVariable Long id, @Valid @RequestBody ChatDTO chatDTO) {
         Chat chatAtualizado = chatService.atualizarChat(id, chatDTO);
-        return ResponseEntity.ok(chatMapper.toDto(chatAtualizado));
+        return ResponseEntity.ok(chatModelAssembler.toModel(chatAtualizado));
     }
 
-    /**
-     * Exclui chat por ID.
-     *
-     * @param id identificador do chat
-     */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Excluir chat", description = "Remove um chat pelo ID")
-    public void deletarChat(@PathVariable Long id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Chat removido"),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Chat nao encontrado",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<Void> deletarChat(@PathVariable Long id) {
         chatService.deletarChat(id);
+        return ResponseEntity.noContent().build();
     }
 }

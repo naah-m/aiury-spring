@@ -1,6 +1,7 @@
 package br.com.fiap.aiury.mappers;
 
 import br.com.fiap.aiury.dto.AjudanteDTO;
+import br.com.fiap.aiury.dto.AjudanteResponseDTO;
 import br.com.fiap.aiury.entities.Ajudante;
 import org.springframework.stereotype.Component;
 
@@ -49,5 +50,26 @@ public class AjudanteMapper {
         if (ajudanteDTO.getRating() != null) {
             ajudante.setRating(ajudanteDTO.getRating());
         }
+    }
+
+    /**
+     * Converte entidade para DTO de resposta.
+     *
+     * @param ajudante entidade de dominio
+     * @return representacao serializavel para a API
+     */
+    public AjudanteResponseDTO toResponseDto(Ajudante ajudante) {
+        if (ajudante == null) {
+            return null;
+        }
+
+        AjudanteResponseDTO dto = new AjudanteResponseDTO();
+        dto.setId(ajudante.getId());
+        dto.setAreaAtuacao(ajudante.getAreaAtuacao());
+        dto.setMotivacao(ajudante.getMotivacao());
+        dto.setDisponivel(ajudante.isDisponivel());
+        dto.setRating(ajudante.getRating());
+
+        return dto;
     }
 }

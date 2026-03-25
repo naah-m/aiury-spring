@@ -28,11 +28,13 @@ public interface MensagemService {
     Mensagem buscarPorId(Long id);
 
     /**
-     * Lista todas as mensagens.
+     * Lista mensagens com filtros opcionais.
      *
+     * @param chatId filtro opcional por chat
+     * @param remetenteId filtro opcional por remetente
      * @return colecao de mensagens
      */
-    List<Mensagem> buscarTodos();
+    List<Mensagem> buscarTodos(Long chatId, Long remetenteId);
 
     /**
      * Atualiza mensagem existente.

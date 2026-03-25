@@ -1,67 +1,53 @@
-# Modelagem de Dados (Base para DER e MER)
+# Modelagem de Dados - Aiury
 
 ## Objetivo
-Este documento descreve o modelo de dados atual do projeto para apoiar a construcao do DER (Diagrama Entidade-Relacionamento), do MER e do diagrama de classes.
+Documentar o modelo relacional e sua correspondencia com as classes JPA para garantir consistencia entre DER, diagrama de classes e implementacao.
 
-## Entidades atuais
+## Entidades e Tabelas
 
-### Usuario
-- **Chave primaria:** `id`
-- **Atributos principais:** `nomeReal`, `nomeAnonimo`, `dataNascimento`, `celular`, `senha`, `dataCadastro`
-- **Relacionamento direto:** `cidade` (`ManyToOne` com `Cidade`)
+| Entidade JPA | Tabela | Chave primaria | Campos principais |
+|---|---|---|---|
+| `Usuario` | `usuario` | `id` | `nome_real`, `nome_anonimo`, `data_nascimento`, `celular`, `senha`, `data_cadastro`, `id_cidade` |
+| `Ajudante` | `tb_ajudante` | `id` | `area_atuacao`, `motivacao`, `disponivel`, `rating` |
+| `Chat` | `chat` | `id` | `id_usuario`, `id_ajudante`, `data_inicio`, `data_fim`, `status` |
+| `Mensagem` | `tb_mensagem` | `id_mensagem` | `id_chat`, `id_remetente`, `texto`, `data_envio` |
+| `Cidade` | `cidade` | `id` | `nome_cidade`, `id_estado` |
+| `Estado` | `estado` | `id` | `nome_estado`, `uf` |
 
-### Ajudante
-- **Chave primaria:** `id`
-- **Atributos principais:** `areaAtuacao`, `motivacao`, `disponivel`, `rating`
-- **Relacionamento direto:** referenciado por `Chat` (lado inverso nao mapeado na classe)
+## Relacionamentos Principais
 
-### Chat
-- **Chave primaria:** `id`
-- **Atributos principais:** `dataInicio`, `dataFim`, `status`
-- **Relacionamentos diretos:**
-- `usuario` (`ManyToOne` com `Usuario`, obrigatorio no mapeamento atual)
-- `ajudante` (`ManyToOne` com `Ajudante`, opcional no mapeamento atual)
-- `mensagens` (`OneToMany` com `Mensagem`)
+| Relacionamento | Cardinalidade | FK |
+|---|---|---|
+| `Estado` -> `Cidade` | 1:N | `cidade.id_estado` |
+| `Cidade` -> `Usuario` | 1:N | `usuario.id_cidade` |
+| `Usuario` -> `Chat` | 1:N | `chat.id_usuario` |
+| `Ajudante` -> `Chat` | 1:N | `chat.id_ajudante` |
+| `Chat` -> `Mensagem` | 1:N | `tb_mensagem.id_chat` |
+| `Usuario` -> `Mensagem` (remetente) | 1:N | `tb_mensagem.id_remetente` |
 
-### Mensagem
-- **Chave primaria:** `id` (`id_mensagem`)
-- **Atributos principais:** `texto`, `dataEnvio`
-- **Relacionamentos diretos:**
-- `chat` (`ManyToOne` com `Chat`, obrigatorio)
-- `remetente` (`ManyToOne` com `Usuario`, obrigatorio)
+## Consistencia com a API
+- DTOs de entrada (`UsuarioDTO`, `AjudanteDTO`, `ChatDTO`, `MensagemDTO`) refletem os campos obrigatorios de criacao/atualizacao.
+- DTO de resposta de usuario (`UsuarioResponseDTO`) nao expoe `senha`.
+- Mappers garantem conversao coerente entre contrato HTTP e modelo JPA.
+- Repositories usam campos existentes nas entidades, evitando erros de compilacao por query method invalido.
 
-### Cidade
-- **Chave primaria:** `id`
-- **Atributos principais:** `nomeCidade`
-- **Relacionamento direto:** `estado` (`ManyToOne` com `Estado`)
+## Observacoes de Constraints
+- `usuario.celular` possui restricao de unicidade.
+- `usuario.id_cidade`, `chat.id_usuario`, `chat.id_ajudante`, `tb_mensagem.id_chat` e `tb_mensagem.id_remetente` sao obrigatorios.
+- `chat.status` usa enum `ChatStatus` persistido como `STRING`.
 
-### Estado
-- **Chave primaria:** `id`
-- **Atributos principais:** `nomeEstado`, `uf`
-- **Relacionamento direto:** referenciado por `Cidade` (lado inverso nao mapeado na classe)
+## DER e Diagrama de Classes
 
-## Relacionamentos e cardinalidades
-- `Estado (1) -> (N) Cidade`
-- `Cidade (1) -> (N) Usuario`
-- `Usuario (1) -> (N) Chat`
-- `Ajudante (1) -> (N) Chat`, com opcionalidade de `Ajudante` no lado de `Chat` (`0..1`)
-- `Chat (1) -> (N) Mensagem`
-- `Usuario (1) -> (N) Mensagem` (como remetente)
+### DER
+Inserir imagem final em:
+- `docs/imagens/der.png`
 
-## Como representar no DER/MER
-- Criar uma entidade para cada classe: `Usuario`, `Ajudante`, `Chat`, `Mensagem`, `Cidade`, `Estado`.
-- Marcar as chaves primarias em cada entidade (`id` ou `id_mensagem` em `Mensagem`).
-- Representar chaves estrangeiras no lado N:
-- `Usuario` referencia `Cidade`.
-- `Cidade` referencia `Estado`.
-- `Chat` referencia `Usuario` e `Ajudante`.
-- `Mensagem` referencia `Chat` e `Usuario` (remetente).
-- Destacar obrigatoriedade conforme mapeamento atual:
-- `Chat.usuario` obrigatorio.
-- `Chat.ajudante` opcional.
-- `Mensagem.chat` obrigatorio.
-- `Mensagem.remetente` obrigatorio.
-- No diagrama de classes, manter `ChatStatus` como enumeracao associada a `Chat`.
+### Diagrama de Classes
+Inserir imagem final em:
+- `docs/imagens/diagrama-classes.png`
 
-## Observacao de escopo
-Esta documentacao descreve o **MVP atual**, centrado no nucleo `Usuario/Ajudante/Chat/Mensagem` com suporte de localizacao (`Cidade/Estado`).
+## Checklist de Coerencia para Entrega
+- DER representa as mesmas cardinalidades definidas nas entidades JPA.
+- Chaves estrangeiras no DER correspondem aos `@JoinColumn` do codigo.
+- Diagrama de classes inclui `ChatStatus` como enumeracao vinculada a `Chat`.
+- Nomenclaturas de atributos no DER e no codigo seguem o mesmo significado funcional.

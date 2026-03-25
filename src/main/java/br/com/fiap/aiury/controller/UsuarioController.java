@@ -1,27 +1,31 @@
 package br.com.fiap.aiury.controller;
 
+import br.com.fiap.aiury.dto.ApiErrorResponse;
 import br.com.fiap.aiury.dto.UsuarioDTO;
+import br.com.fiap.aiury.dto.UsuarioResponseDTO;
 import br.com.fiap.aiury.entities.Usuario;
 import br.com.fiap.aiury.services.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 /**
- * Controller REST responsavel pelo recurso de usuario.
- *
- * Papel na arquitetura:
- * - recebe requisicoes HTTP relacionadas ao cadastro de usuarios;
- * - delega regras para a camada de servico;
- * - monta representacoes HATEOAS via {@link UsuarioModelAssembler}.
+ * Controller REST do recurso de usuario.
  */
 @RestController
 @RequestMapping("/api/usuarios")
@@ -31,76 +35,91 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
     private final UsuarioModelAssembler usuarioModelAssembler;
 
-    @Autowired
     public UsuarioController(UsuarioService usuarioService, UsuarioModelAssembler usuarioModelAssembler) {
         this.usuarioService = usuarioService;
         this.usuarioModelAssembler = usuarioModelAssembler;
     }
 
-    /**
-     * Cria um novo usuario.
-     *
-     * @param usuarioDTO dados de entrada validados
-     * @return usuario criado com links HATEOAS
-     */
     @PostMapping
     @Operation(summary = "Criar usuario", description = "Cadastra um novo usuario")
-    public ResponseEntity<EntityModel<Usuario>> cadastrarUsuario(@Valid @RequestBody UsuarioDTO usuarioDTO) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Usuario criado"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Payload invalido",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Cidade nao encontrada",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<EntityModel<UsuarioResponseDTO>> cadastrarUsuario(@Valid @RequestBody UsuarioDTO usuarioDTO) {
         Usuario novoUsuario = usuarioService.criarUsuario(usuarioDTO);
-        EntityModel<Usuario> resource = usuarioModelAssembler.toModel(novoUsuario);
-        return new ResponseEntity<>(resource, HttpStatus.CREATED);
+        EntityModel<UsuarioResponseDTO> resource = usuarioModelAssembler.toModel(novoUsuario);
+        URI location = linkTo(methodOn(UsuarioController.class).buscarUsuarioPorId(novoUsuario.getId())).toUri();
+        return ResponseEntity.created(location).body(resource);
     }
 
-    /**
-     * Recupera um usuario pelo identificador.
-     *
-     * @param id identificador do usuario
-     * @return usuario encontrado com links HATEOAS
-     */
     @GetMapping("/{id}")
-    @Operation(summary = "Buscar usuario por ID", description = "Busca um usuario pelo identificador")
-    public ResponseEntity<EntityModel<Usuario>> buscarUsuarioPorId(@PathVariable Long id) {
+    @Operation(summary = "Buscar usuario por ID", description = "Retorna um usuario pelo identificador")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Usuario encontrado"),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuario nao encontrado",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<EntityModel<UsuarioResponseDTO>> buscarUsuarioPorId(@PathVariable Long id) {
         Usuario usuario = usuarioService.buscarPorId(id);
-        EntityModel<Usuario> resource = usuarioModelAssembler.toModel(usuario);
-        return ResponseEntity.ok(resource);
+        return ResponseEntity.ok(usuarioModelAssembler.toModel(usuario));
     }
 
-    /**
-     * Lista todos os usuarios cadastrados.
-     *
-     * @return colecao HATEOAS de usuarios
-     */
     @GetMapping
-    @Operation(summary = "Listar usuarios", description = "Lista todos os usuarios cadastrados")
-    public ResponseEntity<CollectionModel<EntityModel<Usuario>>> listarTodos() {
-        List<Usuario> usuarios = usuarioService.buscarTodos();
-        return ResponseEntity.ok(usuarioModelAssembler.toCollection(usuarios));
+    @Operation(summary = "Listar usuarios", description = "Lista usuarios com filtro opcional por cidade")
+    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+    public ResponseEntity<CollectionModel<EntityModel<UsuarioResponseDTO>>> listarTodos(
+            @Parameter(description = "Filtro opcional por cidade")
+            @RequestParam(required = false) Long cidadeId
+    ) {
+        List<Usuario> usuarios = usuarioService.buscarTodos(cidadeId);
+        return ResponseEntity.ok(usuarioModelAssembler.toCollection(usuarios, cidadeId));
     }
 
-    /**
-     * Atualiza um usuario existente.
-     *
-     * @param id identificador do usuario alvo
-     * @param usuarioDTO dados atualizados recebidos no corpo da requisicao
-     * @return representacao atualizada com links HATEOAS
-     */
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar usuario", description = "Atualiza um usuario existente pelo ID")
-    public ResponseEntity<EntityModel<Usuario>> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
+    @Operation(summary = "Atualizar usuario", description = "Atualiza um usuario existente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Usuario atualizado"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Payload invalido",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuario ou cidade nao encontrados",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<EntityModel<UsuarioResponseDTO>> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
         Usuario usuarioAtualizado = usuarioService.atualizarUsuario(id, usuarioDTO);
-        EntityModel<Usuario> resource = usuarioModelAssembler.toModel(usuarioAtualizado);
-        return ResponseEntity.ok(resource);
+        return ResponseEntity.ok(usuarioModelAssembler.toModel(usuarioAtualizado));
     }
 
-    /**
-     * Remove usuario por identificador.
-     *
-     * @param id identificador do usuario
-     */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Excluir usuario", description = "Remove um usuario pelo ID")
-    public void deletarUsuario(@PathVariable Long id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Usuario removido"),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuario nao encontrado",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) {
         usuarioService.deletarUsuario(id);
+        return ResponseEntity.noContent().build();
     }
 }

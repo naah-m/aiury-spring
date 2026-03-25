@@ -4,6 +4,8 @@ import br.com.fiap.aiury.entities.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Repositorio JPA para persistencia de {@link Usuario}.
  *
@@ -13,4 +15,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+
+    /**
+     * Retorna usuarios filtrados por cidade.
+     *
+     * @param cidadeId identificador da cidade
+     * @return lista de usuarios da cidade
+     */
+    List<Usuario> findByCidade_Id(Long cidadeId);
 }

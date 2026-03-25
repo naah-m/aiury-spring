@@ -1,11 +1,13 @@
 package br.com.fiap.aiury.mappers;
 
 import br.com.fiap.aiury.dto.UsuarioDTO;
+import br.com.fiap.aiury.dto.UsuarioResponseDTO;
 import br.com.fiap.aiury.entities.Cidade;
 import br.com.fiap.aiury.entities.Usuario;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -42,7 +44,7 @@ public class UsuarioMapper {
         usuario.setCelular(usuarioDTO.getCelular());
         usuario.setSenha(usuarioDTO.getSenha());
         usuario.setCidade(cidade);
-        usuario.setDataNascimento(LocalDate.parse(usuarioDTO.getDataNascimento(), formatter));
+        usuario.setDataNascimento(parseDataNascimento(usuarioDTO.getDataNascimento()));
 
         return usuario;
     }
@@ -70,7 +72,38 @@ public class UsuarioMapper {
         }
 
         if (usuarioDTO.getDataNascimento() != null) {
-            usuario.setDataNascimento(LocalDate.parse(usuarioDTO.getDataNascimento(), formatter));
+            usuario.setDataNascimento(parseDataNascimento(usuarioDTO.getDataNascimento()));
+        }
+    }
+
+    /**
+     * Converte entidade para DTO de resposta sem dados sensiveis.
+     *
+     * @param usuario entidade de dominio
+     * @return dto de resposta
+     */
+    public UsuarioResponseDTO toResponseDto(Usuario usuario) {
+        if (usuario == null) {
+            return null;
+        }
+
+        UsuarioResponseDTO dto = new UsuarioResponseDTO();
+        dto.setId(usuario.getId());
+        dto.setNomeReal(usuario.getNomeReal());
+        dto.setNomeAnonimo(usuario.getNomeAnonimo());
+        dto.setDataNascimento(usuario.getDataNascimento());
+        dto.setCelular(usuario.getCelular());
+        dto.setDataCadastro(usuario.getDataCadastro());
+        dto.setCidadeId(usuario.getCidade() != null ? usuario.getCidade().getId() : null);
+
+        return dto;
+    }
+
+    private LocalDate parseDataNascimento(String dataNascimento) {
+        try {
+            return LocalDate.parse(dataNascimento, formatter);
+        } catch (DateTimeParseException ex) {
+            throw new IllegalArgumentException("Data de nascimento invalida. Use o formato DD-MM-AAAA.");
         }
     }
 }

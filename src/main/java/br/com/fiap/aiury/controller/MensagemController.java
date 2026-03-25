@@ -1,26 +1,30 @@
 package br.com.fiap.aiury.controller;
 
+import br.com.fiap.aiury.dto.ApiErrorResponse;
 import br.com.fiap.aiury.dto.MensagemDTO;
 import br.com.fiap.aiury.entities.Mensagem;
-import br.com.fiap.aiury.mappers.MensagemMapper;
 import br.com.fiap.aiury.services.MensagemService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Controller REST do recurso de mensagens.
- *
- * Responsabilidades:
- * - disponibilizar CRUD basico de mensagens;
- * - converter entidade para DTO de resposta;
- * - manter contratos HTTP desacoplados da modelagem interna.
  */
 @RestController
 @RequestMapping("/api/mensagens")
@@ -28,79 +32,95 @@ import java.util.List;
 public class MensagemController {
 
     private final MensagemService mensagemService;
-    private final MensagemMapper mensagemMapper;
+    private final MensagemModelAssembler mensagemModelAssembler;
 
-    @Autowired
-    public MensagemController(MensagemService mensagemService, MensagemMapper mensagemMapper) {
+    public MensagemController(MensagemService mensagemService, MensagemModelAssembler mensagemModelAssembler) {
         this.mensagemService = mensagemService;
-        this.mensagemMapper = mensagemMapper;
+        this.mensagemModelAssembler = mensagemModelAssembler;
     }
 
-    /**
-     * Cria nova mensagem vinculada a um chat.
-     *
-     * @param mensagemDTO dados de entrada da mensagem
-     * @return mensagem criada em formato DTO
-     */
     @PostMapping
     @Operation(summary = "Criar mensagem", description = "Cria uma nova mensagem vinculada a um chat")
-    public ResponseEntity<MensagemDTO> cadastrarMensagem(@Valid @RequestBody MensagemDTO mensagemDTO) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Mensagem criada"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Payload invalido",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Chat ou remetente nao encontrados",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<EntityModel<MensagemDTO>> cadastrarMensagem(@Valid @RequestBody MensagemDTO mensagemDTO) {
         Mensagem novaMensagem = mensagemService.criarMensagem(mensagemDTO);
-        return new ResponseEntity<>(mensagemMapper.toDto(novaMensagem), HttpStatus.CREATED);
+        EntityModel<MensagemDTO> resource = mensagemModelAssembler.toModel(novaMensagem);
+        URI location = linkTo(methodOn(MensagemController.class).buscarMensagemPorId(novaMensagem.getId())).toUri();
+        return ResponseEntity.created(location).body(resource);
     }
 
-    /**
-     * Busca mensagem por identificador.
-     *
-     * @param id identificador da mensagem
-     * @return mensagem encontrada em formato DTO
-     */
     @GetMapping("/{id}")
-    @Operation(summary = "Buscar mensagem por ID", description = "Busca uma mensagem pelo identificador")
-    public ResponseEntity<MensagemDTO> buscarMensagemPorId(@PathVariable Long id) {
+    @Operation(summary = "Buscar mensagem por ID", description = "Retorna uma mensagem pelo identificador")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Mensagem encontrada"),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Mensagem nao encontrada",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<EntityModel<MensagemDTO>> buscarMensagemPorId(@PathVariable Long id) {
         Mensagem mensagem = mensagemService.buscarPorId(id);
-        return ResponseEntity.ok(mensagemMapper.toDto(mensagem));
+        return ResponseEntity.ok(mensagemModelAssembler.toModel(mensagem));
     }
 
-    /**
-     * Lista todas as mensagens cadastradas.
-     *
-     * @return lista de mensagens convertidas para DTO
-     */
     @GetMapping
-    @Operation(summary = "Listar mensagens", description = "Lista todas as mensagens cadastradas")
-    public ResponseEntity<List<MensagemDTO>> listarTodos() {
-        List<MensagemDTO> mensagens = mensagemService.buscarTodos()
-                .stream()
-                .map(mensagemMapper::toDto)
-                .toList();
-
-        return ResponseEntity.ok(mensagens);
+    @Operation(summary = "Listar mensagens", description = "Lista mensagens com filtros opcionais")
+    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+    public ResponseEntity<CollectionModel<EntityModel<MensagemDTO>>> listarTodos(
+            @Parameter(description = "Filtro opcional por chat")
+            @RequestParam(required = false) Long chatId,
+            @Parameter(description = "Filtro opcional por remetente")
+            @RequestParam(required = false) Long remetenteId
+    ) {
+        List<Mensagem> mensagens = mensagemService.buscarTodos(chatId, remetenteId);
+        return ResponseEntity.ok(mensagemModelAssembler.toCollection(mensagens, chatId, remetenteId));
     }
 
-    /**
-     * Atualiza mensagem existente.
-     *
-     * @param id identificador da mensagem
-     * @param mensagemDTO novos dados da mensagem
-     * @return mensagem atualizada em formato DTO
-     */
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar mensagem", description = "Atualiza uma mensagem existente pelo ID")
-    public ResponseEntity<MensagemDTO> atualizarMensagem(@PathVariable Long id, @Valid @RequestBody MensagemDTO mensagemDTO) {
+    @Operation(summary = "Atualizar mensagem", description = "Atualiza uma mensagem existente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Mensagem atualizada"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Payload invalido",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Mensagem, chat ou remetente nao encontrados",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<EntityModel<MensagemDTO>> atualizarMensagem(@PathVariable Long id, @Valid @RequestBody MensagemDTO mensagemDTO) {
         Mensagem mensagemAtualizada = mensagemService.atualizarMensagem(id, mensagemDTO);
-        return ResponseEntity.ok(mensagemMapper.toDto(mensagemAtualizada));
+        return ResponseEntity.ok(mensagemModelAssembler.toModel(mensagemAtualizada));
     }
 
-    /**
-     * Exclui mensagem por ID.
-     *
-     * @param id identificador da mensagem
-     */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Excluir mensagem", description = "Remove uma mensagem pelo ID")
-    public void deletarMensagem(@PathVariable Long id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Mensagem removida"),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Mensagem nao encontrada",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<Void> deletarMensagem(@PathVariable Long id) {
         mensagemService.deletarMensagem(id);
+        return ResponseEntity.noContent().build();
     }
 }
