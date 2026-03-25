@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base('Chats', 'chats', ~{::content})}">
+<th:block th:fragment="content">
+    <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">Chats e atendimentos</h1>
+            <p class="text-secondary mb-0">Acompanhe os atendimentos em andamento e o historico de chats da plataforma.</p>
+        </div>
+        <a class="btn btn-primary px-4" th:href="@{/app/chats/novo}">Abrir novo chat</a>
+    </section>
+
+    <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
+
+    <section class="page-card rounded-4 p-3 p-lg-4 mb-4">
+        <form class="row g-3 align-items-end" method="get" th:action="@{/app/chats}">
+            <div class="col-12 col-lg-4">
+                <label class="form-label" for="usuarioId">Usuario</label>
+                <select id="usuarioId" name="usuarioId" class="form-select">
+                    <option value="">Todos</option>
+                    <option th:each="usuario : ${usuarios}"
+                            th:value="${usuario.id}"
+                            th:selected="${filtroUsuarioId != null and filtroUsuarioId == usuario.id}"
+                            th:text="${usuario.nomeReal}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label class="form-label" for="ajudanteId">Ajudante</label>
+                <select id="ajudanteId" name="ajudanteId" class="form-select">
+                    <option value="">Todos</option>
+                    <option th:each="ajudante : ${ajudantes}"
+                            th:value="${ajudante.id}"
+                            th:selected="${filtroAjudanteId != null and filtroAjudanteId == ajudante.id}"
+                            th:text="${ajudante.areaAtuacao}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-12 col-lg-2">
+                <label class="form-label" for="status">Status</label>
+                <select id="status" name="status" class="form-select">
+                    <option value="">Todos</option>
+                    <option th:each="statusOption : ${statusOptions}"
+                            th:value="${statusOption.value}"
+                            th:selected="${filtroStatus != null and filtroStatus == statusOption.value}"
+                            th:text="${statusOption.label}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-12 col-lg-2 d-grid d-lg-flex justify-content-lg-end">
+                <button type="submit" class="btn btn-outline-primary px-4">Filtrar</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="page-card rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th scope="col">Chat</th>
+                    <th scope="col">Usuario</th>
+                    <th scope="col">Ajudante</th>
+                    <th scope="col">Inicio</th>
+                    <th scope="col">Fim</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="text-end">Acoes</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(chats)}">
+                    <td colspan="7" class="text-center py-4">Nenhum chat encontrado para os filtros aplicados.</td>
+                </tr>
+                <tr th:each="chat : ${chats}">
+                    <td class="fw-semibold" th:text="${'#' + chat.id}">#1</td>
+                    <td>
+                        <p class="mb-0 fw-semibold" th:text="${chat.usuarioNomeReal}">Usuario</p>
+                        <small class="text-secondary" th:text="${chat.usuarioNomeAnonimo != '-' ? '@' + chat.usuarioNomeAnonimo : '-'}">-</small>
+                    </td>
+                    <td>
+                        <p class="mb-0 fw-semibold" th:text="${chat.ajudanteAreaAtuacao}">Ajudante</p>
+                        <small th:classappend="${chat.ajudanteDisponivel} ? 'text-success' : 'text-secondary'"
+                               th:text="${chat.ajudanteDisponivel} ? 'Disponivel' : 'Indisponivel'">
+                            Disponivel
+                        </small>
+                    </td>
+                    <td th:text="${chat.dataInicio != null ? #temporals.format(chat.dataInicio, 'dd/MM/yyyy HH:mm') : '-'}">-</td>
+                    <td th:text="${chat.dataFim != null ? #temporals.format(chat.dataFim, 'dd/MM/yyyy HH:mm') : '-'}">-</td>
+                    <td>
+                        <span class="status-pill"
+                              th:classappend="' status-' + ${#strings.toLowerCase(#strings.replace(chat.status.name(), '_', '-'))}"
+                              th:text="${statusLabels[chat.status]}">
+                            Em andamento
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" th:href="@{/app/chats/{id}(id=${chat.id})}">
+                            Acompanhar
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</th:block>
+</html>

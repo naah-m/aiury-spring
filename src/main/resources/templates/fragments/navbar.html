@@ -28,9 +28,15 @@
                 </li>
                 <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','ATENDENTE')">
                     <a class="nav-link"
-                       th:classappend="${activePage == 'usuarios'} ? ' active' : ''"
-                       th:href="@{/app/usuarios}"
-                       th:attr="aria-current=${activePage == 'usuarios'} ? 'page' : null">Usuarios</a>
+                           th:classappend="${activePage == 'usuarios'} ? ' active' : ''"
+                           th:href="@{/app/usuarios}"
+                           th:attr="aria-current=${activePage == 'usuarios'} ? 'page' : null">Usuarios</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','ATENDENTE')">
+                    <a class="nav-link"
+                       th:classappend="${activePage == 'chats'} ? ' active' : ''"
+                       th:href="@{/app/chats}"
+                       th:attr="aria-current=${activePage == 'chats'} ? 'page' : null">Chats</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/swagger-ui.html}" target="_blank" rel="noopener">API Docs</a>

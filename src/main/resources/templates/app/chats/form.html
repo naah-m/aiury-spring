@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base('Novo chat', 'chats', ~{::content})}">
+<th:block th:fragment="content">
+    <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">Abrir novo chat</h1>
+            <p class="text-secondary mb-0">Inicie um atendimento vinculando usuario, ajudante e status inicial do chat.</p>
+        </div>
+        <a class="btn btn-outline-secondary px-4" th:href="@{/app/chats}">Voltar para lista</a>
+    </section>
+
+    <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
+
+    <div class="alert alert-warning border-0 shadow-sm"
+         role="alert"
+         th:if="${#lists.isEmpty(usuarios) or #lists.isEmpty(ajudantes)}">
+        Para abrir um chat, e necessario ter ao menos um usuario e um ajudante cadastrados.
+    </div>
+
+    <section class="form-card rounded-4 p-3 p-lg-4">
+        <form th:action="@{/app/chats}" th:object="${chatForm}" method="post" class="row g-3">
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+            <div class="col-12" th:if="${#fields.hasErrors('*')}">
+                <div class="alert alert-danger border-0 shadow-sm mb-0">
+                    <p class="fw-semibold mb-2">Corrija os pontos abaixo:</p>
+                    <ul class="mb-0 ps-3">
+                        <li th:each="erro : ${#fields.errors('*')}" th:text="${erro}">Erro de validacao</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <label for="usuarioId" class="form-label">Usuario</label>
+                <select id="usuarioId"
+                        th:field="*{usuarioId}"
+                        class="form-select"
+                        th:classappend="${#fields.hasErrors('usuarioId')} ? ' is-invalid' : ''"
+                        required>
+                    <option value="">Selecione um usuario</option>
+                    <option th:each="usuario : ${usuarios}"
+                            th:value="${usuario.id}"
+                            th:text="${usuario.nomeReal + (usuario.nomeAnonimo != null and !#strings.isEmpty(usuario.nomeAnonimo) ? ' (@' + usuario.nomeAnonimo + ')' : '')}">
+                    </option>
+                </select>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('usuarioId')}" th:errors="*{usuarioId}"></div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <label for="ajudanteId" class="form-label">Ajudante</label>
+                <select id="ajudanteId"
+                        th:field="*{ajudanteId}"
+                        class="form-select"
+                        th:classappend="${#fields.hasErrors('ajudanteId')} ? ' is-invalid' : ''"
+                        required>
+                    <option value="">Selecione um ajudante</option>
+                    <option th:each="ajudante : ${ajudantes}"
+                            th:value="${ajudante.id}"
+                            th:text="${ajudante.areaAtuacao + (ajudante.disponivel ? ' (disponivel)' : ' (indisponivel)')}">
+                    </option>
+                </select>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('ajudanteId')}" th:errors="*{ajudanteId}"></div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label for="dataInicio" class="form-label">Inicio do atendimento</label>
+                <input id="dataInicio"
+                       type="datetime-local"
+                       th:field="*{dataInicio}"
+                       class="form-control"
+                       th:classappend="${#fields.hasErrors('dataInicio')} ? ' is-invalid' : ''"
+                       required>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('dataInicio')}" th:errors="*{dataInicio}"></div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label for="status" class="form-label">Status inicial</label>
+                <select id="status"
+                        th:field="*{status}"
+                        class="form-select"
+                        th:classappend="${#fields.hasErrors('status')} ? ' is-invalid' : ''"
+                        required>
+                    <option value="">Selecione um status</option>
+                    <option th:each="statusOption : ${statusOptions}"
+                            th:value="${statusOption.value}"
+                            th:text="${statusOption.label}">
+                    </option>
+                </select>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label for="dataFim" class="form-label">Fim do atendimento</label>
+                <input id="dataFim"
+                       type="datetime-local"
+                       th:field="*{dataFim}"
+                       class="form-control"
+                       th:classappend="${#fields.hasErrors('dataFim')} ? ' is-invalid' : ''">
+                <div class="form-text">Preencha somente quando o chat iniciar finalizado.</div>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('dataFim')}" th:errors="*{dataFim}"></div>
+            </div>
+
+            <div class="col-12 d-flex justify-content-end">
+                <button type="submit"
+                        class="btn btn-primary px-4"
+                        th:disabled="${#lists.isEmpty(usuarios) or #lists.isEmpty(ajudantes)}">
+                    Abrir chat
+                </button>
+            </div>
+        </form>
+    </section>
+</th:block>
+</html>

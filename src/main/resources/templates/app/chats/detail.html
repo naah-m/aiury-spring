@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base('Detalhes do chat', 'chats', ~{::content})}">
+<th:block th:fragment="content">
+    <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h1 class="mb-0" th:text="${'Chat #' + chat.id}">Chat #1</h1>
+                <span class="status-pill"
+                      th:classappend="' status-' + ${#strings.toLowerCase(#strings.replace(chat.status.name(), '_', '-'))}"
+                      th:text="${statusLabels[chat.status]}">
+                    Em andamento
+                </span>
+            </div>
+            <p class="text-secondary mb-0 mt-1">Visualizacao completa do atendimento e atualizacao de status.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-secondary px-4" th:href="@{/app/chats}">Voltar para lista</a>
+            <a class="btn btn-primary px-4" th:href="@{/app/chats/novo}">Abrir outro chat</a>
+        </div>
+    </section>
+
+    <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
+
+    <section class="row g-3 g-lg-4 mb-4">
+        <div class="col-12 col-xl-7">
+            <article class="page-card rounded-4 p-3 p-lg-4 h-100">
+                <h2 class="h5 fw-bold mb-3">Dados do atendimento</h2>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="chat-info-item">
+                            <span class="chat-info-label">Usuario</span>
+                            <p class="mb-0 fw-semibold" th:text="${chat.usuarioNomeReal}">Usuario</p>
+                            <small class="text-secondary" th:text="${chat.usuarioNomeAnonimo != '-' ? '@' + chat.usuarioNomeAnonimo : '-'}">-</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chat-info-item">
+                            <span class="chat-info-label">Cidade/UF</span>
+                            <p class="mb-0 fw-semibold" th:text="${chat.cidadeNome + ' - ' + chat.estadoUf}">Cidade - UF</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chat-info-item">
+                            <span class="chat-info-label">Ajudante</span>
+                            <p class="mb-0 fw-semibold" th:text="${chat.ajudanteAreaAtuacao}">Escuta ativa</p>
+                            <small th:classappend="${chat.ajudanteDisponivel} ? 'text-success' : 'text-secondary'"
+                                   th:text="${chat.ajudanteDisponivel} ? 'Disponivel para novos atendimentos' : 'Indisponivel para novos atendimentos'}">
+                                Disponivel
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chat-info-item">
+                            <span class="chat-info-label">Rating do ajudante</span>
+                            <p class="mb-0 fw-semibold" th:text="${chat.ajudanteRating != null ? #numbers.formatDecimal(chat.ajudanteRating, 1, 1) : '-'}">4.8</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chat-info-item">
+                            <span class="chat-info-label">Inicio</span>
+                            <p class="mb-0 fw-semibold" th:text="${chat.dataInicio != null ? #temporals.format(chat.dataInicio, 'dd/MM/yyyy HH:mm') : '-'}">-</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chat-info-item">
+                            <span class="chat-info-label">Fim</span>
+                            <p class="mb-0 fw-semibold" th:text="${chat.dataFim != null ? #temporals.format(chat.dataFim, 'dd/MM/yyyy HH:mm') : '-'}">-</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-12 col-xl-5">
+            <article class="page-card rounded-4 p-3 p-lg-4 h-100">
+                <h2 class="h5 fw-bold mb-3">Acompanhamento de status</h2>
+
+                <ul class="status-timeline list-unstyled m-0 mb-4">
+                    <li th:each="step : ${statusTimeline}"
+                        class="status-step"
+                        th:classappend="${step.atual} ? ' current' : (${step.concluido} ? ' done' : ' pending')">
+                        <span class="status-dot" aria-hidden="true"></span>
+                        <span th:text="${step.titulo}">Etapa</span>
+                    </li>
+                </ul>
+
+                <form th:action="@{/app/chats/{id}/status(id=${chat.id})}" th:object="${statusForm}" method="post" class="row g-3">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                    <div class="col-12" th:if="${#fields.hasErrors('*')}">
+                        <div class="alert alert-danger border-0 shadow-sm mb-0">
+                            <ul class="mb-0 ps-3">
+                                <li th:each="erro : ${#fields.errors('*')}" th:text="${erro}">Erro</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="status" class="form-label">Novo status</label>
+                        <select id="status"
+                                th:field="*{status}"
+                                class="form-select"
+                                th:classappend="${#fields.hasErrors('status')} ? ' is-invalid' : ''"
+                                required>
+                            <option value="">Selecione um status</option>
+                            <option th:each="statusOption : ${statusOptions}"
+                                    th:value="${statusOption.value}"
+                                    th:text="${statusOption.label}">
+                            </option>
+                        </select>
+                        <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="dataFim" class="form-label">Data/hora de encerramento</label>
+                        <input id="dataFim"
+                               type="datetime-local"
+                               th:field="*{dataFim}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('dataFim')} ? ' is-invalid' : ''">
+                        <div class="form-text">Obrigatoria para status finalizados.</div>
+                        <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('dataFim')}" th:errors="*{dataFim}"></div>
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary px-4">Atualizar status</button>
+                    </div>
+                </form>
+            </article>
+        </div>
+    </section>
+
+    <section class="page-card rounded-4 p-3 p-lg-4">
+        <h2 class="h5 fw-bold mb-3">Mensagens do chat</h2>
+
+        <div class="alert alert-light border mb-0" th:if="${#lists.isEmpty(mensagens)}">
+            Nenhuma mensagem registrada para este chat ate o momento.
+        </div>
+
+        <div class="chat-messages" th:if="${!#lists.isEmpty(mensagens)}">
+            <article class="chat-message-card" th:each="mensagem : ${mensagens}">
+                <header class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-semibold">Usuario</span>
+                    <small class="text-secondary"
+                           th:text="${mensagem.dataEnvio != null ? #temporals.format(mensagem.dataEnvio, 'dd/MM/yyyy HH:mm') : '-'}">
+                        -
+                    </small>
+                </header>
+                <p class="mb-0" th:text="${mensagem.texto}">Mensagem</p>
+            </article>
+        </div>
+    </section>
+</th:block>
+</html>

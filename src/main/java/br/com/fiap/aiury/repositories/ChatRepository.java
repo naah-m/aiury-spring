@@ -1,11 +1,15 @@
 package br.com.fiap.aiury.repositories;
 
 import br.com.fiap.aiury.entities.Chat;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -13,6 +17,14 @@ import java.util.Optional;
  */
 @Repository
 public interface ChatRepository extends JpaRepository<Chat, Long>, JpaSpecificationExecutor<Chat> {
+
+    @Override
+    @EntityGraph(attributePaths = {"usuario", "usuario.cidade", "usuario.cidade.estado", "ajudante"})
+    Optional<Chat> findById(Long id);
+
+    @Override
+    @EntityGraph(attributePaths = {"usuario", "usuario.cidade", "usuario.cidade.estado", "ajudante"})
+    List<Chat> findAll(Specification<Chat> spec, Sort sort);
 
     Optional<Chat> findFirstByUsuario_IdAndAjudante_IdAndDataInicioOrderByIdAsc(
             Long usuarioId,

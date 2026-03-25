@@ -41,6 +41,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/**").hasRole(ROLE_ADMIN)
                         .requestMatchers(HttpMethod.GET, "/app/usuarios", "/app/usuarios/").hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE)
                         .requestMatchers("/app/usuarios", "/app/usuarios/**").hasRole(ROLE_ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/app/chats", "/app/chats/", "/app/chats/**").hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE)
+                        .requestMatchers("/app/chats", "/app/chats/**").hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE)
                         .requestMatchers("/app/**").hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE)
                         .anyRequest().permitAll()
                 )

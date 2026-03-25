@@ -159,3 +159,97 @@ body {
     --bs-btn-active-bg: var(--app-primary-strong);
     --bs-btn-active-border-color: var(--app-primary-strong);
 }
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.status-iniciado {
+    background: #e7f1ff;
+    color: #1e56a0;
+}
+
+.status-em-andamento {
+    background: #e6f7ef;
+    color: #0d7f5d;
+}
+
+.status-finalizado-usuario,
+.status-finalizado-ajudante,
+.status-finalizado-sistema {
+    background: #f1f3f5;
+    color: #495057;
+}
+
+.chat-info-item {
+    background: #f7fbfa;
+    border: 1px solid #e4efeb;
+    border-radius: 0.9rem;
+    padding: 0.85rem 1rem;
+    height: 100%;
+}
+
+.chat-info-label {
+    display: block;
+    color: #5a726b;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.2rem;
+}
+
+.status-timeline {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.status-step {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: #6b7f78;
+    font-weight: 500;
+}
+
+.status-step .status-dot {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: #cdd8d4;
+}
+
+.status-step.done {
+    color: #1d4f44;
+}
+
+.status-step.done .status-dot {
+    background: #1b8f72;
+}
+
+.status-step.current {
+    color: #0d6f5c;
+    font-weight: 700;
+}
+
+.status-step.current .status-dot {
+    background: #0d8a78;
+    box-shadow: 0 0 0 4px rgba(13, 138, 120, 0.2);
+}
+
+.chat-messages {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.chat-message-card {
+    border: 1px solid #e4efeb;
+    border-radius: 0.9rem;
+    background: #f8fbfa;
+    padding: 0.9rem 1rem;
+}
