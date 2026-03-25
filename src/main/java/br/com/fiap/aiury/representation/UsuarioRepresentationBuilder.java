@@ -1,12 +1,14 @@
-package br.com.fiap.aiury.controller;
+package br.com.fiap.aiury.representation;
 
-import br.com.fiap.aiury.dto.UsuarioDTO;
+import br.com.fiap.aiury.controller.ChatController;
+import br.com.fiap.aiury.controller.MensagemController;
+import br.com.fiap.aiury.controller.UsuarioController;
+import br.com.fiap.aiury.dto.UsuarioRequestDTO;
 import br.com.fiap.aiury.dto.UsuarioResponseDTO;
 import br.com.fiap.aiury.entities.Usuario;
 import br.com.fiap.aiury.mappers.UsuarioMapper;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,18 +17,17 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- * Assembler responsavel por enriquecer representacoes de usuario com links HATEOAS.
+ * Construtor de representacoes HATEOAS para o recurso de usuario.
  */
 @Component
-public class UsuarioModelAssembler implements RepresentationModelAssembler<Usuario, EntityModel<UsuarioResponseDTO>> {
+public class UsuarioRepresentationBuilder {
 
     private final UsuarioMapper usuarioMapper;
 
-    public UsuarioModelAssembler(UsuarioMapper usuarioMapper) {
+    public UsuarioRepresentationBuilder(UsuarioMapper usuarioMapper) {
         this.usuarioMapper = usuarioMapper;
     }
 
-    @Override
     public EntityModel<UsuarioResponseDTO> toModel(Usuario usuario) {
         UsuarioResponseDTO dto = usuarioMapper.toResponseDto(usuario);
         Long usuarioId = usuario.getId();
@@ -35,7 +36,7 @@ public class UsuarioModelAssembler implements RepresentationModelAssembler<Usuar
                 dto,
                 linkTo(methodOn(UsuarioController.class).buscarUsuarioPorId(usuarioId)).withSelfRel(),
                 linkTo(methodOn(UsuarioController.class).listarTodos(null)).withRel("usuarios"),
-                linkTo(methodOn(UsuarioController.class).atualizarUsuario(usuarioId, (UsuarioDTO) null)).withRel("atualizar"),
+                linkTo(methodOn(UsuarioController.class).atualizarUsuario(usuarioId, (UsuarioRequestDTO) null)).withRel("atualizar"),
                 linkTo(methodOn(UsuarioController.class).deletarUsuario(usuarioId)).withRel("excluir"),
                 linkTo(methodOn(ChatController.class).listarTodos(usuarioId, null, null)).withRel("chats"),
                 linkTo(methodOn(MensagemController.class).listarTodos(null, usuarioId)).withRel("mensagens-enviadas")

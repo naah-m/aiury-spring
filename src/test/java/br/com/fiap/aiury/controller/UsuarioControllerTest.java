@@ -2,6 +2,7 @@ package br.com.fiap.aiury.controller;
 
 import br.com.fiap.aiury.dto.UsuarioResponseDTO;
 import br.com.fiap.aiury.entities.Usuario;
+import br.com.fiap.aiury.representation.UsuarioRepresentationBuilder;
 import br.com.fiap.aiury.services.UsuarioService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,7 +32,7 @@ class UsuarioControllerTest {
     private UsuarioService usuarioService;
 
     @MockitoBean
-    private UsuarioModelAssembler usuarioModelAssembler;
+    private UsuarioRepresentationBuilder usuarioRepresentationBuilder;
 
     @Test
     void deveRetornarUsuarioComHateoasNoGetById() throws Exception {
@@ -47,12 +49,34 @@ class UsuarioControllerTest {
         );
 
         when(usuarioService.buscarPorId(1L)).thenReturn(usuario);
-        when(usuarioModelAssembler.toModel(usuario)).thenReturn(model);
+        when(usuarioRepresentationBuilder.toModel(usuario)).thenReturn(model);
 
         mockMvc.perform(get("/api/usuarios/1").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nomeReal").value("Maria Silva"))
                 .andExpect(jsonPath("$._links.self.href").exists());
+    }
+
+    @Test
+    void deveRetornar400QuandoPayloadDeUsuarioForInvalido() throws Exception {
+        String bodyInvalido = """
+                {
+                  "nomeReal": "",
+                  "dataNascimento": null,
+                  "senha": "123",
+                  "cidadeId": null
+                }
+                """;
+
+        mockMvc.perform(
+                        post("/api/usuarios")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(bodyInvalido)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.validationErrors.nomeReal").exists())
+                .andExpect(jsonPath("$.validationErrors.senha").exists());
     }
 }

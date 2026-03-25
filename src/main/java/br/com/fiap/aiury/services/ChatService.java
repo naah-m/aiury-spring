@@ -1,6 +1,6 @@
 package br.com.fiap.aiury.services;
 
-import br.com.fiap.aiury.dto.ChatDTO;
+import br.com.fiap.aiury.dto.ChatRequestDTO;
 import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.entities.ChatStatus;
 import jakarta.validation.Valid;
@@ -18,7 +18,7 @@ public interface ChatService {
      * @param chatDTO dados do chat
      * @return chat persistido
      */
-    Chat criarChat(@Valid ChatDTO chatDTO);
+    Chat criarChat(@Valid ChatRequestDTO chatDTO);
 
     /**
      * Busca chat por identificador.
@@ -45,7 +45,7 @@ public interface ChatService {
      * @param chatDTO novos dados
      * @return chat atualizado
      */
-    Chat atualizarChat(Long id, @Valid ChatDTO chatDTO);
+    Chat atualizarChat(Long id, @Valid ChatRequestDTO chatDTO);
 
     /**
      * Exclui chat por ID.

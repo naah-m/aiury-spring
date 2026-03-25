@@ -1,6 +1,6 @@
 package br.com.fiap.aiury.services;
 
-import br.com.fiap.aiury.dto.UsuarioDTO;
+import br.com.fiap.aiury.dto.UsuarioRequestDTO;
 import br.com.fiap.aiury.entities.Usuario;
 import jakarta.validation.Valid;
 
@@ -21,7 +21,7 @@ public interface UsuarioService {
      * @param usuarioDTO dados validados de cadastro
      * @return usuario persistido
      */
-    Usuario criarUsuario(@Valid UsuarioDTO usuarioDTO);
+    Usuario criarUsuario(@Valid UsuarioRequestDTO usuarioDTO);
 
     /**
      * Recupera usuario por identificador.
@@ -46,7 +46,7 @@ public interface UsuarioService {
      * @param detalhesUsuarioDTO novos dados de atualizacao
      * @return usuario atualizado
      */
-    Usuario atualizarUsuario(Long id, @Valid UsuarioDTO detalhesUsuarioDTO);
+    Usuario atualizarUsuario(Long id, @Valid UsuarioRequestDTO detalhesUsuarioDTO);
 
     /**
      * Remove usuario por ID.

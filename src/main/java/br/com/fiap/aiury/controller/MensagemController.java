@@ -1,8 +1,10 @@
 package br.com.fiap.aiury.controller;
 
 import br.com.fiap.aiury.dto.ApiErrorResponse;
-import br.com.fiap.aiury.dto.MensagemDTO;
+import br.com.fiap.aiury.dto.MensagemRequestDTO;
+import br.com.fiap.aiury.dto.MensagemResponseDTO;
 import br.com.fiap.aiury.entities.Mensagem;
+import br.com.fiap.aiury.representation.MensagemRepresentationBuilder;
 import br.com.fiap.aiury.services.MensagemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,17 +34,21 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class MensagemController {
 
     private final MensagemService mensagemService;
-    private final MensagemModelAssembler mensagemModelAssembler;
+    private final MensagemRepresentationBuilder mensagemRepresentationBuilder;
 
-    public MensagemController(MensagemService mensagemService, MensagemModelAssembler mensagemModelAssembler) {
+    public MensagemController(MensagemService mensagemService, MensagemRepresentationBuilder mensagemRepresentationBuilder) {
         this.mensagemService = mensagemService;
-        this.mensagemModelAssembler = mensagemModelAssembler;
+        this.mensagemRepresentationBuilder = mensagemRepresentationBuilder;
     }
 
     @PostMapping
     @Operation(summary = "Criar mensagem", description = "Cria uma nova mensagem vinculada a um chat")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Mensagem criada"),
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Mensagem criada",
+                    content = @Content(schema = @Schema(implementation = MensagemResponseDTO.class))
+            ),
             @ApiResponse(
                     responseCode = "400",
                     description = "Payload invalido",
@@ -54,9 +60,9 @@ public class MensagemController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<MensagemDTO>> cadastrarMensagem(@Valid @RequestBody MensagemDTO mensagemDTO) {
+    public ResponseEntity<EntityModel<MensagemResponseDTO>> cadastrarMensagem(@Valid @RequestBody MensagemRequestDTO mensagemDTO) {
         Mensagem novaMensagem = mensagemService.criarMensagem(mensagemDTO);
-        EntityModel<MensagemDTO> resource = mensagemModelAssembler.toModel(novaMensagem);
+        EntityModel<MensagemResponseDTO> resource = mensagemRepresentationBuilder.toModel(novaMensagem);
         URI location = linkTo(methodOn(MensagemController.class).buscarMensagemPorId(novaMensagem.getId())).toUri();
         return ResponseEntity.created(location).body(resource);
     }
@@ -64,35 +70,47 @@ public class MensagemController {
     @GetMapping("/{id}")
     @Operation(summary = "Buscar mensagem por ID", description = "Retorna uma mensagem pelo identificador")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Mensagem encontrada"),
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Mensagem encontrada",
+                    content = @Content(schema = @Schema(implementation = MensagemResponseDTO.class))
+            ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Mensagem nao encontrada",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<MensagemDTO>> buscarMensagemPorId(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<MensagemResponseDTO>> buscarMensagemPorId(@PathVariable Long id) {
         Mensagem mensagem = mensagemService.buscarPorId(id);
-        return ResponseEntity.ok(mensagemModelAssembler.toModel(mensagem));
+        return ResponseEntity.ok(mensagemRepresentationBuilder.toModel(mensagem));
     }
 
     @GetMapping
     @Operation(summary = "Listar mensagens", description = "Lista mensagens com filtros opcionais")
-    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
-    public ResponseEntity<CollectionModel<EntityModel<MensagemDTO>>> listarTodos(
+    @ApiResponse(
+            responseCode = "200",
+            description = "Lista retornada com sucesso",
+            content = @Content(schema = @Schema(implementation = MensagemResponseDTO.class))
+    )
+    public ResponseEntity<CollectionModel<EntityModel<MensagemResponseDTO>>> listarTodos(
             @Parameter(description = "Filtro opcional por chat")
             @RequestParam(required = false) Long chatId,
             @Parameter(description = "Filtro opcional por remetente")
             @RequestParam(required = false) Long remetenteId
     ) {
         List<Mensagem> mensagens = mensagemService.buscarTodos(chatId, remetenteId);
-        return ResponseEntity.ok(mensagemModelAssembler.toCollection(mensagens, chatId, remetenteId));
+        return ResponseEntity.ok(mensagemRepresentationBuilder.toCollection(mensagens, chatId, remetenteId));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar mensagem", description = "Atualiza uma mensagem existente")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Mensagem atualizada"),
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Mensagem atualizada",
+                    content = @Content(schema = @Schema(implementation = MensagemResponseDTO.class))
+            ),
             @ApiResponse(
                     responseCode = "400",
                     description = "Payload invalido",
@@ -104,9 +122,9 @@ public class MensagemController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<MensagemDTO>> atualizarMensagem(@PathVariable Long id, @Valid @RequestBody MensagemDTO mensagemDTO) {
+    public ResponseEntity<EntityModel<MensagemResponseDTO>> atualizarMensagem(@PathVariable Long id, @Valid @RequestBody MensagemRequestDTO mensagemDTO) {
         Mensagem mensagemAtualizada = mensagemService.atualizarMensagem(id, mensagemDTO);
-        return ResponseEntity.ok(mensagemModelAssembler.toModel(mensagemAtualizada));
+        return ResponseEntity.ok(mensagemRepresentationBuilder.toModel(mensagemAtualizada));
     }
 
     @DeleteMapping("/{id}")

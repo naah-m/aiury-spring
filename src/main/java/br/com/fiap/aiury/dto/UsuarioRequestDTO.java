@@ -1,0 +1,49 @@
+package br.com.fiap.aiury.dto;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+import java.time.LocalDate;
+
+/**
+ * DTO de entrada para criacao e atualizacao de usuario.
+ */
+@Data
+@Schema(name = "UsuarioRequest", description = "Payload para criacao/atualizacao de usuario")
+public class UsuarioRequestDTO {
+
+    @NotBlank(message = "O nome real e obrigatorio")
+    @Size(max = 100, message = "O nome real deve ter no maximo 100 caracteres")
+    @Schema(description = "Nome civil da pessoa usuaria", example = "Maria Silva")
+    private String nomeReal;
+
+    @Size(max = 50, message = "O nome anonimo deve ter no maximo 50 caracteres")
+    @Schema(description = "Apelido publico utilizado nos chats", example = "LuzInterior")
+    private String nomeAnonimo;
+
+    @NotNull(message = "A data de nascimento e obrigatoria")
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    @Schema(description = "Data de nascimento no formato DD-MM-AAAA", example = "15-08-1998")
+    private LocalDate dataNascimento;
+
+    @Pattern(
+            regexp = "^\\d{10,11}$",
+            message = "O celular deve conter apenas numeros com DDD (10 ou 11 digitos)"
+    )
+    @Schema(description = "Numero de celular com DDD", example = "11999998888")
+    private String celular;
+
+    @NotBlank(message = "A senha e obrigatoria")
+    @Size(min = 8, max = 255, message = "A senha deve ter entre 8 e 255 caracteres")
+    @Schema(description = "Senha de acesso do usuario", example = "segredo123")
+    private String senha;
+
+    @NotNull(message = "O ID da cidade e obrigatorio")
+    @Schema(description = "Identificador da cidade do usuario", example = "1")
+    private Long cidadeId;
+}

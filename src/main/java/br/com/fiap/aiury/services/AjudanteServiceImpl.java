@@ -1,6 +1,6 @@
 package br.com.fiap.aiury.services;
 
-import br.com.fiap.aiury.dto.AjudanteDTO;
+import br.com.fiap.aiury.dto.AjudanteRequestDTO;
 import br.com.fiap.aiury.entities.Ajudante;
 import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.AjudanteMapper;
@@ -35,7 +35,7 @@ public class AjudanteServiceImpl implements AjudanteService {
      */
     @Override
     @Transactional
-    public Ajudante criarAjudante(AjudanteDTO ajudanteDTO) {
+    public Ajudante criarAjudante(AjudanteRequestDTO ajudanteDTO) {
         Ajudante ajudante = ajudanteMapper.toEntity(ajudanteDTO);
         return ajudanteRepository.save(ajudante);
     }
@@ -65,7 +65,7 @@ public class AjudanteServiceImpl implements AjudanteService {
      */
     @Override
     @Transactional
-    public Ajudante atualizarAjudante(Long id, AjudanteDTO ajudanteDTO) {
+    public Ajudante atualizarAjudante(Long id, AjudanteRequestDTO ajudanteDTO) {
         Ajudante ajudanteExistente = buscarPorId(id);
         ajudanteMapper.updateEntityFromDto(ajudanteExistente, ajudanteDTO);
         return ajudanteRepository.save(ajudanteExistente);

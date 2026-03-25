@@ -1,36 +1,39 @@
-# Aiury API - Plataforma de Acolhimento
+# Aiury API - Plataforma de Acolhimento Emocional
 
-Backend Spring Boot para gerenciamento de usuarios, ajudantes, chats e mensagens no contexto de acolhimento emocional.
+API REST desenvolvida em Spring Boot para gerenciar usuarios, ajudantes, chats e mensagens em um fluxo de acolhimento digital com rastreabilidade, padronizacao de erro e navegacao HATEOAS.
 
-## 1. Problema Resolvido
-O projeto resolve a falta de organizacao e rastreabilidade de atendimentos de acolhimento digital, estruturando dados de participantes, sessoes de conversa e historico de mensagens em uma API REST documentada.
+## 1. Visao Geral
+O projeto implementa um backend em arquitetura em camadas para suportar o ciclo de atendimento da plataforma Aiury, com persistencia relacional, validacao de dados, documentacao OpenAPI e testes automatizados.
 
-## 2. Proposta da Solucao
-A solucao implementa:
-- cadastro e manutencao de usuarios e ajudantes;
-- abertura, acompanhamento e encerramento de chats;
-- registro de mensagens vinculadas aos chats;
-- padronizacao de erros HTTP;
-- navegacao HATEOAS nos recursos principais.
+## 2. Problema de Negocio
+Processos de acolhimento informal tendem a perder historico, dificultar auditoria e comprometer continuidade de atendimento. O projeto resolve isso estruturando o fluxo em recursos REST versionaveis e consultaveis.
 
-## 3. Publico-Alvo
-- equipes academicas e tecnicas que precisam validar uma API REST completa;
-- futuros consumidores frontend/mobile da plataforma Aiury;
-- avaliadores de sprint com foco em modelagem, documentacao e qualidade tecnica.
+## 3. Objetivo da Solucao
+- Centralizar cadastro e manutencao de usuarios e ajudantes.
+- Controlar abertura, evolucao e encerramento de chats.
+- Registrar mensagens por chat com trilha temporal.
+- Entregar API documentada e testavel para avaliacao academica e consumo futuro por frontend/mobile.
 
-## 4. Arquitetura da Aplicacao
-A aplicacao segue arquitetura em camadas:
-- `controller`: endpoints REST e contratos HTTP;
-- `service`: regras de negocio e validacoes de existencia;
-- `repository`: acesso a dados com Spring Data JPA;
-- `entity`: modelagem relacional;
-- `dto` e `mapper`: isolamento entre persistencia e contrato de API;
-- `configs`: OpenAPI e tratamento global de excecoes.
+## 4. Publico-Alvo
+- Equipe academica (avaliacao de sprints).
+- Equipe tecnica de backend/frontend.
+- Consumidores futuros da API de acolhimento.
 
-Documento detalhado: `docs/arquitetura.md`
+## 5. Arquitetura da Aplicacao
+Arquitetura em camadas com responsabilidades claras:
+- `controller`: contratos HTTP, status code e validacao de entrada.
+- `service`: regras de negocio, validacao de existencia e orquestracao.
+- `repository`: persistencia com Spring Data JPA.
+- `entity`: modelo relacional JPA.
+- `dto`: contratos `Request` e `Response`.
+- `mappers`: conversao entre entidade e DTO.
+- `representation`: composicao HATEOAS sem poluir controllers.
+- `configs` e `exceptions`: OpenAPI e tratamento global de erros.
 
-## 5. Tecnologias Utilizadas
-- Java 21
+Documento detalhado: `docs/arquitetura.md`.
+
+## 6. Tecnologias Utilizadas
+- Java 21+
 - Spring Boot 3.5.6
 - Spring Web
 - Spring Data JPA
@@ -39,18 +42,43 @@ Documento detalhado: `docs/arquitetura.md`
 - Springdoc OpenAPI (Swagger UI)
 - Maven Wrapper
 - Oracle JDBC (`ojdbc11`)
-- H2 (testes automatizados)
-- JUnit 5 / Mockito
+- H2 (ambiente de testes)
+- JUnit 5 e Mockito
 
-## 6. Como Executar Localmente
+## 7. Estrutura do Projeto
+```text
+src/main/java/br/com/fiap/aiury
+  ├─ controller
+  ├─ services
+  ├─ repositories
+  ├─ entities
+  ├─ dto
+  ├─ mappers
+  ├─ representation
+  ├─ configs
+  └─ exceptions
 
-### 6.1 Pre-requisitos
-- JDK 21+
-- Maven 3.9+ (opcional, pois o projeto usa `mvnw`)
-- Banco Oracle acessivel (ambiente da disciplina ou local)
+src/test/java/br/com/fiap/aiury
+  ├─ controller
+  ├─ services
+  └─ repositories
 
-### 6.2 Configuracao de banco
-O projeto usa variaveis de ambiente para evitar credenciais expostas:
+docs
+  ├─ arquitetura.md
+  ├─ endpoints.md
+  ├─ modelagem.md
+  ├─ cronograma.md
+  ├─ testes.md
+  └─ postman/
+```
+
+## 8. Requisitos para Execucao
+- JDK 21 ou superior.
+- Maven 3.9+ (opcional, pois o projeto inclui `mvnw`).
+- Banco Oracle acessivel para execucao da aplicacao principal.
+
+## 9. Como Configurar Banco de Dados
+As credenciais nao ficam no repositorio. Configure variaveis de ambiente:
 - `DB_URL`
 - `DB_USERNAME`
 - `DB_PASSWORD`
@@ -58,43 +86,25 @@ O projeto usa variaveis de ambiente para evitar credenciais expostas:
 - `JPA_SHOW_SQL` (opcional, default `false`)
 
 Exemplo PowerShell:
-
 ```powershell
 $env:DB_URL="jdbc:oracle:thin:@oracle.fiap.com.br:1521:orcl"
-$env:DB_USERNAME="SEU_USUARIO"
-$env:DB_PASSWORD="SUA_SENHA"
+$env:DB_USERNAME="SEU_USUARIO_ORACLE"
+$env:DB_PASSWORD="SUA_SENHA_ORACLE"
+$env:JPA_DDL_AUTO="update"
 ```
 
-### 6.3 Subir aplicacao
-
+## 10. Como Executar a Aplicacao
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
 
-## 7. Build e Testes
-
-### Testes automatizados
-
-```powershell
-.\mvnw.cmd clean test
-```
-
-### Empacotamento
-
-```powershell
-.\mvnw.cmd clean package
-```
-
-Documentacao de testes: `docs/testes.md`
-
-## 8. Swagger / OpenAPI
+## 11. Como Acessar Swagger
 - Swagger UI: `http://localhost:8080/swagger-ui/index.html`
-- Atalho configurado: `http://localhost:8080/swagger-ui.html`
+- Atalho: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
-## 9. Endpoints da API
-
-| Recurso | Endpoint base | Operacoes |
+## 12. Endpoints Principais
+| Recurso | Base path | Operacoes |
 |---|---|---|
 | Usuarios | `/api/usuarios` | `GET`, `GET/{id}`, `POST`, `PUT/{id}`, `DELETE/{id}` |
 | Ajudantes | `/api/ajudantes` | `GET`, `GET/{id}`, `POST`, `PUT/{id}`, `DELETE/{id}` |
@@ -102,51 +112,78 @@ Documentacao de testes: `docs/testes.md`
 | Mensagens | `/api/mensagens` | `GET`, `GET/{id}`, `POST`, `PUT/{id}`, `DELETE/{id}` |
 
 Filtros implementados:
-- `GET /api/usuarios?cidadeId=`
-- `GET /api/ajudantes?disponivel=`
-- `GET /api/chats?usuarioId=&ajudanteId=&status=`
-- `GET /api/mensagens?chatId=&remetenteId=`
+- `/api/usuarios?cidadeId=`
+- `/api/ajudantes?disponivel=`
+- `/api/chats?usuarioId=&ajudanteId=&status=`
+- `/api/mensagens?chatId=&remetenteId=`
 
-Detalhamento completo: `docs/endpoints.md`
+Detalhamento completo: `docs/endpoints.md`.
 
-## 10. Modelagem e Diagramas
-Detalhes de entidades, cardinalidades e consistencia JPA:
-- `docs/modelagem.md`
+## 13. Modelagem do Sistema
+- Entidades principais: `Usuario`, `Ajudante`, `Chat`, `Mensagem`, `Cidade`, `Estado`.
+- Relacionamentos mapeados via JPA com FKs explicitas.
+- Consistencia entre entidades, repositories e DTOs validada por testes.
 
-### DER (inserir imagem final do grupo)
-Repositorio preparado para receber a imagem em:
-- `docs/imagens/der.png`
+Documento detalhado: `docs/modelagem.md`.
 
-### Diagrama de Classes (inserir imagem final do grupo)
-Repositorio preparado para receber a imagem em:
-- `docs/imagens/diagrama-classes.png`
+## 14. DER
+Imagem esperada em: `docs/imagens/der.png`.
 
-## 11. Cronograma
-Cronograma academico completo por atividade, responsavel e status:
-- `docs/cronograma.md`
+## 15. Diagrama de Classes
+Imagem esperada em: `docs/imagens/diagrama-classes.png`.
 
-## 12. Postman e Evidencias
-- Colecao: `docs/postman/Aiury-Sprint3.postman_collection.json`
+## 16. Testes da API
+### Automatizados
+```powershell
+.\mvnw.cmd clean test
+.\mvnw.cmd clean package
+```
+
+### Manuais (Postman)
+- Collection: `docs/postman/Aiury-Sprint3.postman_collection.json`
 - Environment: `docs/postman/Aiury-local.postman_environment.json`
-- Guia de uso: `docs/postman/README.md`
+- Guia: `docs/postman/README.md`
 
-## 13. Integrantes da Equipe
+Documentacao de validacao: `docs/testes.md`.
 
-| Nome completo | Breve apresentacao | Responsabilidades no projeto |
+## 17. Integrantes do Grupo
+Preencher tabela no bloco final "Informacoes a complementar pelo grupo".
+
+## 18. Funcao/Responsabilidade de Cada Integrante
+Detalhar no bloco final por frente de trabalho:
+- backend e persistencia;
+- documentacao e arquitetura;
+- testes e evidencias;
+- apresentacao e consolidacao final.
+
+## 19. Link do Video
+Registrar no bloco final "Informacoes a complementar pelo grupo".
+
+## 20. Melhorias Futuras
+- Autenticacao/autorizacao com JWT.
+- Auditoria de alteracoes em recursos criticos.
+- Cobertura de testes de integracao para todos os controllers.
+- Pipeline CI para build/test/package em pull request.
+- Observabilidade (metricas e tracing) para acompanhamento operacional.
+
+## 21. Conclusao
+O repositorio esta estruturado para entrega academica de Sprint 3 com foco em robustez tecnica: compilacao estavel, contratos REST consistentes, HATEOAS, tratamento global de erros, documentacao completa e trilha de validacao automatizada/manual.
+
+## 22. Informacoes a Complementar pelo Grupo
+Preencher antes da submissao final:
+
+### Integrantes
+| Nome | RM | Papel principal no projeto |
 |---|---|---|
-| Preencher com integrante 1 | Perfil tecnico/acadêmico em 1 linha | Backend, modelagem JPA, qualidade de codigo |
-| Preencher com integrante 2 | Perfil tecnico/acadêmico em 1 linha | Documentacao, Swagger/OpenAPI, README |
-| Preencher com integrante 3 | Perfil tecnico/acadêmico em 1 linha | Testes, Postman, evidencias de validacao |
-| Preencher com integrante 4 | Perfil tecnico/acadêmico em 1 linha | Arquitetura, cronograma, revisao final |
+| Integrante 1 | RMXXXXX | Backend e persistencia |
+| Integrante 2 | RMXXXXX | API/Swagger e README |
+| Integrante 3 | RMXXXXX | Testes e Postman |
+| Integrante 4 | RMXXXXX | Arquitetura, cronograma e revisao final |
 
-## 14. Video da Entrega
-Link final da apresentacao (substituir antes da submissao):
-
-`https://colocar-link-final-do-video`
-
-## 15. Status da Entrega Sprint 3
-Este repositorio foi organizado para entrega academica com:
-- API REST padronizada com HATEOAS nos recursos principais;
-- tratamento global de excecoes;
-- testes automatizados minimos por camada;
-- documentacao completa em `README` e pasta `docs`.
+### Evidencias finais obrigatorias
+- Link do video de apresentacao:
+  - `https://SEU-LINK-DE-VIDEO`
+- DER final:
+  - `docs/imagens/der.png`
+- Diagrama de classes final:
+  - `docs/imagens/diagrama-classes.png`

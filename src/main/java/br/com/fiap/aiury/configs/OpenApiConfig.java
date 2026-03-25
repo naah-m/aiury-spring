@@ -4,8 +4,11 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 /**
  * Configuracao central de metadados do Swagger/OpenAPI.
@@ -18,13 +21,16 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Aiury API")
-                        .description("API REST para gestao de usuarios, ajudantes, chats e mensagens da plataforma Aiury.")
+                        .description("API REST para acolhimento emocional, com contratos Request/Response, HATEOAS e tratamento global de erros.")
                         .version("v1")
                         .contact(new Contact()
                                 .name("Equipe Aiury")
                                 .email("equipe.aiury@fiap.com.br"))
                         .license(new License()
                                 .name("Uso academico")
-                                .url("https://www.fiap.com.br")));
+                                .url("https://www.fiap.com.br")))
+                .servers(List.of(
+                        new Server().url("http://localhost:8080").description("Ambiente local")
+                ));
     }
 }

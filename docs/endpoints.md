@@ -1,35 +1,51 @@
 # Documentacao de Endpoints - Aiury API
 
-## Base da API
+## 1. Informacoes Gerais
 - Base URL local: `http://localhost:8080`
 - Base path: `/api`
 - Content-Type: `application/json`
 - Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 
-## Convencao de Resposta
-- Recursos principais retornam HATEOAS (`_links`) em `GET`, `POST` e `PUT`.
+## 2. Padrao de Resposta
+- `POST`, `GET` e `PUT` retornam representacoes HATEOAS com `_links`.
 - `DELETE` retorna `204 No Content`.
-- Erros seguem estrutura `ApiErrorResponse`.
+- Erros retornam `ApiErrorResponse`:
+```json
+{
+  "timestamp": "2026-03-24T17:00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Erro de validacao nos campos informados.",
+  "path": "/api/usuarios",
+  "validationErrors": {
+    "nomeReal": "O nome real e obrigatorio"
+  }
+}
+```
 
 ---
 
-## 1) Usuarios (`/api/usuarios`)
+## 3. Recurso Usuarios
 
-### Endpoints
+### 3.1 `GET /api/usuarios`
+- Descricao: lista usuarios com filtro opcional por cidade.
+- Parametros:
+  - `cidadeId` (query, opcional, `Long`)
+- Sucesso: `200 OK`
+- Erros possiveis: `400` (parametro invalido)
 
-| Metodo | Rota | Descricao | Status esperados |
-|---|---|---|---|
-| GET | `/api/usuarios` | Lista usuarios (filtro opcional por cidade) | `200` |
-| GET | `/api/usuarios/{id}` | Busca usuario por ID | `200`, `404` |
-| POST | `/api/usuarios` | Cria usuario | `201`, `400`, `404` |
-| PUT | `/api/usuarios/{id}` | Atualiza usuario | `200`, `400`, `404` |
-| DELETE | `/api/usuarios/{id}` | Remove usuario | `204`, `404` |
+### 3.2 `GET /api/usuarios/{id}`
+- Descricao: retorna um usuario por identificador.
+- Parametros:
+  - `id` (path, obrigatorio, `Long`)
+- Sucesso: `200 OK`
+- Erros possiveis: `404` (usuario nao encontrado)
 
-### Filtros
-- `GET /api/usuarios?cidadeId=1`
-
-### Exemplo de payload (POST/PUT)
-
+### 3.3 `POST /api/usuarios`
+- Descricao: cria um novo usuario.
+- Parametros:
+  - Body `UsuarioRequest`
+- Exemplo de request:
 ```json
 {
   "nomeReal": "Maria Silva",
@@ -40,9 +56,7 @@
   "cidadeId": 1
 }
 ```
-
-### Exemplo de resposta (200/201)
-
+- Exemplo de resposta (`201`):
 ```json
 {
   "id": 10,
@@ -62,42 +76,74 @@
   }
 }
 ```
+- Erros possiveis:
+  - `400` payload invalido
+  - `404` cidade nao encontrada
+  - `409` violacao de integridade (ex.: celular duplicado)
+
+### 3.4 `PUT /api/usuarios/{id}`
+- Descricao: atualiza usuario existente.
+- Parametros:
+  - `id` (path, obrigatorio)
+  - Body `UsuarioRequest`
+- Exemplo de request:
+```json
+{
+  "nomeReal": "Maria Silva Atualizada",
+  "nomeAnonimo": "LuzInterior",
+  "dataNascimento": "15-08-1998",
+  "celular": "11999990000",
+  "senha": "novaSenha123",
+  "cidadeId": 2
+}
+```
+- Sucesso: `200 OK` com mesmo formato de resposta do `POST`.
+- Erros possiveis: `400`, `404`, `409`.
+
+### 3.5 `DELETE /api/usuarios/{id}`
+- Descricao: remove usuario por ID.
+- Parametros:
+  - `id` (path, obrigatorio)
+- Sucesso: `204 No Content`
+- Erros possiveis: `404`, `409`.
 
 ---
 
-## 2) Ajudantes (`/api/ajudantes`)
+## 4. Recurso Ajudantes
 
-### Endpoints
+### 4.1 `GET /api/ajudantes`
+- Descricao: lista ajudantes com filtro opcional por disponibilidade.
+- Parametros:
+  - `disponivel` (query, opcional, `Boolean`)
+- Sucesso: `200 OK`
+- Erros possiveis: `400` (formato de query invalido)
 
-| Metodo | Rota | Descricao | Status esperados |
-|---|---|---|---|
-| GET | `/api/ajudantes` | Lista ajudantes (filtro opcional por disponibilidade) | `200` |
-| GET | `/api/ajudantes/{id}` | Busca ajudante por ID | `200`, `404` |
-| POST | `/api/ajudantes` | Cria ajudante | `201`, `400` |
-| PUT | `/api/ajudantes/{id}` | Atualiza ajudante | `200`, `400`, `404` |
-| DELETE | `/api/ajudantes/{id}` | Remove ajudante | `204`, `404` |
+### 4.2 `GET /api/ajudantes/{id}`
+- Descricao: retorna ajudante por ID.
+- Parametros:
+  - `id` (path, obrigatorio)
+- Sucesso: `200 OK`
+- Erros possiveis: `404`.
 
-### Filtros
-- `GET /api/ajudantes?disponivel=true`
-
-### Exemplo de payload (POST/PUT)
-
+### 4.3 `POST /api/ajudantes`
+- Descricao: cria ajudante.
+- Parametros:
+  - Body `AjudanteRequest`
+- Exemplo de request:
 ```json
 {
   "areaAtuacao": "Escuta ativa",
-  "motivacao": "Acolho pessoas em situacoes de crise",
+  "motivacao": "Atuo em acolhimento voluntario",
   "disponivel": true,
   "rating": 4.8
 }
 ```
-
-### Exemplo de resposta (200/201)
-
+- Exemplo de resposta (`201`):
 ```json
 {
   "id": 3,
   "areaAtuacao": "Escuta ativa",
-  "motivacao": "Acolho pessoas em situacoes de crise",
+  "motivacao": "Atuo em acolhimento voluntario",
   "disponivel": true,
   "rating": 4.8,
   "_links": {
@@ -109,36 +155,54 @@
   }
 }
 ```
+- Erros possiveis: `400`.
+
+### 4.4 `PUT /api/ajudantes/{id}`
+- Descricao: atualiza ajudante por ID.
+- Parametros:
+  - `id` (path, obrigatorio)
+  - Body `AjudanteRequest`
+- Sucesso: `200 OK`
+- Erros possiveis: `400`, `404`.
+
+### 4.5 `DELETE /api/ajudantes/{id}`
+- Descricao: remove ajudante por ID.
+- Parametros:
+  - `id` (path, obrigatorio)
+- Sucesso: `204 No Content`
+- Erros possiveis: `404`, `409`.
 
 ---
 
-## 3) Chats (`/api/chats`)
+## 5. Recurso Chats
 
-### Endpoints
+### 5.1 `GET /api/chats`
+- Descricao: lista chats com filtros opcionais.
+- Parametros:
+  - `usuarioId` (query, opcional, `Long`)
+  - `ajudanteId` (query, opcional, `Long`)
+  - `status` (query, opcional, `ChatStatus`)
+- Valores validos de `status`:
+  - `INICIADO`
+  - `EM_ANDAMENTO`
+  - `FINALIZADO_USUARIO`
+  - `FINALIZADO_AJUDANTE`
+  - `FINALIZADO_SISTEMA`
+- Sucesso: `200 OK`
+- Erros possiveis: `400`.
 
-| Metodo | Rota | Descricao | Status esperados |
-|---|---|---|---|
-| GET | `/api/chats` | Lista chats com filtros opcionais | `200` |
-| GET | `/api/chats/{id}` | Busca chat por ID | `200`, `404` |
-| POST | `/api/chats` | Cria chat | `201`, `400`, `404` |
-| PUT | `/api/chats/{id}` | Atualiza chat | `200`, `400`, `404` |
-| DELETE | `/api/chats/{id}` | Remove chat | `204`, `404` |
+### 5.2 `GET /api/chats/{id}`
+- Descricao: retorna chat por ID.
+- Parametros:
+  - `id` (path, obrigatorio)
+- Sucesso: `200 OK`
+- Erros possiveis: `404`.
 
-### Filtros
-- `GET /api/chats?usuarioId=10`
-- `GET /api/chats?ajudanteId=3`
-- `GET /api/chats?status=EM_ANDAMENTO`
-- `GET /api/chats?usuarioId=10&status=EM_ANDAMENTO`
-
-### Status validos de chat
-- `INICIADO`
-- `EM_ANDAMENTO`
-- `FINALIZADO_USUARIO`
-- `FINALIZADO_AJUDANTE`
-- `FINALIZADO_SISTEMA`
-
-### Exemplo de payload (POST/PUT)
-
+### 5.3 `POST /api/chats`
+- Descricao: cria novo chat.
+- Parametros:
+  - Body `ChatRequest`
+- Exemplo de request:
 ```json
 {
   "usuarioId": 10,
@@ -148,9 +212,7 @@
   "status": "INICIADO"
 }
 ```
-
-### Exemplo de resposta (200/201)
-
+- Exemplo de resposta (`201`):
 ```json
 {
   "id": 101,
@@ -158,7 +220,7 @@
   "ajudanteId": 3,
   "dataInicio": "2026-03-24T14:00:00",
   "dataFim": null,
-  "status": "EM_ANDAMENTO",
+  "status": "INICIADO",
   "_links": {
     "self": { "href": "http://localhost:8080/api/chats/101" },
     "chats": { "href": "http://localhost:8080/api/chats" },
@@ -170,28 +232,47 @@
   }
 }
 ```
+- Erros possiveis: `400`, `404`.
+
+### 5.4 `PUT /api/chats/{id}`
+- Descricao: atualiza chat por ID.
+- Parametros:
+  - `id` (path, obrigatorio)
+  - Body `ChatRequest`
+- Sucesso: `200 OK`
+- Erros possiveis: `400`, `404`.
+
+### 5.5 `DELETE /api/chats/{id}`
+- Descricao: remove chat por ID.
+- Parametros:
+  - `id` (path, obrigatorio)
+- Sucesso: `204 No Content`
+- Erros possiveis: `404`.
 
 ---
 
-## 4) Mensagens (`/api/mensagens`)
+## 6. Recurso Mensagens
 
-### Endpoints
+### 6.1 `GET /api/mensagens`
+- Descricao: lista mensagens com filtros opcionais.
+- Parametros:
+  - `chatId` (query, opcional, `Long`)
+  - `remetenteId` (query, opcional, `Long`)
+- Sucesso: `200 OK`
+- Erros possiveis: `400`.
 
-| Metodo | Rota | Descricao | Status esperados |
-|---|---|---|---|
-| GET | `/api/mensagens` | Lista mensagens com filtros opcionais | `200` |
-| GET | `/api/mensagens/{id}` | Busca mensagem por ID | `200`, `404` |
-| POST | `/api/mensagens` | Cria mensagem | `201`, `400`, `404` |
-| PUT | `/api/mensagens/{id}` | Atualiza mensagem | `200`, `400`, `404` |
-| DELETE | `/api/mensagens/{id}` | Remove mensagem | `204`, `404` |
+### 6.2 `GET /api/mensagens/{id}`
+- Descricao: retorna mensagem por ID.
+- Parametros:
+  - `id` (path, obrigatorio)
+- Sucesso: `200 OK`
+- Erros possiveis: `404`.
 
-### Filtros
-- `GET /api/mensagens?chatId=101`
-- `GET /api/mensagens?remetenteId=10`
-- `GET /api/mensagens?chatId=101&remetenteId=10`
-
-### Exemplo de payload (POST/PUT)
-
+### 6.3 `POST /api/mensagens`
+- Descricao: cria mensagem vinculada a chat e remetente.
+- Parametros:
+  - Body `MensagemRequest`
+- Exemplo de request:
 ```json
 {
   "chatId": 101,
@@ -200,9 +281,7 @@
   "dataEnvio": "2026-03-24T14:15:00"
 }
 ```
-
-### Exemplo de resposta (200/201)
-
+- Exemplo de resposta (`201`):
 ```json
 {
   "id": 700,
@@ -220,48 +299,29 @@
   }
 }
 ```
+- Erros possiveis: `400`, `404`.
+
+### 6.4 `PUT /api/mensagens/{id}`
+- Descricao: atualiza mensagem por ID.
+- Parametros:
+  - `id` (path, obrigatorio)
+  - Body `MensagemRequest`
+- Sucesso: `200 OK`
+- Erros possiveis: `400`, `404`.
+
+### 6.5 `DELETE /api/mensagens/{id}`
+- Descricao: remove mensagem por ID.
+- Parametros:
+  - `id` (path, obrigatorio)
+- Sucesso: `204 No Content`
+- Erros possiveis: `404`.
 
 ---
 
-## Erros Padronizados
-
-### 400 - Requisicao invalida
-
-```json
-{
-  "timestamp": "2026-03-24T17:00:00",
-  "status": 400,
-  "error": "Bad Request",
-  "message": "Erro de validacao nos campos informados.",
-  "path": "/api/usuarios",
-  "validationErrors": {
-    "dataNascimento": "Formato invalido para data de nascimento. Use DD-MM-AAAA"
-  }
-}
-```
-
-### 404 - Recurso nao encontrado
-
-```json
-{
-  "timestamp": "2026-03-24T17:00:00",
-  "status": 404,
-  "error": "Not Found",
-  "message": "Usuario nao encontrado com ID: 999",
-  "path": "/api/usuarios/999",
-  "validationErrors": null
-}
-```
-
-### 409 - Violacao de integridade
-
-```json
-{
-  "timestamp": "2026-03-24T17:00:00",
-  "status": 409,
-  "error": "Conflict",
-  "message": "Violacao de integridade de dados.",
-  "path": "/api/usuarios",
-  "validationErrors": null
-}
-```
+## 7. Resumo de Erros HTTP
+| Status | Cenario |
+|---|---|
+| `400` | Validacao de payload, tipo de parametro invalido, corpo mal formatado |
+| `404` | Recurso ou referencia nao encontrado |
+| `409` | Violacao de integridade de dados |
+| `500` | Falha inesperada no servidor |

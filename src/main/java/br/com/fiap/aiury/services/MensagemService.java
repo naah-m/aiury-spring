@@ -1,6 +1,6 @@
 package br.com.fiap.aiury.services;
 
-import br.com.fiap.aiury.dto.MensagemDTO;
+import br.com.fiap.aiury.dto.MensagemRequestDTO;
 import br.com.fiap.aiury.entities.Mensagem;
 import jakarta.validation.Valid;
 
@@ -17,7 +17,7 @@ public interface MensagemService {
      * @param mensagemDTO dados de entrada
      * @return mensagem persistida
      */
-    Mensagem criarMensagem(@Valid MensagemDTO mensagemDTO);
+    Mensagem criarMensagem(@Valid MensagemRequestDTO mensagemDTO);
 
     /**
      * Busca mensagem por ID.
@@ -43,7 +43,7 @@ public interface MensagemService {
      * @param mensagemDTO novos dados da mensagem
      * @return mensagem atualizada
      */
-    Mensagem atualizarMensagem(Long id, @Valid MensagemDTO mensagemDTO);
+    Mensagem atualizarMensagem(Long id, @Valid MensagemRequestDTO mensagemDTO);
 
     /**
      * Remove mensagem por identificador.

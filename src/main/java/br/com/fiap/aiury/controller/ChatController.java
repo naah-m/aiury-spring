@@ -1,9 +1,11 @@
 package br.com.fiap.aiury.controller;
 
 import br.com.fiap.aiury.dto.ApiErrorResponse;
-import br.com.fiap.aiury.dto.ChatDTO;
+import br.com.fiap.aiury.dto.ChatRequestDTO;
+import br.com.fiap.aiury.dto.ChatResponseDTO;
 import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.entities.ChatStatus;
+import br.com.fiap.aiury.representation.ChatRepresentationBuilder;
 import br.com.fiap.aiury.services.ChatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,17 +35,21 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ChatController {
 
     private final ChatService chatService;
-    private final ChatModelAssembler chatModelAssembler;
+    private final ChatRepresentationBuilder chatRepresentationBuilder;
 
-    public ChatController(ChatService chatService, ChatModelAssembler chatModelAssembler) {
+    public ChatController(ChatService chatService, ChatRepresentationBuilder chatRepresentationBuilder) {
         this.chatService = chatService;
-        this.chatModelAssembler = chatModelAssembler;
+        this.chatRepresentationBuilder = chatRepresentationBuilder;
     }
 
     @PostMapping
     @Operation(summary = "Criar chat", description = "Abre um novo chat vinculando usuario e ajudante")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Chat criado"),
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Chat criado",
+                    content = @Content(schema = @Schema(implementation = ChatResponseDTO.class))
+            ),
             @ApiResponse(
                     responseCode = "400",
                     description = "Payload invalido",
@@ -55,9 +61,9 @@ public class ChatController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<ChatDTO>> cadastrarChat(@Valid @RequestBody ChatDTO chatDTO) {
+    public ResponseEntity<EntityModel<ChatResponseDTO>> cadastrarChat(@Valid @RequestBody ChatRequestDTO chatDTO) {
         Chat novoChat = chatService.criarChat(chatDTO);
-        EntityModel<ChatDTO> resource = chatModelAssembler.toModel(novoChat);
+        EntityModel<ChatResponseDTO> resource = chatRepresentationBuilder.toModel(novoChat);
         URI location = linkTo(methodOn(ChatController.class).buscarChatPorId(novoChat.getId())).toUri();
         return ResponseEntity.created(location).body(resource);
     }
@@ -65,22 +71,30 @@ public class ChatController {
     @GetMapping("/{id}")
     @Operation(summary = "Buscar chat por ID", description = "Retorna um chat pelo identificador")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Chat encontrado"),
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Chat encontrado",
+                    content = @Content(schema = @Schema(implementation = ChatResponseDTO.class))
+            ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Chat nao encontrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<ChatDTO>> buscarChatPorId(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<ChatResponseDTO>> buscarChatPorId(@PathVariable Long id) {
         Chat chat = chatService.buscarPorId(id);
-        return ResponseEntity.ok(chatModelAssembler.toModel(chat));
+        return ResponseEntity.ok(chatRepresentationBuilder.toModel(chat));
     }
 
     @GetMapping
     @Operation(summary = "Listar chats", description = "Lista chats com filtros opcionais")
-    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
-    public ResponseEntity<CollectionModel<EntityModel<ChatDTO>>> listarTodos(
+    @ApiResponse(
+            responseCode = "200",
+            description = "Lista retornada com sucesso",
+            content = @Content(schema = @Schema(implementation = ChatResponseDTO.class))
+    )
+    public ResponseEntity<CollectionModel<EntityModel<ChatResponseDTO>>> listarTodos(
             @Parameter(description = "Filtro opcional por usuario")
             @RequestParam(required = false) Long usuarioId,
             @Parameter(description = "Filtro opcional por ajudante")
@@ -89,13 +103,17 @@ public class ChatController {
             @RequestParam(required = false) ChatStatus status
     ) {
         List<Chat> chats = chatService.buscarTodos(usuarioId, ajudanteId, status);
-        return ResponseEntity.ok(chatModelAssembler.toCollection(chats, usuarioId, ajudanteId, status));
+        return ResponseEntity.ok(chatRepresentationBuilder.toCollection(chats, usuarioId, ajudanteId, status));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar chat", description = "Atualiza um chat existente pelo ID")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Chat atualizado"),
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Chat atualizado",
+                    content = @Content(schema = @Schema(implementation = ChatResponseDTO.class))
+            ),
             @ApiResponse(
                     responseCode = "400",
                     description = "Payload invalido",
@@ -107,9 +125,9 @@ public class ChatController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<ChatDTO>> atualizarChat(@PathVariable Long id, @Valid @RequestBody ChatDTO chatDTO) {
+    public ResponseEntity<EntityModel<ChatResponseDTO>> atualizarChat(@PathVariable Long id, @Valid @RequestBody ChatRequestDTO chatDTO) {
         Chat chatAtualizado = chatService.atualizarChat(id, chatDTO);
-        return ResponseEntity.ok(chatModelAssembler.toModel(chatAtualizado));
+        return ResponseEntity.ok(chatRepresentationBuilder.toModel(chatAtualizado));
     }
 
     @DeleteMapping("/{id}")

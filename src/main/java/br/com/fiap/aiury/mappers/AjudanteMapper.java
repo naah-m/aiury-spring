@@ -1,12 +1,12 @@
 package br.com.fiap.aiury.mappers;
 
-import br.com.fiap.aiury.dto.AjudanteDTO;
+import br.com.fiap.aiury.dto.AjudanteRequestDTO;
 import br.com.fiap.aiury.dto.AjudanteResponseDTO;
 import br.com.fiap.aiury.entities.Ajudante;
 import org.springframework.stereotype.Component;
 
 /**
- * Mapper dedicado a conversoes entre {@link AjudanteDTO} e {@link Ajudante}.
+ * Mapper dedicado a conversoes entre DTOs de ajudante e entidade.
  */
 @Component
 public class AjudanteMapper {
@@ -14,19 +14,19 @@ public class AjudanteMapper {
     /**
      * Cria entidade de ajudante a partir do DTO.
      *
-     * @param ajudanteDTO dados de entrada
+     * @param request dados de entrada
      * @return entidade preenchida ou {@code null} se DTO nulo
      */
-    public Ajudante toEntity(AjudanteDTO ajudanteDTO) {
-        if (ajudanteDTO == null) {
+    public Ajudante toEntity(AjudanteRequestDTO request) {
+        if (request == null) {
             return null;
         }
 
         Ajudante ajudante = new Ajudante();
-        ajudante.setAreaAtuacao(ajudanteDTO.getAreaAtuacao());
-        ajudante.setMotivacao(ajudanteDTO.getMotivacao());
-        ajudante.setDisponivel(Boolean.TRUE.equals(ajudanteDTO.getDisponivel()));
-        ajudante.setRating(ajudanteDTO.getRating());
+        ajudante.setAreaAtuacao(request.getAreaAtuacao());
+        ajudante.setMotivacao(request.getMotivacao());
+        ajudante.setDisponivel(Boolean.TRUE.equals(request.getDisponivel()));
+        ajudante.setRating(request.getRating());
 
         return ajudante;
     }
@@ -35,20 +35,20 @@ public class AjudanteMapper {
      * Atualiza entidade existente com os campos informados no DTO.
      *
      * @param ajudante entidade alvo
-     * @param ajudanteDTO novos dados de atualizacao
+     * @param request novos dados de atualizacao
      */
-    public void updateEntityFromDto(Ajudante ajudante, AjudanteDTO ajudanteDTO) {
-        if (ajudanteDTO.getAreaAtuacao() != null) {
-            ajudante.setAreaAtuacao(ajudanteDTO.getAreaAtuacao());
+    public void updateEntityFromDto(Ajudante ajudante, AjudanteRequestDTO request) {
+        if (request.getAreaAtuacao() != null) {
+            ajudante.setAreaAtuacao(request.getAreaAtuacao());
         }
-        if (ajudanteDTO.getMotivacao() != null) {
-            ajudante.setMotivacao(ajudanteDTO.getMotivacao());
+        if (request.getMotivacao() != null) {
+            ajudante.setMotivacao(request.getMotivacao());
         }
-        if (ajudanteDTO.getDisponivel() != null) {
-            ajudante.setDisponivel(ajudanteDTO.getDisponivel());
+        if (request.getDisponivel() != null) {
+            ajudante.setDisponivel(request.getDisponivel());
         }
-        if (ajudanteDTO.getRating() != null) {
-            ajudante.setRating(ajudanteDTO.getRating());
+        if (request.getRating() != null) {
+            ajudante.setRating(request.getRating());
         }
     }
 

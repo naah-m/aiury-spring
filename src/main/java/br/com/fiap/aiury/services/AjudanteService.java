@@ -1,6 +1,6 @@
 package br.com.fiap.aiury.services;
 
-import br.com.fiap.aiury.dto.AjudanteDTO;
+import br.com.fiap.aiury.dto.AjudanteRequestDTO;
 import br.com.fiap.aiury.entities.Ajudante;
 import jakarta.validation.Valid;
 
@@ -17,7 +17,7 @@ public interface AjudanteService {
      * @param ajudanteDTO dados de entrada validados
      * @return entidade criada
      */
-    Ajudante criarAjudante(@Valid AjudanteDTO ajudanteDTO);
+    Ajudante criarAjudante(@Valid AjudanteRequestDTO ajudanteDTO);
 
     /**
      * Busca ajudante por ID.
@@ -42,7 +42,7 @@ public interface AjudanteService {
      * @param ajudanteDTO novos dados
      * @return ajudante atualizado
      */
-    Ajudante atualizarAjudante(Long id, @Valid AjudanteDTO ajudanteDTO);
+    Ajudante atualizarAjudante(Long id, @Valid AjudanteRequestDTO ajudanteDTO);
 
     /**
      * Remove ajudante por ID.

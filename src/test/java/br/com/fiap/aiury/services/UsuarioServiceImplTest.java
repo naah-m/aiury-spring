@@ -1,6 +1,6 @@
 package br.com.fiap.aiury.services;
 
-import br.com.fiap.aiury.dto.UsuarioDTO;
+import br.com.fiap.aiury.dto.UsuarioRequestDTO;
 import br.com.fiap.aiury.entities.Cidade;
 import br.com.fiap.aiury.entities.Usuario;
 import br.com.fiap.aiury.exceptions.NotFoundException;
@@ -38,7 +38,7 @@ class UsuarioServiceImplTest {
 
     @Test
     void deveLancarNotFoundQuandoCidadeNaoExisteAoCriarUsuario() {
-        UsuarioDTO dto = new UsuarioDTO();
+        UsuarioRequestDTO dto = new UsuarioRequestDTO();
         dto.setCidadeId(999L);
 
         when(cidadeRepository.findById(999L)).thenReturn(Optional.empty());
@@ -50,9 +50,9 @@ class UsuarioServiceImplTest {
 
     @Test
     void deveCriarUsuarioQuandoCidadeExiste() {
-        UsuarioDTO dto = new UsuarioDTO();
+        UsuarioRequestDTO dto = new UsuarioRequestDTO();
         dto.setNomeReal("Maria Silva");
-        dto.setDataNascimento("15-08-1998");
+        dto.setDataNascimento(LocalDate.of(1998, 8, 15));
         dto.setSenha("segredo123");
         dto.setCidadeId(1L);
 

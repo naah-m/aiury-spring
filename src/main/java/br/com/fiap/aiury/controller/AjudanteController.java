@@ -1,9 +1,10 @@
 package br.com.fiap.aiury.controller;
 
-import br.com.fiap.aiury.dto.AjudanteDTO;
+import br.com.fiap.aiury.dto.AjudanteRequestDTO;
 import br.com.fiap.aiury.dto.AjudanteResponseDTO;
 import br.com.fiap.aiury.dto.ApiErrorResponse;
 import br.com.fiap.aiury.entities.Ajudante;
+import br.com.fiap.aiury.representation.AjudanteRepresentationBuilder;
 import br.com.fiap.aiury.services.AjudanteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,26 +34,30 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class AjudanteController {
 
     private final AjudanteService ajudanteService;
-    private final AjudanteModelAssembler ajudanteModelAssembler;
+    private final AjudanteRepresentationBuilder ajudanteRepresentationBuilder;
 
-    public AjudanteController(AjudanteService ajudanteService, AjudanteModelAssembler ajudanteModelAssembler) {
+    public AjudanteController(AjudanteService ajudanteService, AjudanteRepresentationBuilder ajudanteRepresentationBuilder) {
         this.ajudanteService = ajudanteService;
-        this.ajudanteModelAssembler = ajudanteModelAssembler;
+        this.ajudanteRepresentationBuilder = ajudanteRepresentationBuilder;
     }
 
     @PostMapping
     @Operation(summary = "Criar ajudante", description = "Cadastra um novo ajudante")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Ajudante criado"),
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Ajudante criado",
+                    content = @Content(schema = @Schema(implementation = AjudanteResponseDTO.class))
+            ),
             @ApiResponse(
                     responseCode = "400",
                     description = "Payload invalido",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<AjudanteResponseDTO>> cadastrarAjudante(@Valid @RequestBody AjudanteDTO ajudanteDTO) {
+    public ResponseEntity<EntityModel<AjudanteResponseDTO>> cadastrarAjudante(@Valid @RequestBody AjudanteRequestDTO ajudanteDTO) {
         Ajudante novoAjudante = ajudanteService.criarAjudante(ajudanteDTO);
-        EntityModel<AjudanteResponseDTO> resource = ajudanteModelAssembler.toModel(novoAjudante);
+        EntityModel<AjudanteResponseDTO> resource = ajudanteRepresentationBuilder.toModel(novoAjudante);
         URI location = linkTo(methodOn(AjudanteController.class).buscarAjudantePorId(novoAjudante.getId())).toUri();
         return ResponseEntity.created(location).body(resource);
     }
@@ -60,7 +65,11 @@ public class AjudanteController {
     @GetMapping("/{id}")
     @Operation(summary = "Buscar ajudante por ID", description = "Retorna um ajudante pelo identificador")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Ajudante encontrado"),
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Ajudante encontrado",
+                    content = @Content(schema = @Schema(implementation = AjudanteResponseDTO.class))
+            ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Ajudante nao encontrado",
@@ -69,24 +78,32 @@ public class AjudanteController {
     })
     public ResponseEntity<EntityModel<AjudanteResponseDTO>> buscarAjudantePorId(@PathVariable Long id) {
         Ajudante ajudante = ajudanteService.buscarPorId(id);
-        return ResponseEntity.ok(ajudanteModelAssembler.toModel(ajudante));
+        return ResponseEntity.ok(ajudanteRepresentationBuilder.toModel(ajudante));
     }
 
     @GetMapping
     @Operation(summary = "Listar ajudantes", description = "Lista ajudantes com filtro opcional por disponibilidade")
-    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Lista retornada com sucesso",
+            content = @Content(schema = @Schema(implementation = AjudanteResponseDTO.class))
+    )
     public ResponseEntity<CollectionModel<EntityModel<AjudanteResponseDTO>>> listarTodos(
             @Parameter(description = "Filtro opcional por disponibilidade")
             @RequestParam(required = false) Boolean disponivel
     ) {
         List<Ajudante> ajudantes = ajudanteService.buscarTodos(disponivel);
-        return ResponseEntity.ok(ajudanteModelAssembler.toCollection(ajudantes, disponivel));
+        return ResponseEntity.ok(ajudanteRepresentationBuilder.toCollection(ajudantes, disponivel));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar ajudante", description = "Atualiza um ajudante existente")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Ajudante atualizado"),
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Ajudante atualizado",
+                    content = @Content(schema = @Schema(implementation = AjudanteResponseDTO.class))
+            ),
             @ApiResponse(
                     responseCode = "400",
                     description = "Payload invalido",
@@ -98,9 +115,9 @@ public class AjudanteController {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
-    public ResponseEntity<EntityModel<AjudanteResponseDTO>> atualizarAjudante(@PathVariable Long id, @Valid @RequestBody AjudanteDTO ajudanteDTO) {
+    public ResponseEntity<EntityModel<AjudanteResponseDTO>> atualizarAjudante(@PathVariable Long id, @Valid @RequestBody AjudanteRequestDTO ajudanteDTO) {
         Ajudante ajudanteAtualizado = ajudanteService.atualizarAjudante(id, ajudanteDTO);
-        return ResponseEntity.ok(ajudanteModelAssembler.toModel(ajudanteAtualizado));
+        return ResponseEntity.ok(ajudanteRepresentationBuilder.toModel(ajudanteAtualizado));
     }
 
     @DeleteMapping("/{id}")

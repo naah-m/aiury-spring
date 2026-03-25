@@ -1,12 +1,16 @@
-package br.com.fiap.aiury.controller;
+package br.com.fiap.aiury.representation;
 
-import br.com.fiap.aiury.dto.ChatDTO;
+import br.com.fiap.aiury.controller.AjudanteController;
+import br.com.fiap.aiury.controller.ChatController;
+import br.com.fiap.aiury.controller.MensagemController;
+import br.com.fiap.aiury.controller.UsuarioController;
+import br.com.fiap.aiury.dto.ChatRequestDTO;
+import br.com.fiap.aiury.dto.ChatResponseDTO;
 import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.entities.ChatStatus;
 import br.com.fiap.aiury.mappers.ChatMapper;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,29 +19,28 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- * Assembler HATEOAS para o recurso de chat.
+ * Construtor de representacoes HATEOAS para o recurso de chat.
  */
 @Component
-public class ChatModelAssembler implements RepresentationModelAssembler<Chat, EntityModel<ChatDTO>> {
+public class ChatRepresentationBuilder {
 
     private final ChatMapper chatMapper;
 
-    public ChatModelAssembler(ChatMapper chatMapper) {
+    public ChatRepresentationBuilder(ChatMapper chatMapper) {
         this.chatMapper = chatMapper;
     }
 
-    @Override
-    public EntityModel<ChatDTO> toModel(Chat chat) {
-        ChatDTO dto = chatMapper.toDto(chat);
+    public EntityModel<ChatResponseDTO> toModel(Chat chat) {
+        ChatResponseDTO dto = chatMapper.toResponseDto(chat);
         Long chatId = chat.getId();
         Long usuarioId = chat.getUsuario() != null ? chat.getUsuario().getId() : null;
         Long ajudanteId = chat.getAjudante() != null ? chat.getAjudante().getId() : null;
 
-        EntityModel<ChatDTO> model = EntityModel.of(
+        EntityModel<ChatResponseDTO> model = EntityModel.of(
                 dto,
                 linkTo(methodOn(ChatController.class).buscarChatPorId(chatId)).withSelfRel(),
                 linkTo(methodOn(ChatController.class).listarTodos(null, null, null)).withRel("chats"),
-                linkTo(methodOn(ChatController.class).atualizarChat(chatId, (ChatDTO) null)).withRel("atualizar"),
+                linkTo(methodOn(ChatController.class).atualizarChat(chatId, (ChatRequestDTO) null)).withRel("atualizar"),
                 linkTo(methodOn(ChatController.class).deletarChat(chatId)).withRel("excluir"),
                 linkTo(methodOn(MensagemController.class).listarTodos(chatId, null)).withRel("mensagens")
         );
@@ -52,8 +55,8 @@ public class ChatModelAssembler implements RepresentationModelAssembler<Chat, En
         return model;
     }
 
-    public CollectionModel<EntityModel<ChatDTO>> toCollection(List<Chat> chats, Long usuarioId, Long ajudanteId, ChatStatus status) {
-        List<EntityModel<ChatDTO>> models = chats.stream()
+    public CollectionModel<EntityModel<ChatResponseDTO>> toCollection(List<Chat> chats, Long usuarioId, Long ajudanteId, ChatStatus status) {
+        List<EntityModel<ChatResponseDTO>> models = chats.stream()
                 .map(this::toModel)
                 .toList();
 

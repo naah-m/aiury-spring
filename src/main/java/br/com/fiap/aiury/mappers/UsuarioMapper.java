@@ -1,50 +1,37 @@
 package br.com.fiap.aiury.mappers;
 
-import br.com.fiap.aiury.dto.UsuarioDTO;
+import br.com.fiap.aiury.dto.UsuarioRequestDTO;
 import br.com.fiap.aiury.dto.UsuarioResponseDTO;
 import br.com.fiap.aiury.entities.Cidade;
 import br.com.fiap.aiury.entities.Usuario;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.time.format.DateTimeFormatter;
-
 /**
- * Mapper responsavel por conversoes entre {@link UsuarioDTO} e {@link Usuario}.
- *
- * Observacoes:
- * - converte data textual no padrao DD-MM-AAAA para {@link LocalDate};
- * - suporta atualizacao parcial da entidade para preservar campos nao enviados.
+ * Mapper responsavel por conversoes entre DTOs de usuario e entidade.
  */
 @Component
 public class UsuarioMapper {
 
     /**
-     * Formatter padrao do contrato atual de entrada da API.
-     */
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
-    /**
      * Converte DTO de usuario em entidade pronta para persistencia.
      *
-     * @param usuarioDTO dados de entrada
+     * @param request dados de entrada
      * @param cidade cidade resolvida pela camada de servico
      * @return entidade de usuario ou {@code null} quando DTO for nulo
      */
-    public Usuario toEntity(UsuarioDTO usuarioDTO, Cidade cidade) {
-        if (usuarioDTO == null) {
+    public Usuario toEntity(UsuarioRequestDTO request, Cidade cidade) {
+        if (request == null) {
             return null;
         }
 
         Usuario usuario = new Usuario();
 
-        usuario.setNomeReal(usuarioDTO.getNomeReal());
-        usuario.setNomeAnonimo(usuarioDTO.getNomeAnonimo());
-        usuario.setCelular(usuarioDTO.getCelular());
-        usuario.setSenha(usuarioDTO.getSenha());
+        usuario.setNomeReal(request.getNomeReal());
+        usuario.setNomeAnonimo(request.getNomeAnonimo());
+        usuario.setCelular(request.getCelular());
+        usuario.setSenha(request.getSenha());
         usuario.setCidade(cidade);
-        usuario.setDataNascimento(parseDataNascimento(usuarioDTO.getDataNascimento()));
+        usuario.setDataNascimento(request.getDataNascimento());
 
         return usuario;
     }
@@ -53,26 +40,26 @@ public class UsuarioMapper {
      * Atualiza entidade existente somente com campos informados no DTO.
      *
      * @param usuario entidade alvo
-     * @param usuarioDTO dados recebidos no endpoint
+     * @param request dados recebidos no endpoint
      * @param novaCidade cidade nova opcional, resolvida no servico
      */
-    public void updateEntityFromDto(Usuario usuario, UsuarioDTO usuarioDTO, Cidade novaCidade) {
-        if (usuarioDTO.getNomeReal() != null) {
-            usuario.setNomeReal(usuarioDTO.getNomeReal());
+    public void updateEntityFromDto(Usuario usuario, UsuarioRequestDTO request, Cidade novaCidade) {
+        if (request.getNomeReal() != null) {
+            usuario.setNomeReal(request.getNomeReal());
         }
-        if (usuarioDTO.getNomeAnonimo() != null) {
-            usuario.setNomeAnonimo(usuarioDTO.getNomeAnonimo());
+        if (request.getNomeAnonimo() != null) {
+            usuario.setNomeAnonimo(request.getNomeAnonimo());
         }
-        if (usuarioDTO.getCelular() != null) {
-            usuario.setCelular(usuarioDTO.getCelular());
+        if (request.getCelular() != null) {
+            usuario.setCelular(request.getCelular());
         }
 
         if (novaCidade != null) {
             usuario.setCidade(novaCidade);
         }
 
-        if (usuarioDTO.getDataNascimento() != null) {
-            usuario.setDataNascimento(parseDataNascimento(usuarioDTO.getDataNascimento()));
+        if (request.getDataNascimento() != null) {
+            usuario.setDataNascimento(request.getDataNascimento());
         }
     }
 
@@ -97,13 +84,5 @@ public class UsuarioMapper {
         dto.setCidadeId(usuario.getCidade() != null ? usuario.getCidade().getId() : null);
 
         return dto;
-    }
-
-    private LocalDate parseDataNascimento(String dataNascimento) {
-        try {
-            return LocalDate.parse(dataNascimento, formatter);
-        } catch (DateTimeParseException ex) {
-            throw new IllegalArgumentException("Data de nascimento invalida. Use o formato DD-MM-AAAA.");
-        }
     }
 }

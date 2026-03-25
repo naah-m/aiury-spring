@@ -1,6 +1,6 @@
 package br.com.fiap.aiury.services;
 
-import br.com.fiap.aiury.dto.ChatDTO;
+import br.com.fiap.aiury.dto.ChatRequestDTO;
 import br.com.fiap.aiury.entities.Ajudante;
 import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.entities.ChatStatus;
@@ -49,7 +49,7 @@ public class ChatServiceImpl implements ChatService {
      */
     @Override
     @Transactional
-    public Chat criarChat(ChatDTO chatDTO) {
+    public Chat criarChat(ChatRequestDTO chatDTO) {
         Usuario usuario = buscarUsuarioPorId(chatDTO.getUsuarioId());
         Ajudante ajudante = buscarAjudantePorId(chatDTO.getAjudanteId());
 
@@ -99,7 +99,7 @@ public class ChatServiceImpl implements ChatService {
      */
     @Override
     @Transactional
-    public Chat atualizarChat(Long id, ChatDTO chatDTO) {
+    public Chat atualizarChat(Long id, ChatRequestDTO chatDTO) {
         Chat chatExistente = buscarPorId(id);
 
         Usuario usuario = buscarUsuarioPorId(chatDTO.getUsuarioId());

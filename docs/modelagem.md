@@ -1,11 +1,14 @@
-# Modelagem de Dados - Aiury
+# Modelagem de Dados e Consistencia JPA
 
-## Objetivo
-Documentar o modelo relacional e sua correspondencia com as classes JPA para garantir consistencia entre DER, diagrama de classes e implementacao.
+## 1. Objetivo
+Documentar o modelo de dados da API Aiury e comprovar coerencia entre:
+- entidade JPA;
+- estrutura relacional;
+- repositories;
+- contratos de API.
 
-## Entidades e Tabelas
-
-| Entidade JPA | Tabela | Chave primaria | Campos principais |
+## 2. Entidades e Tabelas
+| Entidade | Tabela | PK | Campos-chave |
 |---|---|---|---|
 | `Usuario` | `usuario` | `id` | `nome_real`, `nome_anonimo`, `data_nascimento`, `celular`, `senha`, `data_cadastro`, `id_cidade` |
 | `Ajudante` | `tb_ajudante` | `id` | `area_atuacao`, `motivacao`, `disponivel`, `rating` |
@@ -14,40 +17,46 @@ Documentar o modelo relacional e sua correspondencia com as classes JPA para gar
 | `Cidade` | `cidade` | `id` | `nome_cidade`, `id_estado` |
 | `Estado` | `estado` | `id` | `nome_estado`, `uf` |
 
-## Relacionamentos Principais
+## 3. Relacionamentos e Cardinalidades
+| Relacionamento | Cardinalidade | Implementacao JPA | FK |
+|---|---|---|---|
+| `Estado -> Cidade` | 1:N | `Cidade @ManyToOne Estado` | `cidade.id_estado` |
+| `Cidade -> Usuario` | 1:N | `Usuario @ManyToOne Cidade` | `usuario.id_cidade` |
+| `Usuario -> Chat` | 1:N | `Chat @ManyToOne Usuario` | `chat.id_usuario` |
+| `Ajudante -> Chat` | 1:N | `Chat @ManyToOne Ajudante` | `chat.id_ajudante` |
+| `Chat -> Mensagem` | 1:N | `Chat @OneToMany Mensagem` | `tb_mensagem.id_chat` |
+| `Usuario -> Mensagem` | 1:N | `Mensagem @ManyToOne Usuario` | `tb_mensagem.id_remetente` |
 
-| Relacionamento | Cardinalidade | FK |
-|---|---|---|
-| `Estado` -> `Cidade` | 1:N | `cidade.id_estado` |
-| `Cidade` -> `Usuario` | 1:N | `usuario.id_cidade` |
-| `Usuario` -> `Chat` | 1:N | `chat.id_usuario` |
-| `Ajudante` -> `Chat` | 1:N | `chat.id_ajudante` |
-| `Chat` -> `Mensagem` | 1:N | `tb_mensagem.id_chat` |
-| `Usuario` -> `Mensagem` (remetente) | 1:N | `tb_mensagem.id_remetente` |
+## 4. Regras de Integridade Aplicadas
+- `usuario.celular` com unicidade.
+- FKs obrigatorias em `usuario`, `chat` e `tb_mensagem`.
+- Enum de status de chat persistido como `STRING` (`INICIADO`, `EM_ANDAMENTO`, `FINALIZADO_USUARIO`, `FINALIZADO_AJUDANTE`, `FINALIZADO_SISTEMA`).
+- `Chat` com `cascade = ALL` e `orphanRemoval = true` para mensagens associadas.
 
-## Consistencia com a API
-- DTOs de entrada (`UsuarioDTO`, `AjudanteDTO`, `ChatDTO`, `MensagemDTO`) refletem os campos obrigatorios de criacao/atualizacao.
-- DTO de resposta de usuario (`UsuarioResponseDTO`) nao expoe `senha`.
-- Mappers garantem conversao coerente entre contrato HTTP e modelo JPA.
-- Repositories usam campos existentes nas entidades, evitando erros de compilacao por query method invalido.
+## 5. Coerencia com Repositories
+Queries derivadas em uso:
+- `UsuarioRepository.findByCidade_Id(...)`
+- `AjudanteRepository.findByDisponivel(...)`
+- `MensagemRepository.findByChat_IdOrderByDataEnvioAsc(...)`
+- `MensagemRepository.findByRemetente_IdOrderByDataEnvioAsc(...)`
+- `MensagemRepository.findByChat_IdAndRemetente_IdOrderByDataEnvioAsc(...)`
 
-## Observacoes de Constraints
-- `usuario.celular` possui restricao de unicidade.
-- `usuario.id_cidade`, `chat.id_usuario`, `chat.id_ajudante`, `tb_mensagem.id_chat` e `tb_mensagem.id_remetente` sao obrigatorios.
-- `chat.status` usa enum `ChatStatus` persistido como `STRING`.
+Todas referenciam campos existentes nas entidades e sao cobertas por testes automatizados.
 
-## DER e Diagrama de Classes
+## 6. Coerencia com API (Request/Response)
+- Cada recurso principal usa DTOs separados de request e response.
+- Campos sensiveis (`senha`) nao sao expostos em respostas.
+- IDs de relacionamento sao recebidos por request e resolvidos na camada de servico.
 
+## 7. DER e Diagrama de Classes
 ### DER
-Inserir imagem final em:
-- `docs/imagens/der.png`
+- Arquivo esperado: `docs/imagens/der.png`
 
 ### Diagrama de Classes
-Inserir imagem final em:
-- `docs/imagens/diagrama-classes.png`
+- Arquivo esperado: `docs/imagens/diagrama-classes.png`
 
-## Checklist de Coerencia para Entrega
-- DER representa as mesmas cardinalidades definidas nas entidades JPA.
-- Chaves estrangeiras no DER correspondem aos `@JoinColumn` do codigo.
-- Diagrama de classes inclui `ChatStatus` como enumeracao vinculada a `Chat`.
-- Nomenclaturas de atributos no DER e no codigo seguem o mesmo significado funcional.
+## 8. Checklist de Consistencia Final
+- Relacionamentos do DER batem com `@JoinColumn`.
+- Chaves e constraints batem com anotações JPA.
+- Repositories nao usam campos inexistentes.
+- Contratos HTTP refletem o modelo relacional sem expor internals indevidos.

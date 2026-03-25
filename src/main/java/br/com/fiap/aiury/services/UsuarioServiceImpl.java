@@ -1,6 +1,6 @@
 package br.com.fiap.aiury.services;
 
-import br.com.fiap.aiury.dto.UsuarioDTO;
+import br.com.fiap.aiury.dto.UsuarioRequestDTO;
 import br.com.fiap.aiury.entities.Cidade;
 import br.com.fiap.aiury.entities.Usuario;
 import br.com.fiap.aiury.exceptions.NotFoundException;
@@ -40,7 +40,7 @@ public class UsuarioServiceImpl implements UsuarioService {
      */
     @Override
     @Transactional
-    public Usuario criarUsuario(UsuarioDTO usuarioDTO) {
+    public Usuario criarUsuario(UsuarioRequestDTO usuarioDTO) {
         Cidade cidade = cidadeRepository.findById(usuarioDTO.getCidadeId())
                 .orElseThrow(() -> new NotFoundException("Cidade nao encontrada com ID: " + usuarioDTO.getCidadeId()));
 
@@ -75,7 +75,7 @@ public class UsuarioServiceImpl implements UsuarioService {
      */
     @Override
     @Transactional
-    public Usuario atualizarUsuario(Long id, UsuarioDTO detalhesUsuarioDTO) {
+    public Usuario atualizarUsuario(Long id, UsuarioRequestDTO detalhesUsuarioDTO) {
         Usuario usuarioExistente = buscarPorId(id);
 
         Cidade novaCidade = null;

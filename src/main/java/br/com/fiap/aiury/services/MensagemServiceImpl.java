@@ -1,6 +1,6 @@
 package br.com.fiap.aiury.services;
 
-import br.com.fiap.aiury.dto.MensagemDTO;
+import br.com.fiap.aiury.dto.MensagemRequestDTO;
 import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.entities.Mensagem;
 import br.com.fiap.aiury.entities.Usuario;
@@ -47,7 +47,7 @@ public class MensagemServiceImpl implements MensagemService {
      */
     @Override
     @Transactional
-    public Mensagem criarMensagem(MensagemDTO mensagemDTO) {
+    public Mensagem criarMensagem(MensagemRequestDTO mensagemDTO) {
         Chat chat = buscarChatPorId(mensagemDTO.getChatId());
         Usuario remetente = buscarUsuarioPorId(mensagemDTO.getRemetenteId());
 
@@ -86,7 +86,7 @@ public class MensagemServiceImpl implements MensagemService {
      */
     @Override
     @Transactional
-    public Mensagem atualizarMensagem(Long id, MensagemDTO mensagemDTO) {
+    public Mensagem atualizarMensagem(Long id, MensagemRequestDTO mensagemDTO) {
         Mensagem mensagemExistente = buscarPorId(id);
 
         Chat chat = buscarChatPorId(mensagemDTO.getChatId());
