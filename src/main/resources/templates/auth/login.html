@@ -8,7 +8,7 @@
             <h1 class="h3 fw-bold mb-2">Acesso ao painel</h1>
             <p class="text-secondary mb-4">Entre com suas credenciais para acessar a area administrativa do Aiury.</p>
 
-            <div th:replace="~{fragments/alerts :: feedback(${param.logout != null ? 'Sessao encerrada com sucesso.' : null}, ${param.error != null ? 'Usuario ou senha invalidos.' : null})}"></div>
+            <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
 
             <form th:action="@{/login}" method="post" class="d-grid gap-3">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
