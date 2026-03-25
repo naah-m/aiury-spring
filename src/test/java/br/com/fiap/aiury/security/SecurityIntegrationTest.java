@@ -44,6 +44,9 @@ class SecurityIntegrationTest {
 
         mockMvc.perform(get("/app/chats/novo"))
                 .andExpect(status().isOk());
+
+        mockMvc.perform(get("/app/chats/1/conversa"))
+                .andExpect(status().isOk());
     }
 
     @Test

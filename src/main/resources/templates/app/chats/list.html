@@ -98,9 +98,14 @@
                         </span>
                     </td>
                     <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" th:href="@{/app/chats/{id}(id=${chat.id})}">
-                            Acompanhar
-                        </a>
+                        <div class="d-inline-flex gap-1">
+                            <a class="btn btn-sm btn-outline-secondary" th:href="@{/app/chats/{id}(id=${chat.id})}">
+                                Acompanhar
+                            </a>
+                            <a class="btn btn-sm btn-outline-primary" th:href="@{/app/chats/{id}/conversa(id=${chat.id})}">
+                                Conversa
+                            </a>
+                        </div>
                     </td>
                 </tr>
                 </tbody>

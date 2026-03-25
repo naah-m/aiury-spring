@@ -1,11 +1,13 @@
 package br.com.fiap.aiury.mappers.web;
 
 import br.com.fiap.aiury.dto.ChatRequestDTO;
+import br.com.fiap.aiury.dto.MensagemRequestDTO;
 import br.com.fiap.aiury.dto.web.ChatDetailView;
 import br.com.fiap.aiury.dto.web.ChatListItemView;
 import br.com.fiap.aiury.dto.web.ChatMensagemItemView;
 import br.com.fiap.aiury.dto.web.ChatStatusWebForm;
 import br.com.fiap.aiury.dto.web.ChatWebForm;
+import br.com.fiap.aiury.dto.web.MensagemWebForm;
 import br.com.fiap.aiury.entities.Ajudante;
 import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.entities.Cidade;
@@ -13,6 +15,8 @@ import br.com.fiap.aiury.entities.Estado;
 import br.com.fiap.aiury.entities.Mensagem;
 import br.com.fiap.aiury.entities.Usuario;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 public class ChatWebMapper {
@@ -84,6 +88,15 @@ public class ChatWebMapper {
                 mensagem.getTexto(),
                 mensagem.getDataEnvio()
         );
+    }
+
+    public MensagemRequestDTO toMensagemRequest(Chat chat, MensagemWebForm form, LocalDateTime dataEnvio) {
+        MensagemRequestDTO dto = new MensagemRequestDTO();
+        dto.setChatId(chat.getId());
+        dto.setRemetenteId(chat.getUsuario() != null ? chat.getUsuario().getId() : null);
+        dto.setTexto(form.getTexto());
+        dto.setDataEnvio(dataEnvio);
+        return dto;
     }
 
     private String textoOuHifen(String valor) {

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base('Conversa do chat', 'chats', ~{::content})}">
+<th:block th:fragment="content">
+    <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h1 class="mb-0" th:text="${'Conversa - Chat #' + chat.id}">Conversa</h1>
+                <span class="status-pill"
+                      th:classappend="' status-' + ${#strings.toLowerCase(#strings.replace(chat.status.name(), '_', '-'))}"
+                      th:text="${statusLabels[chat.status]}">
+                    Em andamento
+                </span>
+            </div>
+            <p class="text-secondary mb-0 mt-1"
+               th:text="${'Usuario: ' + chat.usuarioNomeReal + ' | Ajudante: ' + chat.ajudanteAreaAtuacao}">
+                Usuario | Ajudante
+            </p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-secondary px-4" th:href="@{/app/chats/{id}(id=${chat.id})}">Voltar para acompanhamento</a>
+            <a class="btn btn-outline-primary px-4" th:href="@{/app/chats}">Lista de chats</a>
+        </div>
+    </section>
+
+    <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
+
+    <section class="page-card rounded-4 p-3 p-lg-4 mb-4">
+        <div class="conversation-meta">
+            <div class="conversation-meta-item">
+                <span class="chat-info-label">Mensagens registradas</span>
+                <p class="mb-0 fw-semibold" th:text="${totalMensagens}">0</p>
+            </div>
+            <div class="conversation-meta-item">
+                <span class="chat-info-label">Inicio do chat</span>
+                <p class="mb-0 fw-semibold" th:text="${chat.dataInicio != null ? #temporals.format(chat.dataInicio, 'dd/MM/yyyy HH:mm') : '-'}">-</p>
+            </div>
+            <div class="conversation-meta-item">
+                <span class="chat-info-label">Encerramento</span>
+                <p class="mb-0 fw-semibold" th:text="${chat.dataFim != null ? #temporals.format(chat.dataFim, 'dd/MM/yyyy HH:mm') : '-'}">-</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="conversation-shell">
+        <div class="conversation-history">
+            <div class="conversation-empty" th:if="${#lists.isEmpty(mensagens)}">
+                Ainda nao existem mensagens neste atendimento. Envie a primeira abaixo.
+            </div>
+
+            <div class="conversation-list" th:if="${!#lists.isEmpty(mensagens)}">
+                <article class="message-bubble" th:each="mensagem : ${mensagens}">
+                    <header class="message-meta">
+                        <span class="fw-semibold" th:text="${chat.usuarioNomeAnonimo != '-' ? '@' + chat.usuarioNomeAnonimo : chat.usuarioNomeReal}">
+                            Usuario
+                        </span>
+                        <small class="text-secondary"
+                               th:text="${mensagem.dataEnvio != null ? #temporals.format(mensagem.dataEnvio, 'dd/MM/yyyy HH:mm:ss') : '-'}">
+                            -
+                        </small>
+                    </header>
+                    <p class="mb-0" th:text="${mensagem.texto}">Mensagem</p>
+                </article>
+            </div>
+        </div>
+
+        <div class="conversation-compose">
+            <div class="alert alert-secondary border-0 shadow-sm mb-3" th:if="${chatEncerrado}">
+                Chat finalizado. O envio de novas mensagens esta bloqueado.
+            </div>
+
+            <form th:action="@{/app/chats/{id}/conversa/mensagens(id=${chat.id})}" th:object="${mensagemForm}" method="post">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <label for="texto" class="form-label fw-semibold">Nova mensagem</label>
+                <textarea id="texto"
+                          th:field="*{texto}"
+                          rows="4"
+                          maxlength="1000"
+                          class="form-control"
+                          th:classappend="${#fields.hasErrors('texto')} ? ' is-invalid' : ''"
+                          placeholder="Digite a mensagem que sera registrada no chat..."
+                          th:disabled="${chatEncerrado}"
+                          required></textarea>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('texto')}" th:errors="*{texto}"></div>
+
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <small class="text-secondary">Limite de 1000 caracteres.</small>
+                    <button type="submit" class="btn btn-primary px-4" th:disabled="${chatEncerrado}">
+                        Enviar mensagem
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+</th:block>
+</html>

@@ -7,6 +7,7 @@ import br.com.fiap.aiury.dto.web.ChatStatusOptionView;
 import br.com.fiap.aiury.dto.web.ChatStatusStepView;
 import br.com.fiap.aiury.dto.web.ChatStatusWebForm;
 import br.com.fiap.aiury.dto.web.ChatWebForm;
+import br.com.fiap.aiury.dto.web.MensagemWebForm;
 import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.entities.ChatStatus;
 import br.com.fiap.aiury.exceptions.NotFoundException;
@@ -141,6 +142,54 @@ public class ChatMvcController {
         return "app/chats/detail";
     }
 
+    @GetMapping("/{id}/conversa")
+    public String conversar(@PathVariable Long id, Model model) {
+        Chat chat = chatService.buscarPorId(id);
+        prepararTelaConversa(model, chat);
+
+        if (!model.containsAttribute("mensagemForm")) {
+            model.addAttribute("mensagemForm", new MensagemWebForm());
+        }
+
+        return "app/chats/conversation";
+    }
+
+    @PostMapping("/{id}/conversa/mensagens")
+    public String enviarMensagem(@PathVariable Long id,
+                                 @Valid @ModelAttribute("mensagemForm") MensagemWebForm mensagemForm,
+                                 BindingResult bindingResult,
+                                 Model model,
+                                 RedirectAttributes redirectAttributes) {
+        Chat chat = chatService.buscarPorId(id);
+
+        if (bindingResult.hasErrors()) {
+            prepararTelaConversa(model, chat);
+            return "app/chats/conversation";
+        }
+
+        if (isFinalizado(chat.getStatus())) {
+            prepararTelaConversa(model, chat);
+            model.addAttribute("mensagemErro", "Nao e possivel enviar mensagens em chats finalizados.");
+            return "app/chats/conversation";
+        }
+
+        try {
+            mensagemService.criarMensagem(
+                    chatWebMapper.toMensagemRequest(
+                            chat,
+                            mensagemForm,
+                            LocalDateTime.now().withSecond(0).withNano(0)
+                    )
+            );
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Mensagem enviada com sucesso.");
+            return "redirect:/app/chats/" + id + "/conversa";
+        } catch (NotFoundException | IllegalArgumentException ex) {
+            prepararTelaConversa(model, chat);
+            model.addAttribute("mensagemErro", ex.getMessage());
+            return "app/chats/conversation";
+        }
+    }
+
     @PostMapping("/{id}/status")
     public String atualizarStatus(@PathVariable Long id,
                                   @Valid @ModelAttribute("statusForm") ChatStatusWebForm statusForm,
@@ -175,15 +224,29 @@ public class ChatMvcController {
 
     private void prepararTelaDetalhes(Model model, Chat chat) {
         ChatDetailView chatDetailView = chatWebMapper.toDetailView(chat);
-        List<ChatMensagemItemView> mensagens = mensagemService.buscarTodos(chat.getId(), null).stream()
-                .map(chatWebMapper::toMensagemItem)
-                .toList();
+        List<ChatMensagemItemView> mensagens = buscarMensagensDoChat(chat.getId());
 
         model.addAttribute("chat", chatDetailView);
         model.addAttribute("mensagens", mensagens);
         model.addAttribute("statusOptions", STATUS_OPTIONS);
         model.addAttribute("statusLabels", STATUS_LABELS);
         model.addAttribute("statusTimeline", montarLinhaDoTempo(chat.getStatus()));
+    }
+
+    private void prepararTelaConversa(Model model, Chat chat) {
+        List<ChatMensagemItemView> mensagens = buscarMensagensDoChat(chat.getId());
+
+        model.addAttribute("chat", chatWebMapper.toDetailView(chat));
+        model.addAttribute("mensagens", mensagens);
+        model.addAttribute("statusLabels", STATUS_LABELS);
+        model.addAttribute("chatEncerrado", isFinalizado(chat.getStatus()));
+        model.addAttribute("totalMensagens", mensagens.size());
+    }
+
+    private List<ChatMensagemItemView> buscarMensagensDoChat(Long chatId) {
+        return mensagemService.buscarTodos(chatId, null).stream()
+                .map(chatWebMapper::toMensagemItem)
+                .toList();
     }
 
     private List<ChatStatusStepView> montarLinhaDoTempo(ChatStatus statusAtual) {
