@@ -26,7 +26,7 @@
                        th:href="@{/app}"
                        th:attr="aria-current=${activePage == 'dashboard'} ? 'page' : null">Dashboard</a>
                 </li>
-                <li class="nav-item" sec:authorize="isAuthenticated()">
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','ATENDENTE')">
                     <a class="nav-link"
                        th:classappend="${activePage == 'usuarios'} ? ' active' : ''"
                        th:href="@{/app/usuarios}"
@@ -41,6 +41,8 @@
                 <span class="navbar-text text-white-50" sec:authorize="isAuthenticated()">
                     conectado como <strong class="text-white" sec:authentication="name">usuario</strong>
                 </span>
+                <span class="badge rounded-pill text-bg-light" sec:authorize="hasRole('ADMIN')">ADMIN</span>
+                <span class="badge rounded-pill text-bg-light" sec:authorize="hasRole('ATENDENTE')">ATENDENTE</span>
                 <a class="btn btn-light btn-sm px-3" sec:authorize="isAnonymous()" th:href="@{/login}">Entrar</a>
                 <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()" class="m-0">
                     <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">

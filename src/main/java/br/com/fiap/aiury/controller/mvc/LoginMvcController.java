@@ -17,4 +17,9 @@ public class LoginMvcController {
         }
         return "auth/login";
     }
+
+    @GetMapping("/acesso-negado")
+    public String acessoNegado() {
+        return "error/access-denied";
+    }
 }
