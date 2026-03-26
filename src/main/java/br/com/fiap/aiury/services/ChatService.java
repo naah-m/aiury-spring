@@ -8,7 +8,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 /**
- * Contrato de servicos para abertura e manutencao de chats.
+ * Contrato de servicos para abertura e manutenção de chats.
  */
 public interface ChatService {
 
@@ -62,3 +62,4 @@ public interface ChatService {
      */
     void deletarChat(Long id);
 }
+

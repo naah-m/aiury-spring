@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 /**
- * Configuracao central de metadados do Swagger/OpenAPI.
+ * Configuração central de metadados do Swagger/OpenAPI.
  */
 @Configuration
 public class OpenApiConfig {
@@ -48,3 +48,4 @@ public class OpenApiConfig {
                 ));
     }
 }
+

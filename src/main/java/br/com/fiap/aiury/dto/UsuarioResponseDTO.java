@@ -20,7 +20,7 @@ public class UsuarioResponseDTO {
     @Schema(description = "Nome real da pessoa usuaria", example = "Maria Silva")
     private String nomeReal;
 
-    @Schema(description = "Nome anonimo exibido no chat", example = "LuzInterior")
+    @Schema(description = "Nome anônimo exibido no chat", example = "LuzInterior")
     private String nomeAnonimo;
 
     @JsonFormat(pattern = DateTimePatterns.DATE)
@@ -47,3 +47,4 @@ public class UsuarioResponseDTO {
     @Schema(description = "Identificador da cidade vinculada", example = "1")
     private Long cidadeId;
 }
+

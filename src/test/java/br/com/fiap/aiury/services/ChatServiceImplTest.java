@@ -73,7 +73,7 @@ class ChatServiceImplTest {
 
         assertThatThrownBy(() -> chatService.deletarChat(chatId))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessageContaining("Chat nao encontrado");
+                .hasMessageContaining("Chat não encontrado");
     }
 
     @Test

@@ -2,7 +2,7 @@
 <html lang="pt-BR"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout/base :: base('Inicio', 'home', ~{::content})}">
+      th:replace="~{layout/base :: base('Início', 'home', ~{::content})}">
 <th:block th:fragment="content">
     <section class="home-hero rounded-4 p-4 p-lg-5 mb-4 mb-lg-5">
         <div class="row align-items-center g-4">
@@ -10,7 +10,7 @@
                 <span class="home-chip">Plataforma Aiury</span>
                 <h1 class="display-6 fw-bold mt-3 mb-3">Atendimento seguro com Spring Boot, Security e Thymeleaf.</h1>
                 <p class="lead mb-4">
-                    Fluxo completo de autenticacao e autorizacao por perfil: administracao, usuarios atendidos
+                    Fluxo completo de autenticação e autorização por perfil: administração, usuários atendidos
                     e ajudantes vinculados aos chats.
                 </p>
                 <div class="d-flex flex-wrap gap-2">
@@ -21,18 +21,18 @@
                         Ir para dashboard
                     </a>
                     <a class="btn btn-outline-light btn-lg px-4" th:href="@{/swagger-ui/index.html}" target="_blank" rel="noopener">
-                        Ver API Docs
+                        Ver documentação da API
                     </a>
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="home-highlight rounded-4 p-4">
-                    <h2 class="h5 fw-bold mb-3">O que ja esta pronto</h2>
+                    <h2 class="h5 fw-bold mb-3">O que já está pronto</h2>
                     <ul class="list-unstyled m-0 d-grid gap-2">
-                        <li>Login com perfis ADMIN, USUARIO e AJUDANTE</li>
-                        <li>Controle de acesso por vinculo de atendimento</li>
-                        <li>Telas MVC para gestao de usuarios, ajudantes e chats</li>
-                        <li>API REST protegida por autorizacao real no backend</li>
+                        <li>Login com perfis ADMIN, USUÁRIO e AJUDANTE</li>
+                        <li>Controle de acesso por vínculo de atendimento</li>
+                        <li>Telas MVC para gestão de usuários, ajudantes e chats</li>
+                        <li>API REST protegida por autorização real no backend</li>
                     </ul>
                 </div>
             </div>
@@ -43,25 +43,25 @@
         <div class="col-md-6 col-xl-3">
             <article class="feature-card h-100 rounded-4 p-4">
                 <h2 class="h5 fw-bold">Templates organizados</h2>
-                <p class="mb-0 text-secondary">Separacao clara entre layout, fragments, paginas e telas de autenticacao.</p>
+                <p class="mb-0 text-secondary">Separação clara entre layout, fragments, páginas e telas de autenticação.</p>
             </article>
         </div>
         <div class="col-md-6 col-xl-3">
             <article class="feature-card h-100 rounded-4 p-4">
-                <h2 class="h5 fw-bold">Navegacao funcional</h2>
-                <p class="mb-0 text-secondary">Fluxo inicial pronto com links para inicio, painel, usuarios e documentacao.</p>
+                <h2 class="h5 fw-bold">Navegação funcional</h2>
+                <p class="mb-0 text-secondary">Fluxo inicial pronto com links para início, painel, usuários e documentação.</p>
             </article>
         </div>
         <div class="col-md-6 col-xl-3">
             <article class="feature-card h-100 rounded-4 p-4">
-                <h2 class="h5 fw-bold">Mensagens reutilizaveis</h2>
-                <p class="mb-0 text-secondary">Fragment unico para feedback de sucesso e erro nas paginas MVC.</p>
+                <h2 class="h5 fw-bold">Mensagens reutilizáveis</h2>
+                <p class="mb-0 text-secondary">Fragment único para feedback de sucesso e erro nas páginas MVC.</p>
             </article>
         </div>
         <div class="col-md-6 col-xl-3">
             <article class="feature-card h-100 rounded-4 p-4">
                 <h2 class="h5 fw-bold">Escalabilidade visual</h2>
-                <p class="mb-0 text-secondary">Base estilistica limpa para novas views sem retrabalho de front-end.</p>
+                <p class="mb-0 text-secondary">Base estilística limpa para novas views sem retrabalho de front-end.</p>
             </article>
         </div>
     </section>

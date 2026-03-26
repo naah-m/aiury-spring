@@ -53,16 +53,16 @@ Todos os campos usados nos metodos derivados existem nas entidades.
 ## 6. Decisao sobre Cidade e Estado
 
 ### 6.1 Faz sentido manter Cidade e Estado no dominio?
-Sim. Elas deixaram de ser entidades soltas e passaram a operar como catalogo oficial para validacao geografica de usuarios.
+Sim. Elas deixaram de ser entidades soltas e passaram a operar como catalogo oficial para validação geografica de usuarios.
 
 ### 6.2 Elas agregam valor real?
 Sim. Agora sustentam:
 - integridade referencial de `Usuario`;
 - filtros de busca (`/api/cidades?estadoId=...`, `/api/usuarios?cidadeId=...`);
-- navegacao HATEOAS entre usuario, cidade e estado.
+- navegação HATEOAS entre usuario, cidade e estado.
 
 ### 6.3 O relacionamento Cidade -> Estado esta correto?
-Sim. Foi mantido como `@ManyToOne` com FK obrigatoria e unicidade composta para evitar duplicidade de cidade no mesmo estado.
+Sim. Foi mantido como `@ManyToOne` com FK obrigatória e unicidade composta para evitar duplicidade de cidade no mesmo estado.
 
 ### 6.4 Usuario deve apontar para Cidade e Estado vir por consequencia?
 Sim. A referencia de `Usuario` fica em `Cidade`; `Estado` e derivado via relacionamento da cidade.
@@ -70,16 +70,16 @@ Sim. A referencia de `Usuario` fica em `Cidade`; `Estado` e derivado via relacio
 ### 6.5 Vale expor endpoint para Cidade e Estado?
 Sim. Foram adicionados endpoints CRUD para ambos os catalogos, evitando dependencia de insercao manual no banco.
 
-### 6.6 Qual foi a acao aplicada na Sprint 3?
-Manter e fortalecer. O modelo nao foi removido; foi integrado por completo em DTO, service, controller, HATEOAS, repositorio e documentacao.
+### 6.6 Qual foi a ação aplicada na Sprint 3?
+Manter e fortalecer. O modelo não foi removido; foi integrado por completo em DTO, service, controller, HATEOAS, repositorio e documentacao.
 
 ## 7. Regras de negocio adicionadas
 
 - Chat finalizado exige `dataFim`.
-- Chat `INICIADO` nao aceita `dataFim`.
+- Chat `INICIADO` não aceita `dataFim`.
 - Mensagem deve respeitar janela temporal do chat.
 - Remetente da mensagem deve pertencer ao chat.
-- Cidade/Estado e celular de usuario possuem validacao de unicidade com resposta `409`.
+- Cidade/Estado e celular de usuario possuem validação de unicidade com resposta `409`.
 
 ## 8. DER e diagrama de classes
 
@@ -87,3 +87,4 @@ Manter e fortalecer. O modelo nao foi removido; foi integrado por completo em DT
 - Diagrama de classes final: `docs/imagens/diagrama-classes.png`
 
 Esses artefatos devem refletir exatamente as entidades acima e seus relacionamentos.
+

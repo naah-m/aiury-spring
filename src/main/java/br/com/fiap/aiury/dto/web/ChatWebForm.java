@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 @Data
 public class ChatWebForm {
 
-    @NotNull(message = "Selecione o usuario para abrir o chat")
+    @NotNull(message = "Selecione o usuário para abrir o chat")
     private Long usuarioId;
 
     @NotNull(message = "Selecione o ajudante para abrir o chat")
     private Long ajudanteId;
 
-    @NotNull(message = "A data/hora de inicio e obrigatoria")
+    @NotNull(message = "A data/hora de início é obrigatória")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime dataInicio;
 
@@ -27,7 +27,7 @@ public class ChatWebForm {
     @NotNull(message = "Selecione o status inicial do chat")
     private ChatStatus status;
 
-    @AssertTrue(message = "A data/hora de fim nao pode ser anterior ao inicio")
+    @AssertTrue(message = "A data/hora de fim não pode ser anterior ao início")
     public boolean isConsistenciaTemporalValida() {
         if (dataInicio == null || dataFim == null) {
             return true;
@@ -43,7 +43,7 @@ public class ChatWebForm {
         return !isStatusFinalizado(status) || dataFim != null;
     }
 
-    @AssertTrue(message = "Chat com status INICIADO nao pode informar data/hora de fim")
+    @AssertTrue(message = "Chat com status INICIADO não pode informar data/hora de fim")
     public boolean isIniciadoSemDataFim() {
         if (status == null) {
             return true;

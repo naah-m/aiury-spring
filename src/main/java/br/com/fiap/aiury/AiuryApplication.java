@@ -8,10 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  * Papel na arquitetura:
  * - ponto de entrada unico para inicializacao do contexto Spring;
- * - habilita auto-configuracao, scan de componentes e configuracoes padrao.
+ * - habilita auto-configuração, scan de componentes e configuracoes padrao.
  *
  * Observacao:
- * - nao contem regra de negocio; a responsabilidade e somente iniciar a API.
+ * - não contem regra de negocio; a responsabilidade e somente iniciar a API.
  */
 @SpringBootApplication
 public class AiuryApplication {
@@ -26,3 +26,4 @@ public class AiuryApplication {
 	}
 
 }
+

@@ -8,6 +8,6 @@ import lombok.Data;
 public class MensagemWebForm {
 
     @NotBlank(message = "Digite a mensagem antes de enviar")
-    @Size(max = 1000, message = "A mensagem deve ter no maximo 1000 caracteres")
+    @Size(max = 1000, message = "A mensagem deve ter no máximo 1000 caracteres")
     private String texto;
 }

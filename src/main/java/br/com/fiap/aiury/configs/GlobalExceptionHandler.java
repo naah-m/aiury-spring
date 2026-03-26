@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
         for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
             validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
-        return buildError(HttpStatus.BAD_REQUEST, "Erro de validacao nos campos informados.", request.getRequestURI(), validationErrors);
+        return buildError(HttpStatus.BAD_REQUEST, "Erro de validação nos campos informados.", request.getRequestURI(), validationErrors);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
             String propertyPath = violation.getPropertyPath().toString();
             validationErrors.put(extractLeafPropertyPath(propertyPath), violation.getMessage());
         }
-        return buildError(HttpStatus.BAD_REQUEST, "Erro de validacao nos parametros informados.", request.getRequestURI(), validationErrors);
+        return buildError(HttpStatus.BAD_REQUEST, "Erro de validação nos parâmetros informados.", request.getRequestURI(), validationErrors);
     }
 
     @ExceptionHandler({
@@ -78,18 +78,18 @@ public class GlobalExceptionHandler {
         if (invalidFormat != null) {
             return handleInvalidFormat(invalidFormat, request.getRequestURI());
         }
-        return buildError(HttpStatus.BAD_REQUEST, "Corpo da requisicao invalido ou mal formatado.", request.getRequestURI(), null);
+        return buildError(HttpStatus.BAD_REQUEST, "Corpo da requisição inválido ou mal formatado.", request.getRequestURI(), null);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
-        String message = "Parametro invalido: " + ex.getName() + ". Valor recebido: " + ex.getValue();
+        String message = "Parâmetro inválido: " + ex.getName() + ". Valor recebido: " + ex.getValue();
         return buildError(HttpStatus.BAD_REQUEST, message, request.getRequestURI(), null);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiErrorResponse> handleDataConflict(DataIntegrityViolationException ex, HttpServletRequest request) {
-        String message = "Violacao de integridade de dados.";
+        String message = "Violação de integridade de dados.";
         if (ex.getMostSpecificCause() != null && ex.getMostSpecificCause().getMessage() != null) {
             message = message + " " + ex.getMostSpecificCause().getMessage();
         }
@@ -124,23 +124,23 @@ public class GlobalExceptionHandler {
         Map<String, String> validationErrors = new HashMap<>();
 
         if (LocalDate.class.equals(targetType)) {
-            putErrorIfFieldPresent(validationErrors, fieldName, "Formato de data invalido. Use " + DateTimePatterns.DATE + ".");
-            return buildError(HttpStatus.BAD_REQUEST, "Formato de data invalido no corpo da requisicao.", path, validationErrorsOrNull(validationErrors));
+            putErrorIfFieldPresent(validationErrors, fieldName, "Formato de data inválido. Use " + DateTimePatterns.DATE + ".");
+            return buildError(HttpStatus.BAD_REQUEST, "Formato de data inválido no corpo da requisição.", path, validationErrorsOrNull(validationErrors));
         }
 
         if (LocalDateTime.class.equals(targetType)) {
-            putErrorIfFieldPresent(validationErrors, fieldName, "Formato de data/hora invalido. Use " + DateTimePatterns.DATE_TIME + ".");
-            return buildError(HttpStatus.BAD_REQUEST, "Formato de data/hora invalido no corpo da requisicao.", path, validationErrorsOrNull(validationErrors));
+            putErrorIfFieldPresent(validationErrors, fieldName, "Formato de data/hora inválido. Use " + DateTimePatterns.DATE_TIME + ".");
+            return buildError(HttpStatus.BAD_REQUEST, "Formato de data/hora inválido no corpo da requisição.", path, validationErrorsOrNull(validationErrors));
         }
 
         if (targetType != null && targetType.isEnum()) {
-            putErrorIfFieldPresent(validationErrors, fieldName, "Valor invalido para enumeracao.");
-            return buildError(HttpStatus.BAD_REQUEST, "Valor invalido para campo enumerado.", path, validationErrorsOrNull(validationErrors));
+            putErrorIfFieldPresent(validationErrors, fieldName, "Valor inválido para enumeração.");
+            return buildError(HttpStatus.BAD_REQUEST, "Valor inválido para campo enumerado.", path, validationErrorsOrNull(validationErrors));
         }
 
         String message = fieldName == null
-                ? "Valor invalido informado no corpo da requisicao."
-                : "Valor invalido para o campo '" + fieldName + "'.";
+                ? "Valor inválido informado no corpo da requisição."
+                : "Valor inválido para o campo '" + fieldName + "'.";
         return buildError(HttpStatus.BAD_REQUEST, message, path, validationErrorsOrNull(validationErrors));
     }
 

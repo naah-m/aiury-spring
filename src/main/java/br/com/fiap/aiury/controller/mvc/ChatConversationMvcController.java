@@ -71,7 +71,7 @@ public class ChatConversationMvcController {
 
         if (chatMvcViewSupport.isFinalizado(chat.getStatus())) {
             chatMvcViewSupport.prepararTelaConversa(model, chat);
-            model.addAttribute("mensagemErro", "Nao e possivel enviar mensagens em chats finalizados.");
+            model.addAttribute("mensagemErro", "Não é possível enviar mensagens em chats finalizados.");
             return "app/chats/conversation";
         }
 

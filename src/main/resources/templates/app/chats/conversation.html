@@ -13,8 +13,8 @@
                 </span>
             </div>
             <p class="text-secondary mb-0 mt-1"
-               th:text="${'Usuario: ' + chat.usuarioNomeReal + ' | Ajudante: ' + chat.ajudanteAreaAtuacao}">
-                Usuario | Ajudante
+               th:text="${'Usuário: ' + chat.usuarioNomeReal + ' | Ajudante: ' + chat.ajudanteAreaAtuacao}">
+                Usuário | Ajudante
             </p>
         </div>
         <div class="d-flex flex-wrap gap-2">
@@ -32,7 +32,7 @@
                 <p class="mb-0 fw-semibold" th:text="${totalMensagens}">0</p>
             </div>
             <div class="conversation-meta-item">
-                <span class="chat-info-label">Inicio do chat</span>
+                <span class="chat-info-label">Início do chat</span>
                 <p class="mb-0 fw-semibold" th:text="${chat.dataInicio != null ? #temporals.format(chat.dataInicio, 'dd/MM/yyyy HH:mm') : '-'}">-</p>
             </div>
             <div class="conversation-meta-item">
@@ -45,7 +45,7 @@
     <section class="conversation-shell">
         <div class="conversation-history">
             <div class="conversation-empty" th:if="${#lists.isEmpty(mensagens)}">
-                Ainda nao existem mensagens neste atendimento. Envie a primeira abaixo.
+                Ainda não existem mensagens neste atendimento. Envie a primeira abaixo.
             </div>
 
             <div class="conversation-list" th:if="${!#lists.isEmpty(mensagens)}">
@@ -54,7 +54,7 @@
                          th:each="mensagem : ${mensagens}">
                     <header class="message-meta">
                         <span class="fw-semibold"
-                              th:text="${mensagem.remetenteTipo == 'AJUDANTE' ? 'Ajudante: ' + mensagem.remetenteNome : 'Usuario: ' + mensagem.remetenteNome}">
+                              th:text="${mensagem.remetenteTipo == 'AJUDANTE' ? 'Ajudante: ' + mensagem.remetenteNome : 'Usuário: ' + mensagem.remetenteNome}">
                             Remetente
                         </span>
                         <small class="text-secondary"
@@ -69,16 +69,16 @@
 
         <div class="conversation-compose">
             <div class="alert alert-secondary border-0 shadow-sm mb-3" th:if="${chatEncerrado}">
-                Chat finalizado. O envio de novas mensagens esta bloqueado.
+                Chat finalizado. O envio de novas mensagens está bloqueado.
             </div>
 
             <form th:action="@{/app/chats/{id}/conversa/mensagens(id=${chat.id})}" th:object="${mensagemForm}" method="post">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-                <div class="mb-3" th:replace="~{fragments/form-errors :: summary('A mensagem nao foi enviada. Revise o conteudo.')}"></div>
+                <div class="mb-3" th:replace="~{fragments/form-errors :: summary('A mensagem não foi enviada. Revise o conteúdo.')}"></div>
 
                 <label for="texto" class="form-label fw-semibold">
-                    <span th:if="${perfilUsuario}">Nova mensagem (usuario)</span>
+                    <span th:if="${perfilUsuario}">Nova mensagem (usuário)</span>
                     <span th:if="${perfilAjudante}">Nova mensagem (ajudante)</span>
                     <span th:if="${perfilAdmin}">Nova mensagem (admin)</span>
                 </label>
@@ -88,7 +88,7 @@
                           maxlength="1000"
                           class="form-control"
                           th:classappend="${#fields.hasErrors('texto')} ? ' is-invalid' : ''"
-                          placeholder="Digite a mensagem que sera registrada no chat..."
+                          placeholder="Digite a mensagem que será registrada no chat..."
                           th:disabled="${chatEncerrado}"
                           required></textarea>
                 <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('texto')}" th:errors="*{texto}"></div>

@@ -7,7 +7,7 @@ Comprovar que a entrega Sprint 3 esta:
 - com regras de negocio validadas;
 - com API documentada e testavel.
 
-## 2. Validacao automatizada oficial
+## 2. Validação automatizada oficial
 
 Comandos obrigatorios:
 
@@ -30,8 +30,8 @@ Resultado esperado:
 | Camada | Classe de teste | Cobertura principal |
 |---|---|---|
 | Contexto | `AiuryApplicationTests` | Inicializacao da aplicacao com perfil `test` |
-| Controller | `UsuarioControllerTest` | HATEOAS no GET por ID e erro de validacao 400 |
-| Service | `UsuarioServiceImplTest` | Validacao de cidade inexistente e criacao de usuario |
+| Controller | `UsuarioControllerTest` | HATEOAS no GET por ID e erro de validação 400 |
+| Service | `UsuarioServiceImplTest` | Validação de cidade inexistente e criação de usuario |
 | Service | `EstadoServiceImplTest` | Regras de conflito para nome/UF duplicados |
 | Repository | `AjudanteRepositoryTest` | Filtro por disponibilidade |
 | Repository | `CidadeRepositoryTest` | Filtro por estado com ordenacao |
@@ -45,7 +45,7 @@ Resultado esperado:
 - Config: `src/test/resources/application-test.properties`
 - DDL: `create-drop`
 
-## 6. Validacao manual via Postman
+## 6. Validação manual via Postman
 
 Arquivos oficiais:
 - Collection: `docs/postman/Aiury-Sprint3.postman_collection.json`
@@ -74,15 +74,15 @@ Ordem recomendada:
 | Filtro de usuarios por cidade | `/api/usuarios?cidadeId={id}` | GET | `200` |
 | Filtro de chats por usuario | `/api/chats?usuarioId={id}` | GET | `200` |
 | Filtro de mensagens por chat | `/api/mensagens?chatId={id}` | GET | `200` |
-| Payload invalido de usuario | `/api/usuarios` | POST | `400` com `validationErrors` |
-| Data invalida em usuario | `/api/usuarios` | POST | `400` com mensagem de formato de data |
+| Payload inválido de usuario | `/api/usuarios` | POST | `400` com `validationErrors` |
+| Data inválida em usuario | `/api/usuarios` | POST | `400` com mensagem de formato de data |
 | Recurso inexistente | `/api/usuarios/999999` | GET | `404` |
 
 ## 8. Causas comuns de erro durante testes manuais
-- `404 Not Found`: ID informado nao existe (ex.: `usuarioId`, `cidadeId`, `chatId`, `ajudanteId`).
-- `409 Conflict`: dado duplicado ou conflito de integridade (ex.: celular ja cadastrado).
+- `404 Not Found`: ID informado não existe (ex.: `usuarioId`, `cidadeId`, `chatId`, `ajudanteId`).
+- `409 Conflict`: dado duplicado ou conflito de integridade (ex.: celular já cadastrado).
 - `400 Bad Request` de data: formato diferente de `dd/MM/yyyy` ou `dd/MM/yyyy HH:mm:ss`.
-- `400 Bad Request` de validacao: campo obrigatorio vazio/nulo ou fora das regras.
+- `400 Bad Request` de validação: campo obrigatório vazio/nulo ou fora das regras.
 
 ## 9. Evidencias para anexar na entrega
 - Log de terminal com `BUILD SUCCESS` em `clean test`.
@@ -94,3 +94,4 @@ Ordem recomendada:
 ## 10. Gap conhecido para evolucao futura
 - Incluir testes de controller para `Cidade`, `Estado`, `Chat` e `Mensagem`.
 - Adicionar testes de integracao de regra de negocio em `MensagemServiceImpl`.
+

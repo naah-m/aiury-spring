@@ -59,7 +59,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     public Usuario criarUsuario(UsuarioRequestDTO usuarioDTO) {
         Cidade cidade = cidadeRepository.findById(usuarioDTO.getCidadeId())
-                .orElseThrow(() -> new NotFoundException("Cidade nao encontrada com ID: " + usuarioDTO.getCidadeId()));
+                .orElseThrow(() -> new NotFoundException("Cidade não encontrada com ID: " + usuarioDTO.getCidadeId()));
 
         validarCelularUnico(usuarioDTO.getCelular(), null);
 
@@ -74,7 +74,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Usuario nao encontrado com ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado com ID: " + id));
     }
 
     /**
@@ -101,7 +101,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         Cidade novaCidade = null;
         if (detalhesUsuarioDTO.getCidadeId() != null) {
             novaCidade = cidadeRepository.findById(detalhesUsuarioDTO.getCidadeId())
-                    .orElseThrow(() -> new NotFoundException("Cidade nao encontrada com ID: " + detalhesUsuarioDTO.getCidadeId()));
+                    .orElseThrow(() -> new NotFoundException("Cidade não encontrada com ID: " + detalhesUsuarioDTO.getCidadeId()));
         }
 
         validarCelularUnico(detalhesUsuarioDTO.getCelular(), id);
@@ -121,7 +121,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     public void deletarUsuario(Long id) {
         if (!usuarioRepository.existsById(id)) {
-            throw new NotFoundException("Usuario nao encontrado com ID: " + id);
+            throw new NotFoundException("Usuário não encontrado com ID: " + id);
         }
 
         try {
@@ -130,7 +130,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             chatRepository.deleteByUsuario_Id(id);
             usuarioRepository.deleteById(id);
         } catch (DataIntegrityViolationException ex) {
-            throw new ConflictException("Nao foi possivel excluir o usuario pois existem registros vinculados.");
+            throw new ConflictException("Não foi possível excluir o usuário pois existem registros vinculados.");
         }
     }
 
@@ -144,7 +144,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 : usuarioRepository.existsByCelularAndIdNot(celular, usuarioIdAtual);
 
         if (celularEmUso) {
-            throw new ConflictException("Ja existe usuario cadastrado com o celular informado.");
+            throw new ConflictException("Já existe usuário cadastrado com o celular informado.");
         }
     }
 
@@ -162,3 +162,4 @@ public class UsuarioServiceImpl implements UsuarioService {
         return passwordEncoder.encode(valorNormalizado);
     }
 }
+

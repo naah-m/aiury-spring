@@ -10,16 +10,17 @@ import lombok.Data;
  * DTO de entrada para criacao e atualizacao de estado.
  */
 @Data
-@Schema(name = "EstadoRequest", description = "Payload para criacao/atualizacao de estado")
+@Schema(name = "EstadoRequest", description = "Payload para criação/atualização de estado")
 public class EstadoRequestDTO {
 
-    @NotBlank(message = "O nome do estado e obrigatorio")
-    @Size(max = 50, message = "O nome do estado deve ter no maximo 50 caracteres")
-    @Schema(description = "Nome oficial do estado", example = "Sao Paulo")
+    @NotBlank(message = "O nome do estado é obrigatório")
+    @Size(max = 50, message = "O nome do estado deve ter no máximo 50 caracteres")
+    @Schema(description = "Nome oficial do estado", example = "São Paulo")
     private String nomeEstado;
 
-    @NotBlank(message = "A UF e obrigatoria")
+    @NotBlank(message = "A UF é obrigatória")
     @Pattern(regexp = "^[A-Za-z]{2}$", message = "A UF deve conter exatamente 2 letras")
     @Schema(description = "Sigla da unidade federativa", example = "SP")
     private String uf;
 }
+

@@ -4,22 +4,22 @@
 <div th:fragment="feedback(successMessage, errorMessage)">
     <div class="alert app-alert alert-success border-0 shadow-sm alert-dismissible fade show" role="alert"
          th:if="${successMessage != null and !#strings.isEmpty(successMessage)}">
-        <span th:text="${successMessage}">Operacao concluida com sucesso.</span>
+        <span th:text="${successMessage}">Operação concluída com sucesso.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
     </div>
     <div class="alert app-alert alert-danger border-0 shadow-sm alert-dismissible fade show" role="alert"
          th:if="${errorMessage != null and !#strings.isEmpty(errorMessage)}">
-        <span th:text="${errorMessage}">Nao foi possivel concluir a operacao.</span>
+        <span th:text="${errorMessage}">Não foi possível concluir a operação.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
     </div>
     <div class="alert app-alert alert-warning border-0 shadow-sm alert-dismissible fade show" role="alert"
          th:if="${mensagemAviso != null and !#strings.isEmpty(mensagemAviso)}">
-        <span th:text="${mensagemAviso}">Verifique as informacoes desta pagina.</span>
+        <span th:text="${mensagemAviso}">Verifique as informações desta página.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
     </div>
     <div class="alert app-alert alert-info border-0 shadow-sm alert-dismissible fade show" role="alert"
          th:if="${mensagemInfo != null and !#strings.isEmpty(mensagemInfo)}">
-        <span th:text="${mensagemInfo}">Informacao importante.</span>
+        <span th:text="${mensagemInfo}">Informação importante.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
     </div>
 </div>

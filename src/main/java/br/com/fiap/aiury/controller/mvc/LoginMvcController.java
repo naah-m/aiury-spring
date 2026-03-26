@@ -22,11 +22,11 @@ public class LoginMvcController {
         }
 
         if (logout != null) {
-            model.addAttribute("mensagemSucesso", "Sessao encerrada com sucesso.");
+            model.addAttribute("mensagemSucesso", "Sessão encerrada com sucesso.");
         }
 
         if (error != null) {
-            model.addAttribute("mensagemErro", "Usuario ou senha invalidos.");
+            model.addAttribute("mensagemErro", "Usuário ou senha inválidos.");
         }
 
         return "auth/login";

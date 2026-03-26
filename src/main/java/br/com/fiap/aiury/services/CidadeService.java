@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 /**
- * Contrato de servico para operacoes de cidade.
+ * Contrato de servico para operações de cidade.
  */
 public interface CidadeService {
 
@@ -21,3 +21,4 @@ public interface CidadeService {
 
     void deletarCidade(Long id);
 }
+

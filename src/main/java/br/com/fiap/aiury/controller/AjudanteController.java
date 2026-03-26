@@ -19,7 +19,15 @@ import jakarta.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
@@ -32,7 +40,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @RestController
 @RequestMapping("/api/ajudantes")
-@Tag(name = "Ajudantes", description = "Operacoes de cadastro e manutencao de ajudantes")
+@Tag(name = "Ajudantes", description = "Operações de cadastro e manutenção de ajudantes")
 public class AjudanteController {
 
     private final AjudanteService ajudanteService;
@@ -47,7 +55,7 @@ public class AjudanteController {
     @Operation(summary = "Criar ajudante", description = "Cadastra um novo ajudante")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Payload de criacao de ajudante.",
+            description = "Payload de criação de ajudante.",
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = AjudanteRequestDTO.class),
@@ -55,13 +63,10 @@ public class AjudanteController {
             )
     )
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "Ajudante criado"
-            ),
+            @ApiResponse(responseCode = "201", description = "Ajudante criado"),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Payload invalido",
+                    description = "Payload inválido",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
@@ -75,13 +80,10 @@ public class AjudanteController {
     @GetMapping("/{id}")
     @Operation(summary = "Buscar ajudante por ID", description = "Retorna um ajudante pelo identificador")
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Ajudante encontrado"
-            ),
+            @ApiResponse(responseCode = "200", description = "Ajudante encontrado"),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Ajudante nao encontrado",
+                    description = "Ajudante não encontrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
@@ -95,10 +97,7 @@ public class AjudanteController {
 
     @GetMapping
     @Operation(summary = "Listar ajudantes", description = "Lista ajudantes com filtro opcional por disponibilidade")
-    @ApiResponse(
-            responseCode = "200",
-            description = "Lista retornada com sucesso"
-    )
+    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
     public ResponseEntity<CollectionModel<EntityModel<AjudanteResponseDTO>>> listarTodos(
             @Parameter(description = "Filtro opcional por disponibilidade")
             @RequestParam(required = false) Boolean disponivel
@@ -111,7 +110,7 @@ public class AjudanteController {
     @Operation(summary = "Atualizar ajudante", description = "Atualiza um ajudante existente")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Payload de atualizacao de ajudante.",
+            description = "Payload de atualização de ajudante.",
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = AjudanteRequestDTO.class),
@@ -119,18 +118,15 @@ public class AjudanteController {
             )
     )
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Ajudante atualizado"
-            ),
+            @ApiResponse(responseCode = "200", description = "Ajudante atualizado"),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Payload invalido",
+                    description = "Payload inválido",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Ajudante nao encontrado",
+                    description = "Ajudante não encontrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
@@ -149,7 +145,7 @@ public class AjudanteController {
             @ApiResponse(responseCode = "204", description = "Ajudante removido"),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Ajudante nao encontrado",
+                    description = "Ajudante não encontrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             ),
             @ApiResponse(

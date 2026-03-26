@@ -23,10 +23,10 @@
               class="row g-3">
             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-            <div class="col-12" th:replace="~{fragments/form-errors :: summary('Revise os campos obrigatorios do cadastro.')}"></div>
+            <div class="col-12" th:replace="~{fragments/form-errors :: summary('Revise os campos obrigatórios do cadastro.')}"></div>
 
             <div class="col-12 col-lg-6">
-                <label for="areaAtuacao" class="form-label">Area de atuacao</label>
+                <label for="areaAtuacao" class="form-label">Área de atuação</label>
                 <input id="areaAtuacao" type="text" th:field="*{areaAtuacao}" maxlength="100" required class="form-control"
                        th:classappend="${#fields.hasErrors('areaAtuacao')} ? ' is-invalid' : ''">
                 <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('areaAtuacao')}" th:errors="*{areaAtuacao}"></div>
@@ -36,7 +36,7 @@
                 <label for="login" class="form-label">Login</label>
                 <input id="login" type="text" th:field="*{login}" maxlength="60" required class="form-control"
                        th:classappend="${#fields.hasErrors('login')} ? ' is-invalid' : ''">
-                <div class="form-text">Use letras, numeros, ponto, traco ou underline.</div>
+                <div class="form-text">Use letras, números, ponto, traço ou underline.</div>
                 <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('login')}" th:errors="*{login}"></div>
             </div>
 
@@ -50,11 +50,11 @@
             </div>
 
             <div class="col-12 col-lg-3">
-                <label for="disponivel" class="form-label">Disponivel</label>
+                <label for="disponivel" class="form-label">Disponível</label>
                 <select id="disponivel" th:field="*{disponivel}" class="form-select"
                         th:classappend="${#fields.hasErrors('disponivel')} ? ' is-invalid' : ''" required>
                     <option th:value="true">Sim</option>
-                    <option th:value="false">Nao</option>
+                    <option th:value="false">Não</option>
                 </select>
                 <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('disponivel')}" th:errors="*{disponivel}"></div>
             </div>
@@ -67,7 +67,7 @@
             </div>
 
             <div class="col-12">
-                <label for="motivacao" class="form-label">Motivacao</label>
+                <label for="motivacao" class="form-label">Motivação</label>
                 <textarea id="motivacao" rows="4" maxlength="2000" th:field="*{motivacao}" class="form-control"
                           th:classappend="${#fields.hasErrors('motivacao')} ? ' is-invalid' : ''"></textarea>
                 <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('motivacao')}" th:errors="*{motivacao}"></div>
@@ -75,7 +75,7 @@
 
             <div class="col-12 d-flex justify-content-end">
                 <button type="submit" class="btn btn-primary px-4"
-                        th:text="${modoEdicao} ? 'Salvar alteracoes' : 'Salvar ajudante'">
+                        th:text="${modoEdicao} ? 'Salvar alterações' : 'Salvar ajudante'">
                     Salvar ajudante
                 </button>
             </div>
@@ -83,3 +83,4 @@
     </section>
 </th:block>
 </html>
+

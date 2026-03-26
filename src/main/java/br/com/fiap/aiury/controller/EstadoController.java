@@ -32,7 +32,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @RestController
 @RequestMapping("/api/estados")
-@Tag(name = "Estados", description = "Operacoes de cadastro e consulta de estados")
+@Tag(name = "Estados", description = "Operações de cadastro e consulta de estados")
 public class EstadoController {
 
     private final EstadoService estadoService;
@@ -47,7 +47,7 @@ public class EstadoController {
     @Operation(summary = "Criar estado", description = "Cadastra um novo estado no catalogo")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Payload de criacao de estado.",
+            description = "Payload de criação de estado.",
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = EstadoRequestDTO.class),
@@ -61,7 +61,7 @@ public class EstadoController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Payload invalido",
+                    description = "Payload inválido",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             ),
             @ApiResponse(
@@ -89,7 +89,7 @@ public class EstadoController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Estado nao encontrado",
+                    description = "Estado não encontrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
@@ -119,7 +119,7 @@ public class EstadoController {
     @Operation(summary = "Atualizar estado", description = "Atualiza um estado existente")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Payload de atualizacao de estado.",
+            description = "Payload de atualização de estado.",
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = EstadoRequestDTO.class),
@@ -133,12 +133,12 @@ public class EstadoController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Payload invalido",
+                    description = "Payload inválido",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Estado nao encontrado",
+                    description = "Estado não encontrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             ),
             @ApiResponse(
@@ -165,7 +165,7 @@ public class EstadoController {
             @ApiResponse(responseCode = "204", description = "Estado removido"),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Estado nao encontrado",
+                    description = "Estado não encontrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             ),
             @ApiResponse(
@@ -182,3 +182,4 @@ public class EstadoController {
         return ResponseEntity.noContent().build();
     }
 }
+

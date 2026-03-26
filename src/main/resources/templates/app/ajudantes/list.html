@@ -19,11 +19,11 @@
                 <thead>
                 <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">Area</th>
+                    <th scope="col">Área</th>
                     <th scope="col">Login</th>
                     <th scope="col">Disponibilidade</th>
                     <th scope="col">Rating</th>
-                    <th scope="col" class="text-end">Acoes</th>
+                    <th scope="col" class="text-end">Ações</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -39,7 +39,7 @@
                     <td th:text="${ajudante.login}">ajudante.escuta</td>
                     <td>
                         <span th:classappend="${ajudante.disponivel} ? 'text-success' : 'text-secondary'"
-                              th:text="${ajudante.disponivel} ? 'Disponivel' : 'Indisponivel'">Disponivel</span>
+                              th:text="${ajudante.disponivel} ? 'Disponível' : 'Indisponível'">Disponível</span>
                     </td>
                     <td th:text="${ajudante.rating != null ? #numbers.formatDecimal(ajudante.rating, 1, 1) : '-'}">4.8</td>
                     <td class="text-end">
@@ -52,7 +52,7 @@
                                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                 <button type="submit"
                                         class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('Deseja excluir este ajudante? Esta acao nao pode ser desfeita.');">
+                                        onclick="return confirm('Deseja excluir este ajudante? Esta ação não pode ser desfeita.');">
                                     Excluir
                                 </button>
                             </form>
@@ -65,3 +65,4 @@
     </section>
 </th:block>
 </html>
+

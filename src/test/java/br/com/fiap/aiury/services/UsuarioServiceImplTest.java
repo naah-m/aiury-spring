@@ -58,7 +58,7 @@ class UsuarioServiceImplTest {
 
         assertThatThrownBy(() -> usuarioService.criarUsuario(dto))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessageContaining("Cidade nao encontrada");
+                .hasMessageContaining("Cidade não encontrada");
     }
 
     @Test
@@ -108,6 +108,6 @@ class UsuarioServiceImplTest {
 
         assertThatThrownBy(() -> usuarioService.deletarUsuario(usuarioId))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessageContaining("Usuario nao encontrado");
+                .hasMessageContaining("Usuário não encontrado");
     }
 }

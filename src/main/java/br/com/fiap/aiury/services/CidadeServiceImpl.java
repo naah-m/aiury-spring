@@ -44,7 +44,7 @@ public class CidadeServiceImpl implements CidadeService {
     @Override
     public Cidade buscarPorId(Long id) {
         return cidadeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Cidade nao encontrada com ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Cidade não encontrada com ID: " + id));
     }
 
     @Override
@@ -53,7 +53,7 @@ public class CidadeServiceImpl implements CidadeService {
             return cidadeRepository.findAllByOrderByNomeCidadeAsc();
         }
         if (!estadoRepository.existsById(estadoId)) {
-            throw new NotFoundException("Estado nao encontrado com ID: " + estadoId);
+            throw new NotFoundException("Estado não encontrado com ID: " + estadoId);
         }
         return cidadeRepository.findByEstado_IdOrderByNomeCidadeAsc(estadoId);
     }
@@ -72,19 +72,19 @@ public class CidadeServiceImpl implements CidadeService {
     @Transactional
     public void deletarCidade(Long id) {
         if (!cidadeRepository.existsById(id)) {
-            throw new NotFoundException("Cidade nao encontrada com ID: " + id);
+            throw new NotFoundException("Cidade não encontrada com ID: " + id);
         }
 
         try {
             cidadeRepository.deleteById(id);
         } catch (DataIntegrityViolationException ex) {
-            throw new ConflictException("Nao foi possivel excluir a cidade pois existem usuarios vinculados.");
+            throw new ConflictException("Não foi possível excluir a cidade pois existem usuários vinculados.");
         }
     }
 
     private Estado buscarEstadoPorId(Long estadoId) {
         return estadoRepository.findById(estadoId)
-                .orElseThrow(() -> new NotFoundException("Estado nao encontrado com ID: " + estadoId));
+                .orElseThrow(() -> new NotFoundException("Estado não encontrado com ID: " + estadoId));
     }
 
     private void validarDuplicidade(String nomeCidade, Long estadoId, Cidade cidadeExistente) {
@@ -100,7 +100,7 @@ public class CidadeServiceImpl implements CidadeService {
 
         if (!mesmaCidadeNoMesmoEstado
                 && cidadeRepository.existsByNomeCidadeIgnoreCaseAndEstado_Id(nomeCidade.trim(), estadoId)) {
-            throw new ConflictException("Ja existe cidade cadastrada com este nome no estado informado.");
+            throw new ConflictException("Já existe cidade cadastrada com este nome no estado informado.");
         }
     }
 }

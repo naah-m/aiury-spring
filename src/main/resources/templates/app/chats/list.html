@@ -7,7 +7,7 @@
     <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
         <div>
             <h1 class="mb-1">Chats e atendimentos</h1>
-            <p class="text-secondary mb-0">Acompanhe os atendimentos em andamento e o historico de chats da plataforma.</p>
+            <p class="text-secondary mb-0">Acompanhe os atendimentos em andamento e o histórico de chats da plataforma.</p>
         </div>
         <a class="btn btn-primary px-4" th:href="@{/app/chats/novo}" sec:authorize="hasAnyRole('ADMIN','USUARIO')">
             <span th:text="${perfilUsuario} ? 'Abrir meu chat' : 'Abrir novo chat'">Abrir novo chat</span>
@@ -19,7 +19,7 @@
     <section class="page-card rounded-4 p-3 p-lg-4 mb-4" th:if="${perfilAdmin}">
         <form class="row g-3 align-items-end" method="get" th:action="@{/app/chats}">
             <div class="col-12 col-lg-4">
-                <label class="form-label" for="usuarioId">Usuario</label>
+                <label class="form-label" for="usuarioId">Usuário</label>
                 <select id="usuarioId" name="usuarioId" class="form-select">
                     <option value="">Todos</option>
                     <option th:each="usuario : ${usuarios}"
@@ -70,12 +70,12 @@
                 <thead>
                 <tr>
                     <th scope="col">Chat</th>
-                    <th scope="col">Usuario</th>
+                    <th scope="col">Usuário</th>
                     <th scope="col">Ajudante</th>
-                    <th scope="col">Inicio</th>
+                    <th scope="col">Início</th>
                     <th scope="col">Fim</th>
                     <th scope="col">Status</th>
-                    <th scope="col" class="text-end">Acoes</th>
+                    <th scope="col" class="text-end">Ações</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -95,14 +95,14 @@
                 <tr th:each="chat : ${chats}">
                     <td class="fw-semibold" th:text="${'#' + chat.id}">#1</td>
                     <td>
-                        <p class="mb-0 fw-semibold" th:text="${chat.usuarioNomeReal}">Usuario</p>
+                        <p class="mb-0 fw-semibold" th:text="${chat.usuarioNomeReal}">Usuário</p>
                         <small class="text-secondary" th:text="${chat.usuarioNomeAnonimo != '-' ? '@' + chat.usuarioNomeAnonimo : '-'}">-</small>
                     </td>
                     <td>
                         <p class="mb-0 fw-semibold" th:text="${chat.ajudanteAreaAtuacao}">Ajudante</p>
                         <small th:classappend="${chat.ajudanteDisponivel} ? 'text-success' : 'text-secondary'"
-                               th:text="${chat.ajudanteDisponivel} ? 'Disponivel' : 'Indisponivel'">
-                            Disponivel
+                               th:text="${chat.ajudanteDisponivel} ? 'Disponível' : 'Indisponível'">
+                            Disponível
                         </small>
                     </td>
                     <td th:text="${chat.dataInicio != null ? #temporals.format(chat.dataInicio, 'dd/MM/yyyy HH:mm') : '-'}">-</td>
@@ -125,7 +125,7 @@
                                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                 <button type="submit"
                                         class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('Deseja excluir este chat? Esta acao nao pode ser desfeita.');">
+                                        onclick="return confirm('Deseja excluir este chat? Esta ação não pode ser desfeita.');">
                                     Excluir
                                 </button>
                             </form>

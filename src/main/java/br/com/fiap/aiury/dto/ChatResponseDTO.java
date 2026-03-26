@@ -26,7 +26,7 @@ public class ChatResponseDTO {
 
     @JsonFormat(pattern = DateTimePatterns.DATE_TIME)
     @Schema(
-            description = "Data/hora de inicio no formato DD/MM/AAAA HH:mm:ss",
+            description = "Data/hora de início no formato DD/MM/AAAA HH:mm:ss",
             example = "25/03/2026 14:00:00",
             type = "string",
             pattern = DateTimePatterns.DATE_TIME
@@ -46,3 +46,4 @@ public class ChatResponseDTO {
     @Schema(description = "Status atual do chat", example = "EM_ANDAMENTO")
     private ChatStatus status;
 }
+

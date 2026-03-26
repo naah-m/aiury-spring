@@ -6,7 +6,7 @@
     <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
         <div>
             <h1 class="mb-1">Abrir novo chat</h1>
-            <p class="text-secondary mb-0">Inicie um novo atendimento com vinculacao automatica ao seu perfil.</p>
+            <p class="text-secondary mb-0">Inicie um novo atendimento com vinculação automática ao seu perfil.</p>
         </div>
         <a class="btn btn-outline-secondary px-4" th:href="@{/app/chats}">Voltar para chats</a>
     </section>
@@ -18,13 +18,13 @@
             <article class="form-card rounded-4 p-3 p-lg-4 h-100">
                 <h2 class="h5 fw-bold mb-3">Confirmar abertura</h2>
                 <p class="mb-3">
-                    <strong th:text="${usuarioNome}">Usuario</strong>,
-                    ao confirmar, o sistema ira:
+                    <strong th:text="${usuarioNome}">Usuário</strong>,
+                    ao confirmar, o sistema irá:
                 </p>
                 <ul class="mb-4">
                     <li>abrir o chat com status <strong>INICIADO</strong></li>
                     <li>vincular automaticamente o chat ao seu cadastro</li>
-                    <li>atribuir um ajudante disponivel</li>
+                    <li>atribuir um ajudante disponível</li>
                 </ul>
 
                 <form th:action="@{/app/chats/abrir}" method="post">
@@ -38,11 +38,11 @@
             <article class="page-card rounded-4 p-3 p-lg-4 h-100">
                 <h2 class="h6 text-uppercase text-secondary mb-3">Regra de atendimento</h2>
                 <p class="mb-2">
-                    Voce pode ter apenas <strong>1 chat ativo por vez</strong>.
+                    Você pode ter apenas <strong>1 chat ativo por vez</strong>.
                 </p>
                 <p class="mb-0 text-secondary">
-                    Se ja existir chat com status INICIADO ou EM_ANDAMENTO, a abertura sera bloqueada e uma
-                    mensagem amigavel sera exibida.
+                    Se já existir chat com status INICIADO ou EM_ANDAMENTO, a abertura será bloqueada e uma
+                    mensagem amigável será exibida.
                 </p>
             </article>
         </div>

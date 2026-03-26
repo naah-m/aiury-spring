@@ -37,7 +37,7 @@ public class EstadoServiceImpl implements EstadoService {
     @Override
     public Estado buscarPorId(Long id) {
         return estadoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Estado nao encontrado com ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Estado não encontrado com ID: " + id));
     }
 
     @Override
@@ -61,25 +61,25 @@ public class EstadoServiceImpl implements EstadoService {
     @Transactional
     public void deletarEstado(Long id) {
         if (!estadoRepository.existsById(id)) {
-            throw new NotFoundException("Estado nao encontrado com ID: " + id);
+            throw new NotFoundException("Estado não encontrado com ID: " + id);
         }
 
         try {
             estadoRepository.deleteById(id);
         } catch (DataIntegrityViolationException ex) {
-            throw new ConflictException("Nao foi possivel excluir o estado pois existem cidades vinculadas.");
+            throw new ConflictException("Não foi possível excluir o estado pois existem cidades vinculadas.");
         }
     }
 
     private void validarDuplicidade(String nomeEstado, String uf, Estado estadoExistente) {
         if (nomeEstado != null && estadoRepository.existsByNomeEstadoIgnoreCase(nomeEstado)
                 && (estadoExistente == null || !estadoExistente.getNomeEstado().equalsIgnoreCase(nomeEstado))) {
-            throw new ConflictException("Ja existe estado cadastrado com nome: " + nomeEstado);
+            throw new ConflictException("Já existe estado cadastrado com nome: " + nomeEstado);
         }
 
         if (uf != null && estadoRepository.existsByUfIgnoreCase(uf)
                 && (estadoExistente == null || !estadoExistente.getUf().equalsIgnoreCase(uf))) {
-            throw new ConflictException("Ja existe estado cadastrado com UF: " + uf.toUpperCase());
+            throw new ConflictException("Já existe estado cadastrado com UF: " + uf.toUpperCase());
         }
     }
 }

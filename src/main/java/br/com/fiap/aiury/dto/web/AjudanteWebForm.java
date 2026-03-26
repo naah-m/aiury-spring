@@ -11,15 +11,15 @@ import lombok.Data;
 @Data
 public class AjudanteWebForm {
 
-    @NotBlank(message = "A area de atuacao e obrigatoria")
-    @Size(max = 100, message = "A area de atuacao deve ter no maximo 100 caracteres")
+    @NotBlank(message = "A área de atuação é obrigatória")
+    @Size(max = 100, message = "A área de atuação deve ter no máximo 100 caracteres")
     private String areaAtuacao;
 
-    @NotBlank(message = "O login e obrigatorio")
-    @Size(max = 60, message = "O login deve ter no maximo 60 caracteres")
+    @NotBlank(message = "O login é obrigatório")
+    @Size(max = 60, message = "O login deve ter no máximo 60 caracteres")
     @Pattern(
             regexp = "^[a-zA-Z0-9._-]+$",
-            message = "O login deve conter apenas letras, numeros, ponto, traco ou underline"
+            message = "O login deve conter apenas letras, números, ponto, traço ou underline"
     )
     private String login;
 
@@ -29,13 +29,13 @@ public class AjudanteWebForm {
     )
     private String senha;
 
-    @Size(max = 2000, message = "A motivacao deve ter no maximo 2000 caracteres")
+    @Size(max = 2000, message = "A motivação deve ter no máximo 2000 caracteres")
     private String motivacao;
 
-    @NotNull(message = "A disponibilidade e obrigatoria")
+    @NotNull(message = "A disponibilidade é obrigatória")
     private Boolean disponivel;
 
-    @DecimalMin(value = "0.0", message = "O rating minimo e 0.0")
-    @DecimalMax(value = "5.0", message = "O rating maximo e 5.0")
+    @DecimalMin(value = "0.0", message = "A avaliação mínima é 0.0")
+    @DecimalMax(value = "5.0", message = "A avaliação máxima é 5.0")
     private Double rating;
 }

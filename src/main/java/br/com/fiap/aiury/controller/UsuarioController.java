@@ -32,7 +32,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @RestController
 @RequestMapping("/api/usuarios")
-@Tag(name = "Usuarios", description = "Operacoes de cadastro e manutencao de usuarios")
+@Tag(name = "Usuarios", description = "Operações de cadastro e manutenção de usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -50,7 +50,7 @@ public class UsuarioController {
     )
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Payload de criacao de usuario. Campo dataNascimento deve seguir o formato dd/MM/yyyy.",
+            description = "Payload de criação de usuario. Campo dataNascimento deve seguir o formato dd/MM/yyyy.",
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = UsuarioRequestDTO.class),
@@ -64,7 +64,7 @@ public class UsuarioController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Payload invalido",
+                    description = "Payload inválido",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = {
@@ -75,7 +75,7 @@ public class UsuarioController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Cidade nao encontrada",
+                    description = "Cidade não encontrada",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND)
@@ -83,7 +83,7 @@ public class UsuarioController {
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = "Celular ja cadastrado",
+                    description = "Celular já cadastrado",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = @ExampleObject(name = "Conflito", value = OpenApiExamples.ERROR_CONFLICT)
@@ -106,7 +106,7 @@ public class UsuarioController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Usuario nao encontrado",
+                    description = "Usuario não encontrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
@@ -139,7 +139,7 @@ public class UsuarioController {
     )
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Payload de atualizacao. Campo dataNascimento deve seguir o formato dd/MM/yyyy.",
+            description = "Payload de atualização. Campo dataNascimento deve seguir o formato dd/MM/yyyy.",
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = UsuarioRequestDTO.class),
@@ -153,7 +153,7 @@ public class UsuarioController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Payload invalido",
+                    description = "Payload inválido",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = {
@@ -164,7 +164,7 @@ public class UsuarioController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Usuario ou cidade nao encontrados",
+                    description = "Usuario ou cidade não encontrados",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND)
@@ -172,7 +172,7 @@ public class UsuarioController {
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = "Celular ja cadastrado",
+                    description = "Celular já cadastrado",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = @ExampleObject(name = "Conflito", value = OpenApiExamples.ERROR_CONFLICT)
@@ -194,7 +194,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "204", description = "Usuario removido"),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Usuario nao encontrado",
+                    description = "Usuario não encontrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             ),
             @ApiResponse(
@@ -211,3 +211,4 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 }
+

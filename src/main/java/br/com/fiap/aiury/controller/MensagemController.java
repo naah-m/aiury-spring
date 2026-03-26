@@ -32,7 +32,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @RestController
 @RequestMapping("/api/mensagens")
-@Tag(name = "Mensagens", description = "Operacoes de envio e manutencao de mensagens")
+@Tag(name = "Mensagens", description = "Operações de envio e manutenção de mensagens")
 public class MensagemController {
 
     private final MensagemService mensagemService;
@@ -50,7 +50,7 @@ public class MensagemController {
     )
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Payload de criacao de mensagem. Campo dataEnvio deve seguir dd/MM/yyyy HH:mm:ss.",
+            description = "Payload de criação de mensagem. Campo dataEnvio deve seguir dd/MM/yyyy HH:mm:ss.",
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = MensagemRequestDTO.class),
@@ -64,7 +64,7 @@ public class MensagemController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Payload invalido",
+                    description = "Payload inválido",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = {
@@ -75,7 +75,7 @@ public class MensagemController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Chat ou remetente nao encontrados",
+                    description = "Chat ou remetente não encontrados",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND_GENERIC)
@@ -98,7 +98,7 @@ public class MensagemController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Mensagem nao encontrada",
+                    description = "Mensagem não encontrada",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
@@ -133,7 +133,7 @@ public class MensagemController {
     )
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Payload de atualizacao de mensagem. Campo dataEnvio deve seguir dd/MM/yyyy HH:mm:ss.",
+            description = "Payload de atualização de mensagem. Campo dataEnvio deve seguir dd/MM/yyyy HH:mm:ss.",
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = MensagemRequestDTO.class),
@@ -147,7 +147,7 @@ public class MensagemController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Payload invalido",
+                    description = "Payload inválido",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = {
@@ -158,7 +158,7 @@ public class MensagemController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Mensagem, chat ou remetente nao encontrados",
+                    description = "Mensagem, chat ou remetente não encontrados",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND_GENERIC)
@@ -180,7 +180,7 @@ public class MensagemController {
             @ApiResponse(responseCode = "204", description = "Mensagem removida"),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Mensagem nao encontrada",
+                    description = "Mensagem não encontrada",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
@@ -192,3 +192,4 @@ public class MensagemController {
         return ResponseEntity.noContent().build();
     }
 }
+

@@ -30,11 +30,6 @@ import java.util.Locale;
 
 /**
  * Carga inicial minima para demonstracao local no profile dev.
- *
- * Caracteristicas:
- * - controlada por propriedade (aiury.seed.enabled);
- * - idempotente, reutilizando dados existentes para evitar duplicidade;
- * - preparada para deixar dashboard e listagens com dados logo ao subir a aplicacao.
  */
 @Component
 @Profile("dev")
@@ -136,13 +131,13 @@ public class LocalDevSeedInitializer implements ApplicationRunner {
                 ChatStatus.FINALIZADO_USUARIO
         );
 
-        upsertMensagem(chatAtivo, camila, "Oi, eu precisava conversar com alguem agora.", CHAT_ATIVO_INICIO.plusMinutes(3));
-        upsertMensagem(chatAtivo, escutaAtiva, "Oi, Camila. Estou aqui com voce neste momento.", CHAT_ATIVO_INICIO.plusMinutes(5));
-        upsertMensagem(chatAtivo, camila, "Obrigado por me ouvir, ja me sinto mais calmo.", CHAT_ATIVO_INICIO.plusMinutes(8));
+        upsertMensagem(chatAtivo, camila, "Oi, eu precisava conversar com alguém agora.", CHAT_ATIVO_INICIO.plusMinutes(3));
+        upsertMensagem(chatAtivo, escutaAtiva, "Oi, Camila. Estou aqui com você neste momento.", CHAT_ATIVO_INICIO.plusMinutes(5));
+        upsertMensagem(chatAtivo, camila, "Obrigado por me ouvir, já me sinto mais calmo.", CHAT_ATIVO_INICIO.plusMinutes(8));
         upsertMensagem(chatFinalizado, plantaoEmocional, "Fico feliz em saber disso. Conte comigo quando precisar.", CHAT_FINALIZADO_INICIO.plusMinutes(10));
-        upsertMensagem(chatFinalizado, diego, "Consegui organizar meus pensamentos apos o atendimento.", CHAT_FINALIZADO_INICIO.plusMinutes(12));
+        upsertMensagem(chatFinalizado, diego, "Consegui organizar meus pensamentos após o atendimento.", CHAT_FINALIZADO_INICIO.plusMinutes(12));
 
-        LOGGER.info("Seed local aplicada (dev): 2 estados, 3 cidades, 2 usuarios, 2 ajudantes, 2 chats, 5 mensagens.");
+        LOGGER.info("Seed local aplicada (dev): 2 estados, 3 cidades, 2 usuários, 2 ajudantes, 2 chats, 5 mensagens.");
     }
 
     private Estado upsertEstado(String nomeEstado, String uf) {

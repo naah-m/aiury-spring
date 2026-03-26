@@ -9,9 +9,6 @@ import java.util.Optional;
 
 /**
  * Repositorio de persistencia para {@link Ajudante}.
- *
- * Consulta customizada:
- * - {@link #findByDisponivel(boolean)} filtra ajudantes por status operacional.
  */
 @Repository
 public interface AjudanteRepository extends JpaRepository<Ajudante, Long> {
@@ -28,11 +25,5 @@ public interface AjudanteRepository extends JpaRepository<Ajudante, Long> {
 
     boolean existsByLoginIgnoreCaseAndIdNot(String login, Long id);
 
-    /**
-     * Retorna ajudantes filtrando pela disponibilidade atual.
-     *
-     * @param disponivel indicador de disponibilidade
-     * @return lista de ajudantes com o status informado
-     */
     List<Ajudante> findByDisponivel(Boolean disponivel);
 }

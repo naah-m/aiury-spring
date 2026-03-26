@@ -1,4 +1,4 @@
-# Guia de Validacao com Postman
+# Guia de Validação com Postman
 
 ## 1. Arquivos desta pasta
 - `Aiury-Sprint3.postman_collection.json`: collection oficial da Sprint 3.
@@ -55,9 +55,9 @@ Exemplos validos:
 - Fluxo completo de cadastro e vinculacao entre recursos.
 - Filtros por `estadoId`, `cidadeId`, `usuarioId`, `chatId`.
 - Captura automatica de IDs para as proximas requests.
-- Validacao de erro `400` (payload invalido).
-- Validacao de erro `404` (recurso inexistente).
-- Validacao de erro `400` para formato de data invalido.
+- Validação de erro `400` (payload inválido).
+- Validação de erro `404` (recurso inexistente).
+- Validação de erro `400` para formato de data inválido.
 
 ## 7. Erros mais comuns ao testar
 - `404`: tentar criar `Usuario` sem `cidadeId` existente, ou `Chat` sem `usuarioId/ajudanteId` existentes.
@@ -70,3 +70,4 @@ Exemplos validos:
 - Print de `400` com `validationErrors`.
 - Print de `404` para busca de recurso inexistente.
 - Export atualizado da collection apos execucao final.
+

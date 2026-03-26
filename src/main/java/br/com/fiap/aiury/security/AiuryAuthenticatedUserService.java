@@ -14,7 +14,7 @@ public class AiuryAuthenticatedUserService {
         if (authentication == null
                 || !authentication.isAuthenticated()
                 || authentication instanceof AnonymousAuthenticationToken) {
-            throw new AccessDeniedException("Usuario nao autenticado.");
+            throw new AccessDeniedException("Usuário não autenticado.");
         }
 
         if (authentication.getPrincipal() instanceof AiuryUserPrincipal principal) {

@@ -79,7 +79,7 @@ public class MensagemServiceImpl implements MensagemService {
     @Override
     public Mensagem buscarPorId(Long id) {
         Mensagem mensagem = mensagemRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Mensagem nao encontrada com ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Mensagem não encontrada com ID: " + id));
         validarAcessoAoChat(mensagem.getChat());
         return mensagem;
     }
@@ -114,10 +114,10 @@ public class MensagemServiceImpl implements MensagemService {
         if (principal.isUsuario()) {
             Long usuarioId = principal.getUsuarioId();
             if (usuarioId == null) {
-                throw new AccessDeniedException("Perfil de usuario autenticado sem vinculo valido.");
+                throw new AccessDeniedException("Perfil de usuário autenticado sem vínculo válido.");
             }
             if (remetenteId != null && !remetenteId.equals(usuarioId)) {
-                throw new AccessDeniedException("O usuario logado nao possui acesso ao remetente informado.");
+                throw new AccessDeniedException("O usuário logado não possui acesso ao remetente informado.");
             }
             specification = specification.and(
                     (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("chat").get("usuario").get("id"), usuarioId)
@@ -125,10 +125,10 @@ public class MensagemServiceImpl implements MensagemService {
         } else if (principal.isAjudante()) {
             Long ajudanteId = principal.getAjudanteId();
             if (ajudanteId == null) {
-                throw new AccessDeniedException("Perfil de ajudante autenticado sem vinculo valido.");
+                throw new AccessDeniedException("Perfil de ajudante autenticado sem vínculo válido.");
             }
             if (remetenteId != null && !remetenteId.equals(ajudanteId)) {
-                throw new AccessDeniedException("O ajudante logado nao possui acesso ao remetente informado.");
+                throw new AccessDeniedException("O ajudante logado não possui acesso ao remetente informado.");
             }
             specification = specification.and(
                     (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("chat").get("ajudante").get("id"), ajudanteId)
@@ -164,7 +164,7 @@ public class MensagemServiceImpl implements MensagemService {
     public void deletarMensagem(Long id) {
         exigirAdmin();
         if (!mensagemRepository.existsById(id)) {
-            throw new NotFoundException("Mensagem nao encontrada com ID: " + id);
+            throw new NotFoundException("Mensagem não encontrada com ID: " + id);
         }
         mensagemRepository.deleteById(id);
     }
@@ -174,7 +174,7 @@ public class MensagemServiceImpl implements MensagemService {
      */
     private Chat buscarChatPorId(Long id) {
         return chatRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Chat nao encontrado com ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Chat não encontrado com ID: " + id));
     }
 
     /**
@@ -185,7 +185,7 @@ public class MensagemServiceImpl implements MensagemService {
             return null;
         }
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Usuario nao encontrado com ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado com ID: " + id));
     }
 
     private Ajudante buscarAjudantePorId(Long id) {
@@ -193,7 +193,7 @@ public class MensagemServiceImpl implements MensagemService {
             return null;
         }
         return ajudanteRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Ajudante nao encontrado com ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Ajudante não encontrado com ID: " + id));
     }
 
     private void validarMensagem(Chat chat,
@@ -205,15 +205,15 @@ public class MensagemServiceImpl implements MensagemService {
         validarRemetenteDoUsuarioLogado(remetente, remetenteAjudante);
 
         if (isFinalizado(chat.getStatus())) {
-            throw new IllegalArgumentException("Nao e possivel enviar mensagens em chats finalizados.");
+            throw new IllegalArgumentException("Não é possível enviar mensagens em chats finalizados.");
         }
 
         if (mensagemDTO.getDataEnvio().isBefore(chat.getDataInicio())) {
-            throw new IllegalArgumentException("A data/hora da mensagem nao pode ser anterior ao inicio do chat.");
+            throw new IllegalArgumentException("A data/hora da mensagem não pode ser anterior ao início do chat.");
         }
 
         if (chat.getDataFim() != null && mensagemDTO.getDataEnvio().isAfter(chat.getDataFim())) {
-            throw new IllegalArgumentException("A data/hora da mensagem nao pode ser posterior ao fim do chat.");
+            throw new IllegalArgumentException("A data/hora da mensagem não pode ser posterior ao fim do chat.");
         }
     }
 
@@ -226,7 +226,7 @@ public class MensagemServiceImpl implements MensagemService {
                 && chat.getAjudante().getId().equals(remetenteAjudante.getId());
 
         if (!(remetenteUsuarioValido ^ remetenteAjudanteValido)) {
-            throw new IllegalArgumentException("O remetente informado nao pertence ao chat.");
+            throw new IllegalArgumentException("O remetente informado não pertence ao chat.");
         }
     }
 
@@ -237,24 +237,24 @@ public class MensagemServiceImpl implements MensagemService {
         }
 
         if (principal.isUsuario()) {
-            if (principal.getUsuarioId() == null
+                if (principal.getUsuarioId() == null
                     || remetente == null
                     || !principal.getUsuarioId().equals(remetente.getId())) {
-                throw new AccessDeniedException("Usuario nao pode enviar mensagem em nome de outro remetente.");
+                throw new AccessDeniedException("Usuário não pode enviar mensagem em nome de outro remetente.");
             }
             return;
         }
 
         if (principal.isAjudante()) {
-            if (principal.getAjudanteId() == null
+                if (principal.getAjudanteId() == null
                     || remetenteAjudante == null
                     || !principal.getAjudanteId().equals(remetenteAjudante.getId())) {
-                throw new AccessDeniedException("Ajudante nao pode enviar mensagem em nome de outro remetente.");
+                throw new AccessDeniedException("Ajudante não pode enviar mensagem em nome de outro remetente.");
             }
             return;
         }
 
-        throw new AccessDeniedException("Perfil sem permissao para envio de mensagem.");
+        throw new AccessDeniedException("Perfil sem permissão para envio de mensagem.");
     }
 
     private void validarAcessoAoChat(Chat chat) {
@@ -286,7 +286,8 @@ public class MensagemServiceImpl implements MensagemService {
 
     private void exigirAdmin() {
         if (!authenticatedUserService.isAdmin()) {
-            throw new AccessDeniedException("Apenas administradores podem executar esta operacao.");
+            throw new AccessDeniedException("Apenas administradores podem executar esta operação.");
         }
     }
 }
+

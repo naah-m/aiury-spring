@@ -102,7 +102,7 @@ class UsuarioControllerTest {
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.message").value("Formato de data invalido no corpo da requisicao."))
-                .andExpect(jsonPath("$.validationErrors.dataNascimento").value("Formato de data invalido. Use dd/MM/yyyy."));
+                .andExpect(jsonPath("$.message").value("Formato de data inválido no corpo da requisição."))
+                .andExpect(jsonPath("$.validationErrors.dataNascimento").value("Formato de data inválido. Use dd/MM/yyyy."));
     }
 }

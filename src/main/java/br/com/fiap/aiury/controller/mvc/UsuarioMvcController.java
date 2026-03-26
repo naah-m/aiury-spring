@@ -87,7 +87,7 @@ public class UsuarioMvcController {
 
         try {
             usuarioService.criarUsuario(usuarioWebMapper.toRequestDto(usuarioForm));
-            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuario cadastrado com sucesso.");
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuário cadastrado com sucesso.");
             return "redirect:/app/usuarios";
         } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
             configurarModoCriacao(model);
@@ -111,7 +111,7 @@ public class UsuarioMvcController {
 
         try {
             usuarioService.atualizarUsuario(id, usuarioWebMapper.toRequestDto(usuarioForm));
-            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuario atualizado com sucesso.");
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuário atualizado com sucesso.");
             return "redirect:/app/usuarios";
         } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
             configurarModoEdicao(model, id);
@@ -125,7 +125,7 @@ public class UsuarioMvcController {
     public String excluir(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             usuarioService.deletarUsuario(id);
-            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuario excluido com sucesso.");
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuário excluído com sucesso.");
         } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
             redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
         }

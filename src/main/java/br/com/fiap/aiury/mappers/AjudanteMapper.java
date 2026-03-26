@@ -11,12 +11,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class AjudanteMapper {
 
-    /**
-     * Cria entidade de ajudante a partir do DTO.
-     *
-     * @param request dados de entrada
-     * @return entidade preenchida ou {@code null} se DTO nulo
-     */
     public Ajudante toEntity(AjudanteRequestDTO request) {
         if (request == null) {
             return null;
@@ -29,16 +23,9 @@ public class AjudanteMapper {
         ajudante.setMotivacao(request.getMotivacao());
         ajudante.setDisponivel(Boolean.TRUE.equals(request.getDisponivel()));
         ajudante.setRating(request.getRating());
-
         return ajudante;
     }
 
-    /**
-     * Atualiza entidade existente com os campos informados no DTO.
-     *
-     * @param ajudante entidade alvo
-     * @param request novos dados de atualizacao
-     */
     public void updateEntityFromDto(Ajudante ajudante, AjudanteRequestDTO request) {
         if (request.getAreaAtuacao() != null) {
             ajudante.setAreaAtuacao(request.getAreaAtuacao());
@@ -60,12 +47,6 @@ public class AjudanteMapper {
         }
     }
 
-    /**
-     * Converte entidade para DTO de resposta.
-     *
-     * @param ajudante entidade de dominio
-     * @return representacao serializavel para a API
-     */
     public AjudanteResponseDTO toResponseDto(Ajudante ajudante) {
         if (ajudante == null) {
             return null;
@@ -78,7 +59,6 @@ public class AjudanteMapper {
         dto.setMotivacao(ajudante.getMotivacao());
         dto.setDisponivel(ajudante.isDisponivel());
         dto.setRating(ajudante.getRating());
-
         return dto;
     }
 }

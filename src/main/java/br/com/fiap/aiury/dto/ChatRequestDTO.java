@@ -13,21 +13,21 @@ import java.time.LocalDateTime;
  * DTO de entrada para criacao e atualizacao de chat.
  */
 @Data
-@Schema(name = "ChatRequest", description = "Payload de entrada para criacao/atualizacao de chat")
+@Schema(name = "ChatRequest", description = "Payload de entrada para criação/atualização de chat")
 public class ChatRequestDTO {
 
-    @NotNull(message = "O ID do usuario e obrigatorio")
-    @Schema(description = "Identificador do usuario vinculado ao chat", example = "10")
+    @NotNull(message = "O ID do usuário é obrigatório")
+    @Schema(description = "Identificador do usuário vinculado ao chat", example = "10")
     private Long usuarioId;
 
-    @NotNull(message = "O ID do ajudante e obrigatorio")
+    @NotNull(message = "O ID do ajudante é obrigatório")
     @Schema(description = "Identificador do ajudante vinculado ao chat", example = "3")
     private Long ajudanteId;
 
-    @NotNull(message = "A data de inicio e obrigatoria")
+    @NotNull(message = "A data de início é obrigatória")
     @JsonFormat(pattern = DateTimePatterns.DATE_TIME)
     @Schema(
-            description = "Data e hora de inicio no formato DD/MM/AAAA HH:mm:ss",
+            description = "Data e hora de início no formato DD/MM/AAAA HH:mm:ss",
             example = "25/03/2026 14:00:00",
             type = "string",
             pattern = DateTimePatterns.DATE_TIME
@@ -44,7 +44,8 @@ public class ChatRequestDTO {
     )
     private LocalDateTime dataFim;
 
-    @NotNull(message = "O status do chat e obrigatorio")
+    @NotNull(message = "O status do chat é obrigatório")
     @Schema(description = "Status operacional do chat", example = "EM_ANDAMENTO")
     private ChatStatus status;
 }
+

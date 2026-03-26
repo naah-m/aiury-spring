@@ -33,7 +33,7 @@ public class AiuryUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String login = username == null ? "" : username.trim();
         if (!StringUtils.hasText(login)) {
-            throw new UsernameNotFoundException("Credencial invalida.");
+            throw new UsernameNotFoundException("Credencial inválida.");
         }
 
         if (adminProperties.getUsername().equalsIgnoreCase(login)) {
@@ -53,6 +53,6 @@ public class AiuryUserDetailsService implements UserDetailsService {
             return AiuryUserPrincipal.ajudante(ajudante.getLogin(), ajudante.getSenha(), ajudante.getId());
         }
 
-        throw new UsernameNotFoundException("Usuario nao encontrado para o login informado.");
+        throw new UsernameNotFoundException("Usuário não encontrado para o login informado.");
     }
 }

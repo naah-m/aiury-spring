@@ -33,7 +33,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @RestController
 @RequestMapping("/api/chats")
-@Tag(name = "Chats", description = "Operacoes de abertura e manutencao de chats")
+@Tag(name = "Chats", description = "Operações de abertura e manutenção de chats")
 public class ChatController {
 
     private final ChatService chatService;
@@ -51,7 +51,7 @@ public class ChatController {
     )
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Payload de criacao de chat. Campos dataInicio/dataFim devem seguir dd/MM/yyyy HH:mm:ss.",
+            description = "Payload de criação de chat. Campos dataInicio/dataFim devem seguir dd/MM/yyyy HH:mm:ss.",
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = ChatRequestDTO.class),
@@ -65,7 +65,7 @@ public class ChatController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Payload invalido",
+                    description = "Payload inválido",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = {
@@ -76,7 +76,7 @@ public class ChatController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Usuario ou ajudante nao encontrados",
+                    description = "Usuario ou ajudante não encontrados",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND_GENERIC)
@@ -99,7 +99,7 @@ public class ChatController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Chat nao encontrado",
+                    description = "Chat não encontrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
@@ -136,7 +136,7 @@ public class ChatController {
     )
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Payload de atualizacao de chat. Campos dataInicio/dataFim devem seguir dd/MM/yyyy HH:mm:ss.",
+            description = "Payload de atualização de chat. Campos dataInicio/dataFim devem seguir dd/MM/yyyy HH:mm:ss.",
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = ChatRequestDTO.class),
@@ -150,7 +150,7 @@ public class ChatController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Payload invalido",
+                    description = "Payload inválido",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = {
@@ -161,7 +161,7 @@ public class ChatController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Chat, usuario ou ajudante nao encontrados",
+                    description = "Chat, usuario ou ajudante não encontrados",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND_GENERIC)
@@ -183,7 +183,7 @@ public class ChatController {
             @ApiResponse(responseCode = "204", description = "Chat removido"),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Chat nao encontrado",
+                    description = "Chat não encontrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
@@ -195,3 +195,4 @@ public class ChatController {
         return ResponseEntity.noContent().build();
     }
 }
+

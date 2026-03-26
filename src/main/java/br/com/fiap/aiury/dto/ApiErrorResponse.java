@@ -21,8 +21,9 @@ public record ApiErrorResponse(
         ) LocalDateTime timestamp,
         @Schema(description = "Codigo HTTP", example = "404") int status,
         @Schema(description = "Descricao resumida do erro", example = "Not Found") String error,
-        @Schema(description = "Mensagem detalhada", example = "Usuario nao encontrado com ID: 999") String message,
-        @Schema(description = "Path da requisicao", example = "/api/usuarios/999") String path,
-        @Schema(description = "Erros de validacao por campo") Map<String, String> validationErrors
+        @Schema(description = "Mensagem detalhada", example = "Usuario não encontrado com ID: 999") String message,
+        @Schema(description = "Path da requisição", example = "/api/usuarios/999") String path,
+        @Schema(description = "Erros de validação por campo") Map<String, String> validationErrors
 ) {
 }
+

@@ -1,4 +1,4 @@
-# Visao do MVP
+# Visão do MVP
 
 ## Problema
 Atendimentos emocionais sem estrutura tecnica dificultam continuidade, controle e melhoria do processo.
@@ -13,11 +13,12 @@ API REST para registrar:
 ## Escopo entregue
 - CRUD completo dos recursos.
 - Regras de negocio basicas de consistencia temporal e referencial.
-- HATEOAS para navegacao entre recursos.
+- HATEOAS para navegação entre recursos.
 - Swagger/OpenAPI e documentacao markdown.
 - Testes automatizados e roteiro Postman.
 
 ## Fora do escopo desta entrega
-- Autenticacao e autorizacao.
+- Autenticação e autorização.
 - Integracao em tempo real (WebSocket).
 - Telemetria e observabilidade avancada.
+

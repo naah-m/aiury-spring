@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 /**
- * Contrato de servico para operacoes de mensagens.
+ * Contrato de servico para operações de mensagens.
  */
 public interface MensagemService {
 
@@ -52,3 +52,4 @@ public interface MensagemService {
      */
     void deletarMensagem(Long id);
 }
+

@@ -4,12 +4,12 @@
       th:replace="~{layout/base :: base('Acesso negado', 'home', ~{::content})}">
 <th:block th:fragment="content">
     <section class="error-card rounded-4 p-4 p-lg-5 text-center mx-auto">
-        <p class="text-uppercase fw-semibold text-secondary mb-2">Permissao insuficiente</p>
+        <p class="text-uppercase fw-semibold text-secondary mb-2">Permissão insuficiente</p>
         <h1 class="display-5 fw-bold mb-2">403</h1>
         <h2 class="h4 mb-3">Acesso negado</h2>
         <p class="text-secondary mb-4">
-            Seu perfil nao possui permissao para acessar esta funcionalidade.
-            Se precisar, solicite elevacao de acesso ao administrador.
+            Seu perfil não possui permissão para acessar esta funcionalidade.
+            Se precisar, solicite elevação de acesso ao administrador.
         </p>
         <div class="d-flex flex-wrap justify-content-center gap-2">
             <a class="btn btn-primary px-4" th:href="@{/app}">Voltar ao painel</a>

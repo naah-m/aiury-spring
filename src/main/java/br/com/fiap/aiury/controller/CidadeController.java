@@ -32,7 +32,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @RestController
 @RequestMapping("/api/cidades")
-@Tag(name = "Cidades", description = "Operacoes de cadastro e consulta de cidades")
+@Tag(name = "Cidades", description = "Operações de cadastro e consulta de cidades")
 public class CidadeController {
 
     private final CidadeService cidadeService;
@@ -50,7 +50,7 @@ public class CidadeController {
     )
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Payload de criacao de cidade.",
+            description = "Payload de criação de cidade.",
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = CidadeRequestDTO.class),
@@ -64,12 +64,12 @@ public class CidadeController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Payload invalido",
+                    description = "Payload inválido",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Estado nao encontrado",
+                    description = "Estado não encontrado",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND_GENERIC)
@@ -100,7 +100,7 @@ public class CidadeController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Cidade nao encontrada",
+                    description = "Cidade não encontrada",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
@@ -121,7 +121,7 @@ public class CidadeController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Estado do filtro nao encontrado",
+                    description = "Estado do filtro não encontrado",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             )
     })
@@ -140,7 +140,7 @@ public class CidadeController {
     )
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Payload de atualizacao de cidade.",
+            description = "Payload de atualização de cidade.",
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = CidadeRequestDTO.class),
@@ -154,12 +154,12 @@ public class CidadeController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Payload invalido",
+                    description = "Payload inválido",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Cidade ou estado nao encontrados",
+                    description = "Cidade ou estado não encontrados",
                     content = @Content(
                             schema = @Schema(implementation = ApiErrorResponse.class),
                             examples = @ExampleObject(name = "RecursoNaoEncontrado", value = OpenApiExamples.ERROR_NOT_FOUND_GENERIC)
@@ -189,7 +189,7 @@ public class CidadeController {
             @ApiResponse(responseCode = "204", description = "Cidade removida"),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Cidade nao encontrada",
+                    description = "Cidade não encontrada",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
             ),
             @ApiResponse(
@@ -206,3 +206,4 @@ public class CidadeController {
         return ResponseEntity.noContent().build();
     }
 }
+

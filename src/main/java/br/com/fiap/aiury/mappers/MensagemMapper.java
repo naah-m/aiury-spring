@@ -46,7 +46,7 @@ public class MensagemMapper {
      * Atualiza entidade de mensagem existente com os dados recebidos.
      *
      * @param mensagem entidade alvo
-     * @param request dados novos de atualizacao
+     * @param request dados novos de atualização
      * @param chat referencia de chat resolvida
      * @param remetente referencia de usuario remetente resolvida
      * @param remetenteAjudante referencia de ajudante remetente resolvida
@@ -104,3 +104,4 @@ public class MensagemMapper {
         return "NAO_INFORMADO";
     }
 }
+

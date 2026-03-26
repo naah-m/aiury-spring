@@ -17,12 +17,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @RestController
 @RequestMapping("/api")
-@Tag(name = "Root", description = "Navegacao inicial da API via HATEOAS")
+@Tag(name = "Root", description = "Navegação inicial da API via HATEOAS")
 public class ApiRootController {
 
     @GetMapping
     @Operation(summary = "Entrypoint da API", description = "Retorna links para os principais recursos da API")
-    @ApiResponse(responseCode = "200", description = "Links de navegacao retornados com sucesso")
+    @ApiResponse(responseCode = "200", description = "Links de navegação retornados com sucesso")
     public RepresentationModel<?> root() {
         RepresentationModel<?> model = new RepresentationModel<>();
         model.add(linkTo(methodOn(ApiRootController.class).root()).withSelfRel());
@@ -35,3 +35,4 @@ public class ApiRootController {
         return model;
     }
 }
+

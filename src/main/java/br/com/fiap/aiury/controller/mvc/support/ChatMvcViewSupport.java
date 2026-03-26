@@ -22,12 +22,12 @@ import java.util.Map;
 @Component
 public class ChatMvcViewSupport {
 
-    private static final String STATUS_NAO_INFORMADO = "Status nao informado";
+    private static final String STATUS_NAO_INFORMADO = "Status não informado";
 
     private static final List<ChatStatusOptionView> STATUS_OPTIONS = List.of(
             new ChatStatusOptionView(ChatStatus.INICIADO, "Iniciado"),
             new ChatStatusOptionView(ChatStatus.EM_ANDAMENTO, "Em andamento"),
-            new ChatStatusOptionView(ChatStatus.FINALIZADO_USUARIO, "Finalizado pelo usuario"),
+            new ChatStatusOptionView(ChatStatus.FINALIZADO_USUARIO, "Finalizado pelo usuário"),
             new ChatStatusOptionView(ChatStatus.FINALIZADO_AJUDANTE, "Finalizado pelo ajudante"),
             new ChatStatusOptionView(ChatStatus.FINALIZADO_SISTEMA, "Finalizado pelo sistema")
     );
@@ -35,7 +35,7 @@ public class ChatMvcViewSupport {
     private static final Map<ChatStatus, String> STATUS_LABELS = Map.of(
             ChatStatus.INICIADO, "Iniciado",
             ChatStatus.EM_ANDAMENTO, "Em andamento",
-            ChatStatus.FINALIZADO_USUARIO, "Finalizado pelo usuario",
+            ChatStatus.FINALIZADO_USUARIO, "Finalizado pelo usuário",
             ChatStatus.FINALIZADO_AJUDANTE, "Finalizado pelo ajudante",
             ChatStatus.FINALIZADO_SISTEMA, "Finalizado pelo sistema"
     );
@@ -156,7 +156,7 @@ public class ChatMvcViewSupport {
 
         boolean finalizado = isFinalizado(statusAtual);
         String etapaFinal = switch (statusAtual) {
-            case FINALIZADO_USUARIO -> "Encerrado pelo usuario";
+            case FINALIZADO_USUARIO -> "Encerrado pelo usuário";
             case FINALIZADO_AJUDANTE -> "Encerrado pelo ajudante";
             case FINALIZADO_SISTEMA -> "Encerrado pelo sistema";
             default -> "Aguardando encerramento";

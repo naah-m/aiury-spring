@@ -12,7 +12,7 @@
 As respostas `GET`, `POST` e `PUT` retornam representacoes HATEOAS com `_links`.
 
 Relacoes (`rel`) padronizadas na API:
-- Acoes: `criar`, `atualizar`, `excluir`
+- Ações: `criar`, `atualizar`, `excluir`
 - Colecoes: `usuarios`, `ajudantes`, `chats`, `mensagens`, `cidades`, `estados`
 - Relacionamentos: `usuario`, `ajudante`, `remetente`, `chat`, `cidade`, `estado`
 
@@ -23,10 +23,10 @@ Estrutura padrao de erro:
   "timestamp": "25/03/2026 00:10:00",
   "status": 400,
   "error": "Bad Request",
-  "message": "Erro de validacao nos campos informados.",
+  "message": "Erro de validação nos campos informados.",
   "path": "/api/usuarios",
   "validationErrors": {
-    "nomeReal": "O nome real e obrigatorio"
+    "nomeReal": "O nome real e obrigatório"
   }
 }
 ```
@@ -38,10 +38,10 @@ Exemplo de erro de formato de data:
   "timestamp": "25/03/2026 00:10:00",
   "status": 400,
   "error": "Bad Request",
-  "message": "Formato de data/hora invalido no corpo da requisicao.",
+  "message": "Formato de data/hora inválido no corpo da requisição.",
   "path": "/api/chats",
   "validationErrors": {
-    "dataInicio": "Formato de data/hora invalido. Use dd/MM/yyyy HH:mm:ss."
+    "dataInicio": "Formato de data/hora inválido. Use dd/MM/yyyy HH:mm:ss."
   }
 }
 ```
@@ -70,7 +70,7 @@ Exemplo de erro de formato de data:
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
-| `GET` | `/api` | Retorna links de navegacao para os recursos principais | `200` | - |
+| `GET` | `/api` | Retorna links de navegação para os recursos principais | `200` | - |
 
 Exemplo de relacoes retornadas:
 - `self`
@@ -163,7 +163,7 @@ Exemplo `POST /api/ajudantes`:
 ```json
 {
   "areaAtuacao": "Escuta ativa",
-  "motivacao": "Acolhimento voluntario em plantao",
+  "motivação": "Acolhimento voluntario em plantao",
   "disponivel": true,
   "rating": 4.8
 }
@@ -199,7 +199,7 @@ Exemplo `POST /api/chats`:
 ```
 
 Regra adicional de negocio:
-- `dataFim` nao pode ser anterior a `dataInicio`.
+- `dataFim` não pode ser anterior a `dataInicio`.
 - status finalizado exige `dataFim`.
 
 Pre-requisitos:
@@ -229,7 +229,7 @@ Exemplo `POST /api/mensagens`:
 
 Regras adicionais de negocio:
 - `remetenteId` deve pertencer ao usuario dono do chat.
-- `dataEnvio` deve estar entre inicio e fim do chat.
+- `dataEnvio` deve estar entre início e fim do chat.
 
 Pre-requisitos:
 - `chatId` deve existir.
@@ -239,10 +239,11 @@ Pre-requisitos:
 
 | Status | Uso |
 |---|---|
-| `200` | Consulta e atualizacao bem-sucedidas |
-| `201` | Criacao bem-sucedida |
-| `204` | Exclusao bem-sucedida |
-| `400` | Validacao ou regra de entrada invalida |
-| `404` | Recurso nao encontrado |
+| `200` | Consulta e atualização bem-sucedidas |
+| `201` | Criação bem-sucedida |
+| `204` | Exclusão bem-sucedida |
+| `400` | Validação ou regra de entrada inválida |
+| `404` | Recurso não encontrado |
 | `409` | Conflito de integridade ou unicidade |
 | `500` | Erro inesperado no servidor |
+

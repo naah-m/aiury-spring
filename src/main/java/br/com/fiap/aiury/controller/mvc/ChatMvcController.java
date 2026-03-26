@@ -75,7 +75,7 @@ public class ChatMvcController {
         if (authenticatedUserService.isUsuario()) {
             Long usuarioId = authenticatedUserService.getUsuarioIdOrNull();
             if (usuarioId == null) {
-                throw new AccessDeniedException("Perfil de usuario sem vinculo valido.");
+                throw new AccessDeniedException("Perfil de usuário sem vínculo válido.");
             }
             model.addAttribute("usuarioNome", authenticatedUserService.getPrincipalOrThrow().getUsername());
             return "app/chats/open";
@@ -95,12 +95,12 @@ public class ChatMvcController {
     @PostMapping("/abrir")
     public String abrirNovoChatParaUsuario(RedirectAttributes redirectAttributes) {
         if (!authenticatedUserService.isUsuario()) {
-            throw new AccessDeniedException("Apenas usuarios podem abrir novo chat.");
+            throw new AccessDeniedException("Apenas usuários podem abrir novo chat.");
         }
 
         Long usuarioId = authenticatedUserService.getUsuarioIdOrNull();
         if (usuarioId == null) {
-            throw new AccessDeniedException("Perfil de usuario sem vinculo valido.");
+            throw new AccessDeniedException("Perfil de usuário sem vínculo válido.");
         }
         try {
             Chat chat = chatService.abrirChatParaUsuario(usuarioId);
@@ -179,7 +179,7 @@ public class ChatMvcController {
     public String excluir(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             chatService.deletarChat(id);
-            redirectAttributes.addFlashAttribute("mensagemSucesso", "Chat excluido com sucesso.");
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Chat excluído com sucesso.");
         } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
             redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
         }

@@ -11,43 +11,13 @@ import java.util.List;
  */
 public interface AjudanteService {
 
-    /**
-     * Cria novo ajudante.
-     *
-     * @param ajudanteDTO dados de entrada validados
-     * @return entidade criada
-     */
     Ajudante criarAjudante(@Valid AjudanteRequestDTO ajudanteDTO);
 
-    /**
-     * Busca ajudante por ID.
-     *
-     * @param id identificador do ajudante
-     * @return ajudante encontrado
-     */
     Ajudante buscarPorId(Long id);
 
-    /**
-     * Lista ajudantes com filtro opcional por disponibilidade.
-     *
-     * @param disponivel filtro opcional por disponibilidade
-     * @return colecao de ajudantes
-     */
     List<Ajudante> buscarTodos(Boolean disponivel);
 
-    /**
-     * Atualiza dados de ajudante existente.
-     *
-     * @param id identificador do registro alvo
-     * @param ajudanteDTO novos dados
-     * @return ajudante atualizado
-     */
     Ajudante atualizarAjudante(Long id, @Valid AjudanteRequestDTO ajudanteDTO);
 
-    /**
-     * Remove ajudante por ID.
-     *
-     * @param id identificador do ajudante
-     */
     void deletarAjudante(Long id);
 }

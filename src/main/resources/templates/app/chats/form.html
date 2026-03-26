@@ -6,7 +6,7 @@
     <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
         <div>
             <h1 class="mb-1">Abrir novo chat</h1>
-            <p class="text-secondary mb-0">Inicie um atendimento vinculando usuario, ajudante e status inicial do chat.</p>
+            <p class="text-secondary mb-0">Inicie um atendimento vinculando usuário, ajudante e status inicial do chat.</p>
         </div>
         <a class="btn btn-outline-secondary px-4" th:href="@{/app/chats}">Voltar para lista</a>
     </section>
@@ -16,23 +16,23 @@
     <div class="alert alert-warning border-0 shadow-sm"
          role="alert"
          th:if="${#lists.isEmpty(usuarios) or #lists.isEmpty(ajudantes)}">
-        Para abrir um chat, e necessario ter ao menos um usuario e um ajudante cadastrados.
+        Para abrir um chat, é necessário ter ao menos um usuário e um ajudante cadastrados.
     </div>
 
     <section class="form-card rounded-4 p-3 p-lg-4">
         <form th:action="@{/app/chats}" th:object="${chatForm}" method="post" class="row g-3">
             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-            <div class="col-12" th:replace="~{fragments/form-errors :: summary('Corrija os campos obrigatorios para abrir o chat.')}"></div>
+            <div class="col-12" th:replace="~{fragments/form-errors :: summary('Corrija os campos obrigatórios para abrir o chat.')}"></div>
 
             <div class="col-12 col-lg-6">
-                <label for="usuarioId" class="form-label">Usuario</label>
+                <label for="usuarioId" class="form-label">Usuário</label>
                 <select id="usuarioId"
                         th:field="*{usuarioId}"
                         class="form-select"
                         th:classappend="${#fields.hasErrors('usuarioId')} ? ' is-invalid' : ''"
                         required>
-                    <option value="">Selecione um usuario</option>
+                    <option value="">Selecione um usuário</option>
                     <option th:each="usuario : ${usuarios}"
                             th:value="${usuario.id}"
                             th:text="${usuario.nomeReal + (usuario.nomeAnonimo != null and !#strings.isEmpty(usuario.nomeAnonimo) ? ' (@' + usuario.nomeAnonimo + ')' : '')}">
@@ -51,14 +51,14 @@
                     <option value="">Selecione um ajudante</option>
                     <option th:each="ajudante : ${ajudantes}"
                             th:value="${ajudante.id}"
-                            th:text="${ajudante.areaAtuacao + (ajudante.disponivel ? ' (disponivel)' : ' (indisponivel)')}">
+                            th:text="${ajudante.areaAtuacao + (ajudante.disponivel ? ' (disponível)' : ' (indisponível)')}">
                     </option>
                 </select>
                 <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('ajudanteId')}" th:errors="*{ajudanteId}"></div>
             </div>
 
             <div class="col-12 col-lg-4">
-                <label for="dataInicio" class="form-label">Inicio do atendimento</label>
+                <label for="dataInicio" class="form-label">Início do atendimento</label>
                 <input id="dataInicio"
                        type="datetime-local"
                        th:field="*{dataInicio}"
@@ -106,3 +106,4 @@
     </section>
 </th:block>
 </html>
+

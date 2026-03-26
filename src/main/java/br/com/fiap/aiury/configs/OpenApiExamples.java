@@ -1,7 +1,7 @@
 package br.com.fiap.aiury.configs;
 
 /**
- * Exemplos reutilizaveis para documentacao Swagger/OpenAPI.
+ * Exemplos reutilizáveis para documentacao Swagger/OpenAPI.
  */
 public final class OpenApiExamples {
 
@@ -68,7 +68,7 @@ public final class OpenApiExamples {
               "timestamp": "25/03/2026 16:30:00",
               "status": 404,
               "error": "Not Found",
-              "message": "Usuario nao encontrado com ID: 999",
+              "message": "Usuario não encontrado com ID: 999",
               "path": "/api/usuarios/999",
               "validationErrors": null
             }
@@ -79,7 +79,7 @@ public final class OpenApiExamples {
               "timestamp": "25/03/2026 16:30:00",
               "status": 404,
               "error": "Not Found",
-              "message": "Recurso nao encontrado.",
+              "message": "Recurso não encontrado.",
               "path": "/api/recurso/999",
               "validationErrors": null
             }
@@ -90,7 +90,7 @@ public final class OpenApiExamples {
               "timestamp": "25/03/2026 16:31:00",
               "status": 409,
               "error": "Conflict",
-              "message": "Ja existe usuario cadastrado com o celular informado.",
+              "message": "Já existe usuario cadastrado com o celular informado.",
               "path": "/api/usuarios",
               "validationErrors": null
             }
@@ -112,10 +112,10 @@ public final class OpenApiExamples {
               "timestamp": "25/03/2026 16:32:00",
               "status": 400,
               "error": "Bad Request",
-              "message": "Erro de validacao nos campos informados.",
+              "message": "Erro de validação nos campos informados.",
               "path": "/api/usuarios",
               "validationErrors": {
-                "nomeReal": "O nome real e obrigatorio"
+                "nomeReal": "O nome real e obrigatório"
               }
             }
             """;
@@ -125,10 +125,10 @@ public final class OpenApiExamples {
               "timestamp": "25/03/2026 16:32:00",
               "status": 400,
               "error": "Bad Request",
-              "message": "Erro de validacao nos campos informados.",
+              "message": "Erro de validação nos campos informados.",
               "path": "/api/recurso",
               "validationErrors": {
-                "campo": "Campo obrigatorio"
+                "campo": "Campo obrigatório"
               }
             }
             """;
@@ -138,10 +138,10 @@ public final class OpenApiExamples {
               "timestamp": "25/03/2026 16:33:00",
               "status": 400,
               "error": "Bad Request",
-              "message": "Formato de data invalido no corpo da requisicao.",
+              "message": "Formato de data inválido no corpo da requisição.",
               "path": "/api/usuarios",
               "validationErrors": {
-                "dataNascimento": "Formato de data invalido. Use dd/MM/yyyy."
+                "dataNascimento": "Formato de data inválido. Use dd/MM/yyyy."
               }
             }
             """;
@@ -151,11 +151,12 @@ public final class OpenApiExamples {
               "timestamp": "25/03/2026 16:33:00",
               "status": 400,
               "error": "Bad Request",
-              "message": "Formato de data/hora invalido no corpo da requisicao.",
+              "message": "Formato de data/hora inválido no corpo da requisição.",
               "path": "/api/chats",
               "validationErrors": {
-                "dataInicio": "Formato de data/hora invalido. Use dd/MM/yyyy HH:mm:ss."
+                "dataInicio": "Formato de data/hora inválido. Use dd/MM/yyyy HH:mm:ss."
               }
             }
             """;
 }
+

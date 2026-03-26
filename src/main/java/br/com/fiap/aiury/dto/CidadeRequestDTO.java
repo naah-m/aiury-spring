@@ -10,15 +10,16 @@ import lombok.Data;
  * DTO de entrada para criacao e atualizacao de cidade.
  */
 @Data
-@Schema(name = "CidadeRequest", description = "Payload para criacao/atualizacao de cidade")
+@Schema(name = "CidadeRequest", description = "Payload para criação/atualização de cidade")
 public class CidadeRequestDTO {
 
-    @NotBlank(message = "O nome da cidade e obrigatorio")
-    @Size(max = 100, message = "O nome da cidade deve ter no maximo 100 caracteres")
-    @Schema(description = "Nome oficial da cidade", example = "Sao Paulo")
+    @NotBlank(message = "O nome da cidade é obrigatório")
+    @Size(max = 100, message = "O nome da cidade deve ter no máximo 100 caracteres")
+    @Schema(description = "Nome oficial da cidade", example = "São Paulo")
     private String nomeCidade;
 
-    @NotNull(message = "O ID do estado e obrigatorio")
+    @NotNull(message = "O ID do estado é obrigatório")
     @Schema(description = "Identificador do estado da cidade", example = "1")
     private Long estadoId;
 }
+

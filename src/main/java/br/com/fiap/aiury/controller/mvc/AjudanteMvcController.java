@@ -109,7 +109,7 @@ public class AjudanteMvcController {
     public String excluir(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             ajudanteService.deletarAjudante(id);
-            redirectAttributes.addFlashAttribute("mensagemSucesso", "Ajudante excluido com sucesso.");
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Ajudante excluído com sucesso.");
         } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
             redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
         }

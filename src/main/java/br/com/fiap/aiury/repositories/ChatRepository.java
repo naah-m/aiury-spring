@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repositorio JPA para operacoes de persistencia de {@link Chat}.
+ * Repositorio JPA para operações de persistencia de {@link Chat}.
  */
 @Repository
 public interface ChatRepository extends JpaRepository<Chat, Long>, JpaSpecificationExecutor<Chat> {
@@ -50,3 +50,4 @@ public interface ChatRepository extends JpaRepository<Chat, Long>, JpaSpecificat
 
     long countByAjudante_Id(Long ajudanteId);
 }
+

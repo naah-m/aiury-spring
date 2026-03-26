@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 /**
- * Contrato de servico para operacoes de estado.
+ * Contrato de servico para operações de estado.
  */
 public interface EstadoService {
 
@@ -21,3 +21,4 @@ public interface EstadoService {
 
     void deletarEstado(Long id);
 }
+

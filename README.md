@@ -2,7 +2,7 @@
 
 Aplicacao Spring Boot com frontend server-side em Thymeleaf para gestao de atendimentos entre usuario e ajudante, com persistencia relacional, migracoes versionadas e controle de acesso por perfil.
 
-## 1. Visao geral
+## 1. Visão geral
 O projeto entrega uma base completa de Sprint 3 com:
 - frontend web funcional (`/`, `/login`, `/app`, `/app/chats`, `/app/usuarios`, `/app/ajudantes`);
 - API REST com HATEOAS (`/api/**`);
@@ -15,18 +15,18 @@ O dominio do projeto exige registrar atendimentos de forma estruturada. Antes, o
 - catalogo geografico (`Estado` e `Cidade`);
 - cadastro de usuarios e ajudantes;
 - abertura e acompanhamento de chat;
-- historico de mensagens por atendimento;
+- histórico de mensagens por atendimento;
 - controle de quem pode consultar ou alterar dados.
 
 ## 3. Arquitetura resumida
-Arquitetura em camadas, com separacao clara de responsabilidades:
+Arquitetura em camadas, com separação clara de responsabilidades:
 - `controller` (REST e MVC): entrada HTTP, views e respostas;
-- `services`: regras de negocio e validacoes de dominio;
+- `services`: regras de negocio e validações de dominio;
 - `repositories`: persistencia com Spring Data JPA;
 - `entities`: modelo relacional;
 - `dto` e `mappers`: contratos de entrada/saida e transformacoes;
 - `representation`: montagem HATEOAS da API;
-- `configs` e `security`: configuracoes globais, Flyway, excecoes e autenticacao.
+- `configs` e `security`: configuracoes globais, Flyway, excecoes e autenticação.
 
 No frontend MVC, os fluxos de chat estao separados para manter codigo limpo:
 - `ChatMvcController`: listagem, abertura e status;
@@ -48,10 +48,12 @@ No frontend MVC, os fluxos de chat estao separados para manter codigo limpo:
 - JUnit 5 / Spring Test
 
 ## 5. Como configurar o banco
-Arquivos de configuracao:
+Arquivos de configuração:
 - `src/main/resources/application.properties` (base comum)
 - `src/main/resources/application-dev.properties` (H2)
 - `src/main/resources/application-oracle.properties` (Oracle)
+- `src/main/resources/messages.properties` (mensagens padrão)
+- `src/main/resources/messages_pt_BR.properties` (mensagens em português-BR)
 - `src/test/resources/application-test.properties` (testes)
 
 ### 5.1 Ambiente local (padrao `dev`)
@@ -68,6 +70,11 @@ Opcionalmente, voce pode sobrescrever com variaveis:
 ### 5.2 Ambiente Oracle (`oracle`)
 Defina:
 - `SPRING_PROFILES_ACTIVE=oracle`
+
+### 5.3 Idioma e codificação
+- Locale fixo da aplicação: `pt_BR`
+- Mensagens Spring (`MessageSource`) em UTF-8
+- Thymeleaf e servlet configurados para UTF-8
 - `DB_URL`
 - `DB_USERNAME`
 - `DB_PASSWORD`
@@ -85,7 +92,7 @@ $env:DB_PASSWORD="SUA_SENHA"
 ## 6. Como rodar a aplicacao
 Pre-requisitos:
 - Java 21+
-- Maven Wrapper (ja incluso no repositorio)
+- Maven Wrapper (já incluso no repositorio)
 
 ### 6.1 Execucao rapida (Windows)
 
@@ -129,7 +136,7 @@ Scripts versionados:
 - H2: `src/main/resources/db/migration/h2/V1__create_core_tables.sql`, `V2__create_indexes.sql`, `V3__security_roles_and_message_sender.sql`
 - Oracle: `src/main/resources/db/migration/oracle/V1__create_core_tables.sql`, `V2__create_indexes.sql`, `V3__security_roles_and_message_sender.sql`
 
-Em resumo: ao iniciar a aplicacao, o Flyway detecta o vendor do datasource, valida o historico e aplica somente migracoes pendentes.
+Em resumo: ao iniciar a aplicacao, o Flyway detecta o vendor do datasource, valida o histórico e aplica somente migracoes pendentes.
 
 ## 8. Como acessar o frontend
 URLs principais:
@@ -151,8 +158,8 @@ Documentacao:
 Regra de acesso:
 - API sempre autenticada;
 - `POST/PUT/DELETE /api/usuarios` e `/api/ajudantes`: `ADMIN`;
-- `GET/POST /api/mensagens`: `ADMIN`, `USUARIO`, `AJUDANTE` com validacao de vinculo;
-- `GET /api/chats`: `ADMIN`, `USUARIO`, `AJUDANTE` com validacao de vinculo.
+- `GET/POST /api/mensagens`: `ADMIN`, `USUARIO`, `AJUDANTE` com validação de vínculo;
+- `GET /api/chats`: `ADMIN`, `USUARIO`, `AJUDANTE` com validação de vínculo.
 
 ## 10. Como fazer login
 Use a tela `/login`:
@@ -174,11 +181,11 @@ Perfis da camada de seguranca web:
 Regras relevantes:
 - `USUARIO` pode abrir novo chat web em `/app/chats/novo` com vinculacao automatica;
 - `USUARIO` so pode ter 1 chat ativo por vez (`INICIADO` ou `EM_ANDAMENTO`);
-- `AJUDANTE` nao abre chat novo no frontend;
+- `AJUDANTE` não abre chat novo no frontend;
 - `ADMIN` gerencia usuarios/ajudantes e pode criar/editar chats.
 
 ## 12. Fluxos principais implementados
-Fluxos Sprint 3 entregues ponta a ponta com Thymeleaf, validacao e persistencia real:
+Fluxos Sprint 3 entregues ponta a ponta com Thymeleaf, validação e persistencia real:
 
 1. Abertura e acompanhamento de atendimento/chat
 - usuario abre o proprio chat (`/app/chats/novo`) com atribuicao automatica de ajudante;
@@ -186,12 +193,12 @@ Fluxos Sprint 3 entregues ponta a ponta com Thymeleaf, validacao e persistencia 
 - admin pode abrir chat manual com selecao de usuario/ajudante;
 - listar e filtrar chats (`/app/chats`);
 - ver detalhes e atualizar status (`/app/chats/{id}`);
-- feedback visual de sucesso/erro e validacao de formulario.
+- feedback visual de sucesso/erro e validação de formulario.
 
 2. Troca de mensagens no atendimento
 - abrir tela de conversa (`/app/chats/{id}/conversa`);
-- enviar mensagem com validacao;
-- carregar historico de mensagens em ordem;
+- enviar mensagem com validação;
+- carregar histórico de mensagens em ordem;
 - bloqueio de envio quando chat esta finalizado.
 
 Complemento de apoio para demo:
@@ -262,7 +269,7 @@ docs
 ```
 
 ## 15. Integrantes
-Conforme historico de contribuicoes do repositorio:
+Conforme histórico de contribuicoes do repositorio:
 
 | Nome | Contato |
 |---|---|
@@ -273,3 +280,4 @@ Conforme historico de contribuicoes do repositorio:
 ## 16. Link do video
 Video de demonstracao da Sprint 3:
 - publicacao pendente no repositorio nesta revisao de 25/03/2026.
+

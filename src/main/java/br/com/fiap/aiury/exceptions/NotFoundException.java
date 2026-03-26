@@ -4,10 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * Excecao de recurso nao encontrado no dominio da aplicacao.
+ * Excecao de recurso não encontrado no dominio da aplicacao.
  *
  * Uso esperado:
- * - lancada nas camadas de servico quando um registro obrigatorio nao existe;
+ * - lancada nas camadas de servico quando um registro obrigatório não existe;
  * - convertida automaticamente em HTTP 404 pelo {@code GlobalExceptionHandler}.
  *
  * Observacao:
@@ -26,3 +26,4 @@ public class NotFoundException extends RuntimeException {
         super(message);
     }
 }
+

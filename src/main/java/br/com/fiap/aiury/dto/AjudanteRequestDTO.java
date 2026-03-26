@@ -9,36 +9,40 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /**
- * DTO de entrada para criacao e atualizacao de ajudante.
+ * DTO de entrada para criação e atualização de ajudante.
  */
 @Data
-@Schema(name = "AjudanteRequest", description = "Payload para criacao/atualizacao de ajudante")
+@Schema(name = "AjudanteRequest", description = "Payload para criação/atualização de ajudante")
 public class AjudanteRequestDTO {
 
-    @NotBlank(message = "A area de atuacao e obrigatoria")
-    @Size(max = 100, message = "A area de atuacao deve ter no maximo 100 caracteres")
-    @Schema(description = "Area principal de atuacao", example = "Escuta ativa")
+    @NotBlank(message = "A área de atuação é obrigatória")
+    @Size(max = 100, message = "A área de atuação deve ter no máximo 100 caracteres")
+    @Schema(description = "Área principal de atuação", example = "Escuta ativa")
     private String areaAtuacao;
 
-    @NotBlank(message = "O login do ajudante e obrigatorio")
-    @Size(max = 60, message = "O login deve ter no maximo 60 caracteres")
+    @NotBlank(message = "O login do ajudante é obrigatório")
+    @Size(max = 60, message = "O login deve ter no máximo 60 caracteres")
     @Schema(description = "Login de acesso do ajudante", example = "ajudante.escuta")
     private String login;
 
     @Size(min = 8, max = 255, message = "A senha deve ter entre 8 e 255 caracteres")
-    @Schema(description = "Senha do ajudante (obrigatoria no cadastro, opcional na edicao)", example = "ajudante123", nullable = true)
+    @Schema(
+            description = "Senha do ajudante (obrigatória no cadastro, opcional na edição)",
+            example = "ajudante123",
+            nullable = true
+    )
     private String senha;
 
-    @Size(max = 2000, message = "A motivacao deve ter no maximo 2000 caracteres")
-    @Schema(description = "Motivacao para atuar na plataforma", example = "Atuo com escuta qualificada em acolhimento emocional")
+    @Size(max = 2000, message = "A motivação deve ter no máximo 2000 caracteres")
+    @Schema(description = "Motivação para atuar na plataforma", example = "Atuo com escuta qualificada em acolhimento emocional")
     private String motivacao;
 
-    @NotNull(message = "A disponibilidade e obrigatoria")
-    @Schema(description = "Indica se o ajudante esta apto para novos chats", example = "true")
+    @NotNull(message = "A disponibilidade é obrigatória")
+    @Schema(description = "Indica se o ajudante está apto para novos chats", example = "true")
     private Boolean disponivel;
 
-    @DecimalMin(value = "0.0", message = "O rating minimo e 0.0")
-    @DecimalMax(value = "5.0", message = "O rating maximo e 5.0")
-    @Schema(description = "Nota media do ajudante (0.0 a 5.0)", example = "4.7")
+    @DecimalMin(value = "0.0", message = "A avaliação mínima é 0.0")
+    @DecimalMax(value = "5.0", message = "A avaliação máxima é 5.0")
+    @Schema(description = "Avaliação média do ajudante (0.0 a 5.0)", example = "4.7")
     private Double rating;
 }

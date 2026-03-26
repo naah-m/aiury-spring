@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 public class ChatStatusWebForm {
 
-    @NotNull(message = "Selecione um status para atualizacao")
+    @NotNull(message = "Selecione um status para atualização")
     private ChatStatus status;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
@@ -25,7 +25,7 @@ public class ChatStatusWebForm {
         return !isStatusFinalizado(status) || dataFim != null;
     }
 
-    @AssertTrue(message = "Status INICIADO nao permite data/hora de fim")
+    @AssertTrue(message = "Status INICIADO não permite data/hora de fim")
     public boolean isIniciadoSemDataFim() {
         if (status == null) {
             return true;

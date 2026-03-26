@@ -12,7 +12,7 @@ import java.util.Optional;
  * Repositorio JPA para persistencia de {@link Usuario}.
  *
  * Papel na arquitetura:
- * - fornece operacoes CRUD padrao via Spring Data;
+ * - fornece operações CRUD padrao via Spring Data;
  * - e utilizado pela camada de servico para consultas e escrita.
  */
 @Repository
@@ -40,3 +40,4 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     boolean existsByCelularAndIdNot(String celular, Long id);
 }
+

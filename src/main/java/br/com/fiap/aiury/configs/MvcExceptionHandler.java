@@ -16,7 +16,7 @@ public class MvcExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public String handleNotFound(NotFoundException ex, Model model) {
         model.addAttribute("status", 404);
-        model.addAttribute("error", "Not Found");
+        model.addAttribute("error", "Não encontrado");
         model.addAttribute("message", ex.getMessage());
         return "error/default";
     }
@@ -24,7 +24,7 @@ public class MvcExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public String handleConflict(ConflictException ex, Model model) {
         model.addAttribute("status", 409);
-        model.addAttribute("error", "Conflict");
+        model.addAttribute("error", "Conflito");
         model.addAttribute("message", ex.getMessage());
         return "error/default";
     }
@@ -32,7 +32,7 @@ public class MvcExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public String handleBadRequest(IllegalArgumentException ex, Model model) {
         model.addAttribute("status", 400);
-        model.addAttribute("error", "Bad Request");
+        model.addAttribute("error", "Requisição inválida");
         model.addAttribute("message", ex.getMessage());
         return "error/default";
     }
@@ -46,8 +46,8 @@ public class MvcExceptionHandler {
     @ExceptionHandler(Exception.class)
     public String handleGeneric(Exception ex, Model model) {
         model.addAttribute("status", 500);
-        model.addAttribute("error", "Internal Server Error");
-        model.addAttribute("message", "Nao foi possivel concluir a operacao.");
+        model.addAttribute("error", "Erro interno do servidor");
+        model.addAttribute("message", "Não foi possível concluir a operação.");
         return "error/default";
     }
 }

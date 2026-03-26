@@ -12,7 +12,7 @@
                     Status
                 </span>
             </div>
-            <p class="text-secondary mb-0 mt-1">Visualizacao completa do atendimento e atualizacao de status.</p>
+            <p class="text-secondary mb-0 mt-1">Visualização completa do atendimento e atualização de status.</p>
         </div>
         <div class="d-flex flex-wrap gap-2">
             <a class="btn btn-outline-secondary px-4" th:href="@{/app/chats}">Voltar para lista</a>
@@ -22,7 +22,7 @@
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <button type="submit"
                         class="btn btn-outline-danger px-4"
-                        onclick="return confirm('Deseja excluir este chat? Esta acao nao pode ser desfeita.');">
+                        onclick="return confirm('Deseja excluir este chat? Esta ação não pode ser desfeita.');">
                     Excluir chat
                 </button>
             </form>
@@ -38,8 +38,8 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="chat-info-item">
-                            <span class="chat-info-label">Usuario</span>
-                            <p class="mb-0 fw-semibold" th:text="${chat.usuarioNomeReal}">Usuario</p>
+                            <span class="chat-info-label">Usuário</span>
+                            <p class="mb-0 fw-semibold" th:text="${chat.usuarioNomeReal}">Usuário</p>
                             <small class="text-secondary" th:text="${chat.usuarioNomeAnonimo != '-' ? '@' + chat.usuarioNomeAnonimo : '-'}">-</small>
                         </div>
                     </div>
@@ -54,20 +54,20 @@
                             <span class="chat-info-label">Ajudante</span>
                             <p class="mb-0 fw-semibold" th:text="${chat.ajudanteAreaAtuacao}">Escuta ativa</p>
                             <small th:classappend="${chat.ajudanteDisponivel} ? 'text-success' : 'text-secondary'"
-                                   th:text="${chat.ajudanteDisponivel} ? 'Disponivel para novos atendimentos' : 'Indisponivel para novos atendimentos'">
-                                Disponivel
+                                   th:text="${chat.ajudanteDisponivel} ? 'Disponível para novos atendimentos' : 'Indisponível para novos atendimentos'">
+                                Disponível
                             </small>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="chat-info-item">
-                            <span class="chat-info-label">Rating do ajudante</span>
+                            <span class="chat-info-label">Avaliação do ajudante</span>
                             <p class="mb-0 fw-semibold" th:text="${chat.ajudanteRating != null ? #numbers.formatDecimal(chat.ajudanteRating, 1, 1) : '-'}">4.8</p>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="chat-info-item">
-                            <span class="chat-info-label">Inicio</span>
+                            <span class="chat-info-label">Início</span>
                             <p class="mb-0 fw-semibold" th:text="${chat.dataInicio != null ? #temporals.format(chat.dataInicio, 'dd/MM/yyyy HH:mm') : '-'}">-</p>
                         </div>
                     </div>
@@ -88,7 +88,7 @@
                 <div class="alert alert-info border-0 shadow-sm"
                      role="alert"
                      th:if="${chatEncerrado}">
-                    Este atendimento esta finalizado. Altere o status apenas se houver correcao operacional.
+                    Este atendimento está finalizado. Altere o status apenas se houver correção operacional.
                 </div>
 
                 <ul class="status-timeline list-unstyled m-0 mb-4">
@@ -133,7 +133,7 @@
                                th:field="*{dataFim}"
                                class="form-control"
                                th:classappend="${#fields.hasErrors('dataFim')} ? ' is-invalid' : ''">
-                        <div class="form-text">Obrigatoria para status finalizados.</div>
+                        <div class="form-text">Obrigatória para status finalizados.</div>
                         <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('dataFim')}" th:errors="*{dataFim}"></div>
                     </div>
 
@@ -157,14 +157,14 @@
         </div>
 
         <div class="alert alert-light border mb-0" th:if="${#lists.isEmpty(mensagens)}">
-            Nenhuma mensagem registrada para este chat ate o momento.
+            Nenhuma mensagem registrada para este chat até o momento.
         </div>
 
                 <div class="chat-messages" th:if="${!#lists.isEmpty(mensagens)}">
             <article class="chat-message-card" th:each="mensagem : ${mensagens}">
                 <header class="d-flex justify-content-between align-items-center mb-2">
                     <span class="fw-semibold"
-                          th:text="${mensagem.remetenteTipo == 'AJUDANTE' ? 'Ajudante: ' + mensagem.remetenteNome : 'Usuario: ' + mensagem.remetenteNome}">
+                          th:text="${mensagem.remetenteTipo == 'AJUDANTE' ? 'Ajudante: ' + mensagem.remetenteNome : 'Usuário: ' + mensagem.remetenteNome}">
                         Remetente
                     </span>
                     <small class="text-secondary"

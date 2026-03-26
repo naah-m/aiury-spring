@@ -7,11 +7,11 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 /**
- * Contrato de servicos para operacoes de usuario.
+ * Contrato de servicos para operações de usuario.
  *
  * Papel na arquitetura:
  * - define casos de uso expostos para o controller;
- * - isola regras de negocio e validacoes de existencia.
+ * - isola regras de negocio e validações de existencia.
  */
 public interface UsuarioService {
 
@@ -43,7 +43,7 @@ public interface UsuarioService {
      * Atualiza dados do usuario existente.
      *
      * @param id identificador do registro alvo
-     * @param detalhesUsuarioDTO novos dados de atualizacao
+     * @param detalhesUsuarioDTO novos dados de atualização
      * @return usuario atualizado
      */
     Usuario atualizarUsuario(Long id, @Valid UsuarioRequestDTO detalhesUsuarioDTO);
@@ -55,3 +55,4 @@ public interface UsuarioService {
      */
     void deletarUsuario(Long id);
 }
+
