@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR"
       xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/base :: base('Novo usuário', 'usuarios', ~{::content})}">
+      th:replace="~{layout/base :: base('Cadastro de usuario', 'usuarios', ~{::content})}">
 <th:block th:fragment="content">
     <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
         <div>
-            <h1 class="mb-1" th:text="${modoEdicao} ? 'Editar usuário' : 'Novo usuário'">Novo usuário</h1>
+            <h1 class="mb-1" th:text="${modoEdicao} ? 'Editar usuario' : 'Novo usuario'">Novo usuario</h1>
             <p class="text-secondary mb-0"
-               th:text="${modoEdicao} ? 'Atualize os dados do usuário selecionado.' : 'Preencha os dados abaixo para cadastrar um novo usuário no sistema.'">
-                Preencha os dados abaixo para cadastrar um novo usuário no sistema.
+               th:text="${modoEdicao} ? 'Atualize os dados do usuario selecionado.' : 'Preencha os dados abaixo para cadastrar um novo usuario no sistema.'">
+                Preencha os dados abaixo para cadastrar um novo usuario no sistema.
             </p>
         </div>
         <a class="btn btn-outline-secondary px-4" th:href="@{/app/usuarios}">Voltar para lista</a>
@@ -19,7 +19,7 @@
     <div class="alert alert-warning border-0 shadow-sm"
          role="alert"
          th:if="${semCidades}">
-        Nenhuma cidade cadastrada. Cadastre cidades antes de criar novos usuários.
+        Nenhuma cidade cadastrada. Cadastre cidades antes de criar novos usuarios.
     </div>
 
     <section class="form-card rounded-4 p-3 p-lg-4">
@@ -29,7 +29,7 @@
               class="row g-3">
             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-            <div class="col-12" th:replace="~{fragments/form-errors :: summary('Revise os dados obrigatórios do cadastro.')}"></div>
+            <div class="col-12" th:replace="~{fragments/form-errors :: summary('Revise os dados obrigatorios do cadastro.')}"></div>
 
             <div class="col-12 col-lg-6">
                 <label for="nomeReal" class="form-label">Nome real</label>
@@ -39,7 +39,7 @@
             </div>
 
             <div class="col-12 col-lg-6">
-                <label for="nomeAnonimo" class="form-label">Nome anônimo</label>
+                <label for="nomeAnonimo" class="form-label">Nome anonimo</label>
                 <input id="nomeAnonimo" type="text" th:field="*{nomeAnonimo}" maxlength="50" class="form-control"
                        th:classappend="${#fields.hasErrors('nomeAnonimo')} ? ' is-invalid' : ''">
                 <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('nomeAnonimo')}" th:errors="*{nomeAnonimo}"></div>
@@ -56,15 +56,21 @@
                 <label for="celular" class="form-label">Celular</label>
                 <input id="celular" type="text" th:field="*{celular}" maxlength="11" class="form-control"
                        th:classappend="${#fields.hasErrors('celular')} ? ' is-invalid' : ''">
-                <div class="form-text">Informe apenas números, exemplo: 11999998888.</div>
+                <div class="form-text">Informe apenas numeros, exemplo: 11999998888.</div>
                 <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('celular')}" th:errors="*{celular}"></div>
             </div>
 
             <div class="col-12 col-lg-4">
-                <label for="senha" class="form-label" th:text="${modoEdicao} ? 'Senha (nova)' : 'Senha'">Senha</label>
-                <input id="senha" type="password" th:field="*{senha}" minlength="8" maxlength="255" required class="form-control"
-                       th:classappend="${#fields.hasErrors('senha')} ? ' is-invalid' : ''">
-                <div class="form-text" th:if="${modoEdicao}">Informe a senha para atualizar o cadastro.</div>
+                <label for="senha" class="form-label" th:text="${modoEdicao} ? 'Senha (opcional)' : 'Senha'">Senha</label>
+                <input id="senha"
+                       type="password"
+                       th:field="*{senha}"
+                       minlength="8"
+                       maxlength="255"
+                       class="form-control"
+                       th:classappend="${#fields.hasErrors('senha')} ? ' is-invalid' : ''"
+                       th:attr="required=${!modoEdicao}">
+                <div class="form-text" th:if="${modoEdicao}">Preencha apenas se quiser trocar a senha atual.</div>
                 <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
             </div>
 
@@ -85,8 +91,8 @@
                 <button type="submit"
                         class="btn btn-primary px-4"
                         th:disabled="${semCidades}"
-                        th:text="${modoEdicao} ? 'Salvar alterações' : 'Salvar usuário'">
-                    Salvar usuário
+                        th:text="${modoEdicao} ? 'Salvar alteracoes' : 'Salvar usuario'">
+                    Salvar usuario
                 </button>
             </div>
         </form>

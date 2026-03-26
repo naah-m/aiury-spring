@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -67,6 +68,37 @@ class SecurityIntegrationTest {
         mockMvc.perform(
                         get("/app/usuarios/novo")
                                 .with(user(AiuryUserPrincipal.ajudante("ajudante.escuta", "x", 1L)))
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void devePermitirMinhaContaParaTodosPerfisAutenticados() throws Exception {
+        mockMvc.perform(
+                        get("/app/minha-conta")
+                                .with(user(AiuryUserPrincipal.usuario("11999998888", "x", 1L)))
+                )
+                .andExpect(status().isOk());
+
+        mockMvc.perform(
+                        get("/app/minha-conta")
+                                .with(user(AiuryUserPrincipal.ajudante("ajudante.escuta", "x", 1L)))
+                )
+                .andExpect(status().isOk());
+        mockMvc.perform(
+                        get("/app/minha-conta")
+                                .with(user(AiuryUserPrincipal.admin("admin", "x")))
+                )
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveNegarEnvioDeMensagemNoMvcParaAdmin() throws Exception {
+        mockMvc.perform(
+                        post("/app/chats/1/conversa/mensagens")
+                                .with(csrf())
+                                .with(user(AiuryUserPrincipal.admin("admin", "x")))
+                                .param("texto", "Teste")
                 )
                 .andExpect(status().isForbidden());
     }

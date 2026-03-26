@@ -14,25 +14,28 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class MvcExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNotFound(NotFoundException ex, Model model) {
-        model.addAttribute("status", 404);
-        model.addAttribute("error", "Não encontrado");
+        model.addAttribute("status", HttpStatus.NOT_FOUND.value());
+        model.addAttribute("error", "Nao encontrado");
         model.addAttribute("message", ex.getMessage());
         return "error/default";
     }
 
     @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public String handleConflict(ConflictException ex, Model model) {
-        model.addAttribute("status", 409);
+        model.addAttribute("status", HttpStatus.CONFLICT.value());
         model.addAttribute("error", "Conflito");
         model.addAttribute("message", ex.getMessage());
         return "error/default";
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleBadRequest(IllegalArgumentException ex, Model model) {
-        model.addAttribute("status", 400);
-        model.addAttribute("error", "Requisição inválida");
+        model.addAttribute("status", HttpStatus.BAD_REQUEST.value());
+        model.addAttribute("error", "Requisicao invalida");
         model.addAttribute("message", ex.getMessage());
         return "error/default";
     }
@@ -44,10 +47,11 @@ public class MvcExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleGeneric(Exception ex, Model model) {
-        model.addAttribute("status", 500);
+        model.addAttribute("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         model.addAttribute("error", "Erro interno do servidor");
-        model.addAttribute("message", "Não foi possível concluir a operação.");
+        model.addAttribute("message", "Nao foi possivel concluir a operacao.");
         return "error/default";
     }
 }

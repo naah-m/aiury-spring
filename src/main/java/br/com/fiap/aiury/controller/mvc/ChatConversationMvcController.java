@@ -10,6 +10,7 @@ import br.com.fiap.aiury.security.AiuryAuthenticatedUserService;
 import br.com.fiap.aiury.services.ChatService;
 import br.com.fiap.aiury.services.MensagemService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -71,7 +72,7 @@ public class ChatConversationMvcController {
 
         if (chatMvcViewSupport.isFinalizado(chat.getStatus())) {
             chatMvcViewSupport.prepararTelaConversa(model, chat);
-            model.addAttribute("mensagemErro", "Não é possível enviar mensagens em chats finalizados.");
+            model.addAttribute("mensagemErro", "Nao e possivel enviar mensagens em chats finalizados.");
             return "app/chats/conversation";
         }
 
@@ -83,10 +84,11 @@ public class ChatConversationMvcController {
             } else if (authenticatedUserService.isAjudante()) {
                 remetenteAjudanteId = authenticatedUserService.getAjudanteIdOrNull();
             } else {
-                remetenteAjudanteId = chat.getAjudante() != null ? chat.getAjudante().getId() : null;
-                if (remetenteAjudanteId == null && chat.getUsuario() != null) {
-                    remetenteUsuarioId = chat.getUsuario().getId();
-                }
+                throw new AccessDeniedException("Somente usuario ou ajudante podem enviar mensagens nesta tela.");
+            }
+
+            if (remetenteUsuarioId == null && remetenteAjudanteId == null) {
+                throw new AccessDeniedException("Perfil autenticado sem vinculo valido para envio de mensagem.");
             }
 
             mensagemService.criarMensagem(

@@ -9,19 +9,18 @@ import br.com.fiap.aiury.repositories.ChatRepository;
 import br.com.fiap.aiury.repositories.CidadeRepository;
 import br.com.fiap.aiury.repositories.MensagemRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,12 +52,13 @@ class UsuarioServiceImplTest {
     void deveLancarNotFoundQuandoCidadeNaoExisteAoCriarUsuario() {
         UsuarioRequestDTO dto = new UsuarioRequestDTO();
         dto.setCidadeId(999L);
+        dto.setSenha("senha12345");
 
         when(cidadeRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> usuarioService.criarUsuario(dto))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessageContaining("Cidade não encontrada");
+                .hasMessageContaining("Cidade nao encontrada");
     }
 
     @Test
@@ -108,6 +108,37 @@ class UsuarioServiceImplTest {
 
         assertThatThrownBy(() -> usuarioService.deletarUsuario(usuarioId))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessageContaining("Usuário não encontrado");
+                .hasMessageContaining("Usuario nao encontrado");
+    }
+
+    @Test
+    void deveAlterarSenhaQuandoSenhaAtualValida() {
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        usuario.setSenha("hash-atual");
+
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(passwordEncoder.matches("senhaAtual123", "hash-atual")).thenReturn(true);
+        when(passwordEncoder.matches("novaSenha123", "hash-atual")).thenReturn(false);
+        when(passwordEncoder.encode("novaSenha123")).thenReturn("hash-nova");
+
+        usuarioService.alterarSenha(1L, "senhaAtual123", "novaSenha123");
+
+        assertThat(usuario.getSenha()).isEqualTo("hash-nova");
+        verify(usuarioRepository).save(usuario);
+    }
+
+    @Test
+    void deveLancarErroQuandoSenhaAtualNaoConfere() {
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        usuario.setSenha("hash-atual");
+
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(passwordEncoder.matches("senhaErrada", "hash-atual")).thenReturn(false);
+
+        assertThatThrownBy(() -> usuarioService.alterarSenha(1L, "senhaErrada", "novaSenha123"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("nao confere");
     }
 }

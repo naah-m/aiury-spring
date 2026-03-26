@@ -20,4 +20,6 @@ public interface AjudanteService {
     Ajudante atualizarAjudante(Long id, @Valid AjudanteRequestDTO ajudanteDTO);
 
     void deletarAjudante(Long id);
+
+    void alterarSenha(Long id, String senhaAtual, String novaSenha);
 }

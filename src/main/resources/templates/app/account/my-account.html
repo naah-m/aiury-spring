@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base('Minha conta', 'conta', ~{::content})}">
+<th:block th:fragment="content">
+    <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">Minha conta</h1>
+            <p class="text-secondary mb-0">Atualize sua senha com seguranca. Esta alteracao vale somente para o seu login.</p>
+        </div>
+        <a class="btn btn-outline-secondary px-4" th:href="@{/app/chats}">Voltar para chats</a>
+    </section>
+
+    <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
+
+    <section class="row g-3 g-lg-4">
+        <div class="col-12 col-xl-5">
+            <article class="page-card rounded-4 p-3 p-lg-4 h-100">
+                <h2 class="h5 fw-bold mb-3">Dados da sessao</h2>
+                <div class="d-grid gap-3">
+                    <div>
+                        <span class="chat-info-label">Login atual</span>
+                        <p class="mb-0 fw-semibold" th:text="${loginAtual}">login</p>
+                    </div>
+                    <div>
+                        <span class="chat-info-label">Perfil</span>
+                        <p class="mb-0 fw-semibold" th:if="${perfilAdmin}">ADMIN</p>
+                        <p class="mb-0 fw-semibold" th:if="${perfilUsuario}">USUARIO</p>
+                        <p class="mb-0 fw-semibold" th:if="${perfilAjudante}">AJUDANTE</p>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-12 col-xl-7">
+            <article class="form-card rounded-4 p-3 p-lg-4 h-100">
+                <h2 class="h5 fw-bold mb-3">Alterar senha</h2>
+                <form th:action="@{/app/minha-conta/senha}" th:object="${passwordChangeForm}" method="post" class="row g-3">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                    <div class="col-12" th:replace="~{fragments/form-errors :: summary('Revise os campos para alterar a senha.')}"></div>
+
+                    <div class="col-12">
+                        <label for="senhaAtual" class="form-label">Senha atual</label>
+                        <input id="senhaAtual"
+                               type="password"
+                               th:field="*{senhaAtual}"
+                               maxlength="255"
+                               required
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('senhaAtual')} ? ' is-invalid' : ''">
+                        <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('senhaAtual')}" th:errors="*{senhaAtual}"></div>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="novaSenha" class="form-label">Nova senha</label>
+                        <input id="novaSenha"
+                               type="password"
+                               th:field="*{novaSenha}"
+                               minlength="8"
+                               maxlength="255"
+                               required
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('novaSenha')} ? ' is-invalid' : ''">
+                        <div class="form-text">Use pelo menos 8 caracteres.</div>
+                        <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('novaSenha')}" th:errors="*{novaSenha}"></div>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="confirmacaoNovaSenha" class="form-label">Confirmar nova senha</label>
+                        <input id="confirmacaoNovaSenha"
+                               type="password"
+                               th:field="*{confirmacaoNovaSenha}"
+                               maxlength="255"
+                               required
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('confirmacaoNovaSenha')} ? ' is-invalid' : ''">
+                        <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('confirmacaoNovaSenha')}" th:errors="*{confirmacaoNovaSenha}"></div>
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary px-4">Salvar nova senha</button>
+                    </div>
+                </form>
+            </article>
+        </div>
+    </section>
+</th:block>
+</html>

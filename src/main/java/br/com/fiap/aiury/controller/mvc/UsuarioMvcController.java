@@ -12,6 +12,7 @@ import br.com.fiap.aiury.services.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -79,6 +80,10 @@ public class UsuarioMvcController {
                         BindingResult bindingResult,
                         Model model,
                         RedirectAttributes redirectAttributes) {
+        if (!StringUtils.hasText(usuarioForm.getSenha())) {
+            bindingResult.rejectValue("senha", "NotBlank.usuarioForm.senha", "A senha e obrigatoria no cadastro.");
+        }
+
         if (bindingResult.hasErrors()) {
             configurarModoCriacao(model);
             carregarCidades(model);
@@ -87,7 +92,7 @@ public class UsuarioMvcController {
 
         try {
             usuarioService.criarUsuario(usuarioWebMapper.toRequestDto(usuarioForm));
-            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuário cadastrado com sucesso.");
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuario cadastrado com sucesso.");
             return "redirect:/app/usuarios";
         } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
             configurarModoCriacao(model);
@@ -111,7 +116,7 @@ public class UsuarioMvcController {
 
         try {
             usuarioService.atualizarUsuario(id, usuarioWebMapper.toRequestDto(usuarioForm));
-            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuário atualizado com sucesso.");
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuario atualizado com sucesso.");
             return "redirect:/app/usuarios";
         } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
             configurarModoEdicao(model, id);
@@ -125,7 +130,7 @@ public class UsuarioMvcController {
     public String excluir(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             usuarioService.deletarUsuario(id);
-            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuário excluído com sucesso.");
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Usuario excluido com sucesso.");
         } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
             redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
         }

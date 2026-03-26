@@ -54,5 +54,14 @@ public interface UsuarioService {
      * @param id identificador do usuario
      */
     void deletarUsuario(Long id);
+
+    /**
+     * Altera a senha do usuario.
+     *
+     * @param id identificador do usuario
+     * @param senhaAtual senha atual informada no formulario
+     * @param novaSenha nova senha informada no formulario
+     */
+    void alterarSenha(Long id, String senhaAtual, String novaSenha);
 }
 

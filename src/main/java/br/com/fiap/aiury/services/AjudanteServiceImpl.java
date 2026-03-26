@@ -46,7 +46,7 @@ public class AjudanteServiceImpl implements AjudanteService {
     @Transactional
     public Ajudante criarAjudante(AjudanteRequestDTO ajudanteDTO) {
         if (!StringUtils.hasText(ajudanteDTO.getSenha())) {
-            throw new IllegalArgumentException("A senha do ajudante é obrigatória no cadastro.");
+            throw new IllegalArgumentException("A senha do ajudante e obrigatoria no cadastro.");
         }
 
         validarLoginUnico(ajudanteDTO.getLogin(), null);
@@ -59,7 +59,7 @@ public class AjudanteServiceImpl implements AjudanteService {
     @Override
     public Ajudante buscarPorId(Long id) {
         return ajudanteRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Ajudante não encontrado com ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Ajudante nao encontrado com ID: " + id));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class AjudanteServiceImpl implements AjudanteService {
     @Transactional
     public void deletarAjudante(Long id) {
         if (!ajudanteRepository.existsById(id)) {
-            throw new NotFoundException("Ajudante não encontrado com ID: " + id);
+            throw new NotFoundException("Ajudante nao encontrado com ID: " + id);
         }
 
         try {
@@ -102,8 +102,31 @@ public class AjudanteServiceImpl implements AjudanteService {
             chatRepository.deleteByAjudante_Id(id);
             ajudanteRepository.deleteById(id);
         } catch (DataIntegrityViolationException ex) {
-            throw new ConflictException("Não foi possível excluir o ajudante pois existem chats vinculados.");
+            throw new ConflictException("Nao foi possivel excluir o ajudante pois existem chats vinculados.");
         }
+    }
+
+    @Override
+    @Transactional
+    public void alterarSenha(Long id, String senhaAtual, String novaSenha) {
+        Ajudante ajudante = buscarPorId(id);
+
+        if (!StringUtils.hasText(senhaAtual)) {
+            throw new IllegalArgumentException("Informe a senha atual.");
+        }
+        if (!StringUtils.hasText(novaSenha)) {
+            throw new IllegalArgumentException("Informe a nova senha.");
+        }
+
+        if (!passwordEncoder.matches(senhaAtual, ajudante.getSenha())) {
+            throw new IllegalArgumentException("A senha atual informada nao confere.");
+        }
+        if (passwordEncoder.matches(novaSenha, ajudante.getSenha())) {
+            throw new IllegalArgumentException("A nova senha deve ser diferente da senha atual.");
+        }
+
+        ajudante.setSenha(codificarSenha(novaSenha));
+        ajudanteRepository.save(ajudante);
     }
 
     private void validarLoginUnico(String login, Long ajudanteIdAtual) {
@@ -117,7 +140,7 @@ public class AjudanteServiceImpl implements AjudanteService {
                 : ajudanteRepository.existsByLoginIgnoreCaseAndIdNot(loginNormalizado, ajudanteIdAtual);
 
         if (loginEmUso) {
-            throw new ConflictException("Já existe ajudante cadastrado com o login informado.");
+            throw new ConflictException("Ja existe ajudante cadastrado com o login informado.");
         }
     }
 

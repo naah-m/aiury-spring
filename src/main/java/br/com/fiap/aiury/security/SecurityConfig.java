@@ -46,7 +46,8 @@ public class SecurityConfig {
                         .requestMatchers("/app/chats/novo").hasAnyRole("ADMIN", "USUARIO")
                         .requestMatchers(HttpMethod.POST, "/app/chats/*/status").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/app/chats/*/excluir").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/app/chats/*/conversa/mensagens").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
+                        .requestMatchers(HttpMethod.POST, "/app/chats/*/conversa/mensagens").hasAnyRole("USUARIO", "AJUDANTE")
+                        .requestMatchers("/app/minha-conta/**").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
                         .requestMatchers("/app/chats/**").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
                         .requestMatchers("/app/**").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
 

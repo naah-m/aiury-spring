@@ -21,11 +21,6 @@ import java.util.List;
 
 /**
  * Implementacao de {@link UsuarioService}.
- *
- * Responsabilidades:
- * - aplicar validacoes de existencia (usuario e cidade);
- * - coordenar mapeamento DTO <-> entidade;
- * - orquestrar persistencia transacional no repositorio.
  */
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -52,14 +47,15 @@ public class UsuarioServiceImpl implements UsuarioService {
         this.usuarioMapper = usuarioMapper;
     }
 
-    /**
-     * Cria usuario novo validando previamente a cidade informada.
-     */
     @Override
     @Transactional
     public Usuario criarUsuario(UsuarioRequestDTO usuarioDTO) {
+        if (!StringUtils.hasText(usuarioDTO.getSenha())) {
+            throw new IllegalArgumentException("A senha do usuario e obrigatoria no cadastro.");
+        }
+
         Cidade cidade = cidadeRepository.findById(usuarioDTO.getCidadeId())
-                .orElseThrow(() -> new NotFoundException("Cidade não encontrada com ID: " + usuarioDTO.getCidadeId()));
+                .orElseThrow(() -> new NotFoundException("Cidade nao encontrada com ID: " + usuarioDTO.getCidadeId()));
 
         validarCelularUnico(usuarioDTO.getCelular(), null);
 
@@ -68,18 +64,12 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    /**
-     * Busca usuario por ID e dispara erro de negocio caso nao exista.
-     */
     @Override
     public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado com ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Usuario nao encontrado com ID: " + id));
     }
 
-    /**
-     * Retorna usuarios com filtro opcional por cidade.
-     */
     @Override
     public List<Usuario> buscarTodos(Long cidadeId) {
         if (cidadeId == null) {
@@ -88,11 +78,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.findByCidade_Id(cidadeId);
     }
 
-    /**
-     * Atualiza dados do usuario e opcionalmente troca cidade.
-     *
-     * Mantem a regra existente de atualizar senha apenas quando o valor vier preenchido.
-     */
     @Override
     @Transactional
     public Usuario atualizarUsuario(Long id, UsuarioRequestDTO detalhesUsuarioDTO) {
@@ -101,7 +86,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         Cidade novaCidade = null;
         if (detalhesUsuarioDTO.getCidadeId() != null) {
             novaCidade = cidadeRepository.findById(detalhesUsuarioDTO.getCidadeId())
-                    .orElseThrow(() -> new NotFoundException("Cidade não encontrada com ID: " + detalhesUsuarioDTO.getCidadeId()));
+                    .orElseThrow(() -> new NotFoundException(
+                            "Cidade nao encontrada com ID: " + detalhesUsuarioDTO.getCidadeId()
+                    ));
         }
 
         validarCelularUnico(detalhesUsuarioDTO.getCelular(), id);
@@ -114,14 +101,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.save(usuarioExistente);
     }
 
-    /**
-     * Remove usuario por ID com validacao de existencia.
-     */
     @Override
     @Transactional
     public void deletarUsuario(Long id) {
         if (!usuarioRepository.existsById(id)) {
-            throw new NotFoundException("Usuário não encontrado com ID: " + id);
+            throw new NotFoundException("Usuario nao encontrado com ID: " + id);
         }
 
         try {
@@ -130,8 +114,31 @@ public class UsuarioServiceImpl implements UsuarioService {
             chatRepository.deleteByUsuario_Id(id);
             usuarioRepository.deleteById(id);
         } catch (DataIntegrityViolationException ex) {
-            throw new ConflictException("Não foi possível excluir o usuário pois existem registros vinculados.");
+            throw new ConflictException("Nao foi possivel excluir o usuario pois existem registros vinculados.");
         }
+    }
+
+    @Override
+    @Transactional
+    public void alterarSenha(Long id, String senhaAtual, String novaSenha) {
+        Usuario usuario = buscarPorId(id);
+
+        if (!StringUtils.hasText(senhaAtual)) {
+            throw new IllegalArgumentException("Informe a senha atual.");
+        }
+        if (!StringUtils.hasText(novaSenha)) {
+            throw new IllegalArgumentException("Informe a nova senha.");
+        }
+
+        if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
+            throw new IllegalArgumentException("A senha atual informada nao confere.");
+        }
+        if (passwordEncoder.matches(novaSenha, usuario.getSenha())) {
+            throw new IllegalArgumentException("A nova senha deve ser diferente da senha atual.");
+        }
+
+        usuario.setSenha(codificarSenha(novaSenha));
+        usuarioRepository.save(usuario);
     }
 
     private void validarCelularUnico(String celular, Long usuarioIdAtual) {
@@ -144,7 +151,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 : usuarioRepository.existsByCelularAndIdNot(celular, usuarioIdAtual);
 
         if (celularEmUso) {
-            throw new ConflictException("Já existe usuário cadastrado com o celular informado.");
+            throw new ConflictException("Ja existe usuario cadastrado com o celular informado.");
         }
     }
 
@@ -162,4 +169,3 @@ public class UsuarioServiceImpl implements UsuarioService {
         return passwordEncoder.encode(valorNormalizado);
     }
 }
-
