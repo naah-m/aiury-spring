@@ -39,6 +39,7 @@ public class UsuarioRequestDTO {
     )
     private LocalDate dataNascimento;
 
+    @NotBlank(message = "O celular e obrigatorio")
     @Pattern(
             regexp = "^\\d{10,11}$",
             message = "O celular deve conter apenas numeros com DDD (10 ou 11 digitos)"

@@ -23,6 +23,12 @@ public class Ajudante {
     @Column(name = "area_atuacao", length = 100, nullable = false)
     private String areaAtuacao;
 
+    @Column(name = "login", length = 60, nullable = false, unique = true)
+    private String login;
+
+    @Column(name = "senha", nullable = false, length = 255)
+    private String senha;
+
     @Lob
     @Column(name = "motivacao")
     private String motivacao;

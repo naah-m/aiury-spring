@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{layout/base :: base('Chats', 'chats', ~{::content})}">
 <th:block th:fragment="content">
     <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
@@ -8,12 +9,12 @@
             <h1 class="mb-1">Chats e atendimentos</h1>
             <p class="text-secondary mb-0">Acompanhe os atendimentos em andamento e o historico de chats da plataforma.</p>
         </div>
-        <a class="btn btn-primary px-4" th:href="@{/app/chats/novo}">Abrir novo chat</a>
+        <a class="btn btn-primary px-4" th:href="@{/app/chats/novo}" sec:authorize="hasRole('ADMIN')">Abrir novo chat</a>
     </section>
 
     <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
 
-    <section class="page-card rounded-4 p-3 p-lg-4 mb-4">
+    <section class="page-card rounded-4 p-3 p-lg-4 mb-4" th:if="${perfilAdmin}">
         <form class="row g-3 align-items-end" method="get" th:action="@{/app/chats}">
             <div class="col-12 col-lg-4">
                 <label class="form-label" for="usuarioId">Usuario</label>
@@ -57,6 +58,10 @@
         </form>
     </section>
 
+    <div class="alert alert-info border-0 shadow-sm" role="alert" th:if="${!perfilAdmin}">
+        Esta listagem exibe apenas os chats vinculados ao seu perfil.
+    </div>
+
     <section class="page-card rounded-4 overflow-hidden">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -79,7 +84,7 @@
                             <a class="btn btn-sm btn-outline-secondary" th:if="${temFiltrosAtivos}" th:href="@{/app/chats}">
                                 Limpar filtros
                             </a>
-                            <a class="btn btn-sm btn-primary" th:href="@{/app/chats/novo}">
+                            <a class="btn btn-sm btn-primary" th:href="@{/app/chats/novo}" sec:authorize="hasRole('ADMIN')">
                                 Abrir novo chat
                             </a>
                         </div>
@@ -113,7 +118,8 @@
                             <a class="btn btn-sm btn-outline-primary" th:href="@{/app/chats/{id}/conversa(id=${chat.id})}">
                                 Conversa
                             </a>
-                            <form th:action="@{/app/chats/{id}/excluir(id=${chat.id})}" method="post" class="d-inline">
+                            <form th:action="@{/app/chats/{id}/excluir(id=${chat.id})}" method="post" class="d-inline"
+                                  sec:authorize="hasRole('ADMIN')">
                                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                 <button type="submit"
                                         class="btn btn-sm btn-outline-danger"

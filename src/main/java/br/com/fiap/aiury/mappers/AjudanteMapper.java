@@ -24,6 +24,8 @@ public class AjudanteMapper {
 
         Ajudante ajudante = new Ajudante();
         ajudante.setAreaAtuacao(request.getAreaAtuacao());
+        ajudante.setLogin(request.getLogin());
+        ajudante.setSenha(request.getSenha());
         ajudante.setMotivacao(request.getMotivacao());
         ajudante.setDisponivel(Boolean.TRUE.equals(request.getDisponivel()));
         ajudante.setRating(request.getRating());
@@ -40,6 +42,12 @@ public class AjudanteMapper {
     public void updateEntityFromDto(Ajudante ajudante, AjudanteRequestDTO request) {
         if (request.getAreaAtuacao() != null) {
             ajudante.setAreaAtuacao(request.getAreaAtuacao());
+        }
+        if (request.getLogin() != null) {
+            ajudante.setLogin(request.getLogin());
+        }
+        if (request.getSenha() != null) {
+            ajudante.setSenha(request.getSenha());
         }
         if (request.getMotivacao() != null) {
             ajudante.setMotivacao(request.getMotivacao());
@@ -66,6 +74,7 @@ public class AjudanteMapper {
         AjudanteResponseDTO dto = new AjudanteResponseDTO();
         dto.setId(ajudante.getId());
         dto.setAreaAtuacao(ajudante.getAreaAtuacao());
+        dto.setLogin(ajudante.getLogin());
         dto.setMotivacao(ajudante.getMotivacao());
         dto.setDisponivel(ajudante.isDisponivel());
         dto.setRating(ajudante.getRating());

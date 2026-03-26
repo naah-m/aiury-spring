@@ -6,6 +6,7 @@ import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.exceptions.ConflictException;
 import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.web.ChatWebMapper;
+import br.com.fiap.aiury.security.AiuryAuthenticatedUserService;
 import br.com.fiap.aiury.services.ChatService;
 import br.com.fiap.aiury.services.MensagemService;
 import jakarta.validation.Valid;
@@ -29,15 +30,18 @@ public class ChatConversationMvcController {
     private final MensagemService mensagemService;
     private final ChatWebMapper chatWebMapper;
     private final ChatMvcViewSupport chatMvcViewSupport;
+    private final AiuryAuthenticatedUserService authenticatedUserService;
 
     public ChatConversationMvcController(ChatService chatService,
                                          MensagemService mensagemService,
                                          ChatWebMapper chatWebMapper,
-                                         ChatMvcViewSupport chatMvcViewSupport) {
+                                         ChatMvcViewSupport chatMvcViewSupport,
+                                         AiuryAuthenticatedUserService authenticatedUserService) {
         this.chatService = chatService;
         this.mensagemService = mensagemService;
         this.chatWebMapper = chatWebMapper;
         this.chatMvcViewSupport = chatMvcViewSupport;
+        this.authenticatedUserService = authenticatedUserService;
     }
 
     @GetMapping("/{id}/conversa")
@@ -72,11 +76,26 @@ public class ChatConversationMvcController {
         }
 
         try {
+            Long remetenteUsuarioId = null;
+            Long remetenteAjudanteId = null;
+            if (authenticatedUserService.isUsuario()) {
+                remetenteUsuarioId = authenticatedUserService.getUsuarioIdOrNull();
+            } else if (authenticatedUserService.isAjudante()) {
+                remetenteAjudanteId = authenticatedUserService.getAjudanteIdOrNull();
+            } else {
+                remetenteAjudanteId = chat.getAjudante() != null ? chat.getAjudante().getId() : null;
+                if (remetenteAjudanteId == null && chat.getUsuario() != null) {
+                    remetenteUsuarioId = chat.getUsuario().getId();
+                }
+            }
+
             mensagemService.criarMensagem(
                     chatWebMapper.toMensagemRequest(
                             chat,
                             mensagemForm,
-                            LocalDateTime.now().withSecond(0).withNano(0)
+                            LocalDateTime.now().withSecond(0).withNano(0),
+                            remetenteUsuarioId,
+                            remetenteAjudanteId
                     )
             );
             redirectAttributes.addFlashAttribute("mensagemSucesso", "Mensagem enviada com sucesso.");

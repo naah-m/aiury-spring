@@ -33,4 +33,10 @@ public interface ChatRepository extends JpaRepository<Chat, Long>, JpaSpecificat
     );
 
     long deleteByUsuario_Id(Long usuarioId);
+
+    long deleteByAjudante_Id(Long ajudanteId);
+
+    long countByUsuario_Id(Long usuarioId);
+
+    long countByAjudante_Id(Long ajudanteId);
 }

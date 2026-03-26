@@ -1,22 +1,18 @@
 package br.com.fiap.aiury.security;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.access.HttpStatusAccessDeniedHandler;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -24,11 +20,16 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import java.util.LinkedHashMap;
 
 @Configuration
+@EnableConfigurationProperties(AiuryAdminProperties.class)
 public class SecurityConfig {
 
-    private static final String ROLE_ADMIN = "ADMIN";
-    private static final String ROLE_ATENDENTE = "ATENDENTE";
     private static final RequestMatcher API_REQUEST_MATCHER = PathPatternRequestMatcher.withDefaults().matcher("/api/**");
+
+    private final RoleBasedAuthenticationSuccessHandler authenticationSuccessHandler;
+
+    public SecurityConfig(RoleBasedAuthenticationSuccessHandler authenticationSuccessHandler) {
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,18 +39,36 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                        .requestMatchers("/api/**").hasRole(ROLE_ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/app/usuarios", "/app/usuarios/").hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE)
-                        .requestMatchers("/app/usuarios", "/app/usuarios/**").hasRole(ROLE_ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/app/chats", "/app/chats/", "/app/chats/**").hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE)
-                        .requestMatchers("/app/chats", "/app/chats/**").hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE)
-                        .requestMatchers("/app/**").hasAnyRole(ROLE_ADMIN, ROLE_ATENDENTE)
+                        .requestMatchers("/app/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers("/app/ajudantes/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/app/chats").hasRole("ADMIN")
+                        .requestMatchers("/app/chats/novo").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/app/chats/*/status").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/app/chats/*/excluir").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/app/chats/*/conversa/mensagens").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
+                        .requestMatchers("/app/chats/**").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
+                        .requestMatchers("/app/**").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
+
+                        .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers("/api/ajudantes/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/api/chats/**").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
+                        .requestMatchers(HttpMethod.POST, "/api/chats/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/chats/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/chats/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/api/mensagens/**").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
+                        .requestMatchers(HttpMethod.POST, "/api/mensagens/**").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
+                        .requestMatchers(HttpMethod.PUT, "/api/mensagens/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/mensagens/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/api/cidades/**", "/api/estados/**", "/api").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
+                        .requestMatchers("/api/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .successHandler(authenticationSuccessHandler())
+                        .successHandler(authenticationSuccessHandler)
                         .failureUrl("/login?error")
                         .permitAll()
                 )
@@ -89,32 +108,26 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler() {
-        SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-        successHandler.setDefaultTargetUrl("/app");
-        successHandler.setAlwaysUseDefaultTargetUrl(false);
-        return successHandler;
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("admin123"))
-                .roles(ROLE_ADMIN)
-                .build();
-
-        UserDetails atendente = User.builder()
-                .username("atendente")
-                .password(passwordEncoder.encode("atendente123"))
-                .roles(ROLE_ATENDENTE)
-                .build();
-
-        return new InMemoryUserDetailsManager(admin, atendente);
-    }
-
-    @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        BCryptPasswordEncoder delegate = new BCryptPasswordEncoder();
+        return new PasswordEncoder() {
+            @Override
+            public String encode(CharSequence rawPassword) {
+                return delegate.encode(rawPassword);
+            }
+
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                if (encodedPassword == null) {
+                    return false;
+                }
+                if (encodedPassword.startsWith("$2a$")
+                        || encodedPassword.startsWith("$2b$")
+                        || encodedPassword.startsWith("$2y$")) {
+                    return delegate.matches(rawPassword, encodedPassword);
+                }
+                return rawPassword != null && rawPassword.toString().equals(encodedPassword);
+            }
+        };
     }
 }

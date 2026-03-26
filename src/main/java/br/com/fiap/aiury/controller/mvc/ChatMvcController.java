@@ -9,6 +9,7 @@ import br.com.fiap.aiury.entities.ChatStatus;
 import br.com.fiap.aiury.exceptions.ConflictException;
 import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.web.ChatWebMapper;
+import br.com.fiap.aiury.security.AiuryAuthenticatedUserService;
 import br.com.fiap.aiury.services.ChatService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -32,13 +33,16 @@ public class ChatMvcController {
     private final ChatService chatService;
     private final ChatWebMapper chatWebMapper;
     private final ChatMvcViewSupport chatMvcViewSupport;
+    private final AiuryAuthenticatedUserService authenticatedUserService;
 
     public ChatMvcController(ChatService chatService,
                              ChatWebMapper chatWebMapper,
-                             ChatMvcViewSupport chatMvcViewSupport) {
+                             ChatMvcViewSupport chatMvcViewSupport,
+                             AiuryAuthenticatedUserService authenticatedUserService) {
         this.chatService = chatService;
         this.chatWebMapper = chatWebMapper;
         this.chatMvcViewSupport = chatMvcViewSupport;
+        this.authenticatedUserService = authenticatedUserService;
     }
 
     @GetMapping
@@ -46,12 +50,22 @@ public class ChatMvcController {
                          @RequestParam(required = false) Long ajudanteId,
                          @RequestParam(required = false) ChatStatus status,
                          Model model) {
-        List<ChatListItemView> chatViews = chatService.buscarTodos(usuarioId, ajudanteId, status).stream()
+        Long usuarioIdEfetivo = usuarioId;
+        Long ajudanteIdEfetivo = ajudanteId;
+        if (authenticatedUserService.isUsuario()) {
+            usuarioIdEfetivo = authenticatedUserService.getUsuarioIdOrNull();
+            ajudanteIdEfetivo = null;
+        } else if (authenticatedUserService.isAjudante()) {
+            ajudanteIdEfetivo = authenticatedUserService.getAjudanteIdOrNull();
+            usuarioIdEfetivo = null;
+        }
+
+        List<ChatListItemView> chatViews = chatService.buscarTodos(usuarioIdEfetivo, ajudanteIdEfetivo, status).stream()
                 .map(chatWebMapper::toListItem)
                 .toList();
 
         model.addAttribute("chats", chatViews);
-        chatMvcViewSupport.adicionarDadosListagem(model, usuarioId, ajudanteId, status);
+        chatMvcViewSupport.adicionarDadosListagem(model, usuarioIdEfetivo, ajudanteIdEfetivo, status);
         return "app/chats/list";
     }
 

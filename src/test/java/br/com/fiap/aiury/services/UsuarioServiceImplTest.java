@@ -9,6 +9,7 @@ import br.com.fiap.aiury.repositories.ChatRepository;
 import br.com.fiap.aiury.repositories.CidadeRepository;
 import br.com.fiap.aiury.repositories.MensagemRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,6 +39,9 @@ class UsuarioServiceImplTest {
 
     @Mock
     private MensagemRepository mensagemRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Mock
     private UsuarioMapper usuarioMapper;
@@ -75,6 +79,7 @@ class UsuarioServiceImplTest {
 
         when(cidadeRepository.findById(1L)).thenReturn(Optional.of(cidade));
         when(usuarioMapper.toEntity(dto, cidade)).thenReturn(usuario);
+        when(passwordEncoder.encode("segredo123")).thenReturn("senha-criptografada");
         when(usuarioRepository.save(usuario)).thenReturn(usuario);
 
         Usuario criado = usuarioService.criarUsuario(dto);

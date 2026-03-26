@@ -8,10 +8,10 @@
         <div class="row align-items-center g-4">
             <div class="col-lg-8">
                 <span class="home-chip">Plataforma Aiury</span>
-                <h1 class="display-6 fw-bold mt-3 mb-3">Base web pronta para evolucao com Spring Security e Thymeleaf.</h1>
+                <h1 class="display-6 fw-bold mt-3 mb-3">Atendimento seguro com Spring Boot, Security e Thymeleaf.</h1>
                 <p class="lead mb-4">
-                    Navegacao inicial estruturada, layout modular com fragments reutilizaveis e experiencia visual
-                    consistente para acelerar as proximas entregas.
+                    Fluxo completo de autenticacao e autorizacao por perfil: administracao, usuarios atendidos
+                    e ajudantes vinculados aos chats.
                 </p>
                 <div class="d-flex flex-wrap gap-2">
                     <a class="btn btn-primary btn-lg px-4" sec:authorize="isAnonymous()" th:href="@{/login}">
@@ -29,10 +29,10 @@
                 <div class="home-highlight rounded-4 p-4">
                     <h2 class="h5 fw-bold mb-3">O que ja esta pronto</h2>
                     <ul class="list-unstyled m-0 d-grid gap-2">
-                        <li>Layout principal reutilizavel</li>
-                        <li>Fragments de head, navbar, footer e alertas</li>
-                        <li>Paginas MVC integradas com Bootstrap 5</li>
-                        <li>Estrutura preparada para regras de acesso futuras</li>
+                        <li>Login com perfis ADMIN, USUARIO e AJUDANTE</li>
+                        <li>Controle de acesso por vinculo de atendimento</li>
+                        <li>Telas MVC para gestao de usuarios, ajudantes e chats</li>
+                        <li>API REST protegida por autorizacao real no backend</li>
                     </ul>
                 </div>
             </div>

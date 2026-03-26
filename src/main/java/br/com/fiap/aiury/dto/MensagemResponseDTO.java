@@ -23,6 +23,12 @@ public class MensagemResponseDTO {
     @Schema(description = "ID do remetente", example = "10")
     private Long remetenteId;
 
+    @Schema(description = "ID do remetente ajudante", example = "3")
+    private Long remetenteAjudanteId;
+
+    @Schema(description = "Tipo do remetente (USUARIO ou AJUDANTE)", example = "USUARIO")
+    private String remetenteTipo;
+
     @Schema(description = "Texto enviado", example = "Obrigado pela escuta de hoje.")
     private String texto;
 

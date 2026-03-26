@@ -46,7 +46,7 @@ public class MensagemController {
     @PostMapping
     @Operation(
             summary = "Criar mensagem",
-            description = "Cria uma nova mensagem vinculada a um chat. Pre-requisitos: chatId e remetenteId devem existir e o remetente deve pertencer ao chat."
+            description = "Cria uma nova mensagem vinculada a um chat. Pre-requisitos: chatId e remetente (usuario ou ajudante) devem existir e pertencer ao chat."
     )
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
@@ -129,7 +129,7 @@ public class MensagemController {
     @PutMapping("/{id}")
     @Operation(
             summary = "Atualizar mensagem",
-            description = "Atualiza uma mensagem existente. Pre-requisitos: id da mensagem, chatId e remetenteId devem existir."
+            description = "Atualiza uma mensagem existente. Pre-requisitos: id da mensagem, chatId e remetente (usuario ou ajudante) devem existir."
     )
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,

@@ -3,6 +3,7 @@ package br.com.fiap.aiury.dto;
 import br.com.fiap.aiury.configs.DateTimePatterns;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,9 +22,11 @@ public class MensagemRequestDTO {
     @Schema(description = "Identificador do chat ao qual a mensagem pertence", example = "101")
     private Long chatId;
 
-    @NotNull(message = "O ID do remetente e obrigatorio")
-    @Schema(description = "Identificador do usuario remetente", example = "10")
+    @Schema(description = "Identificador do usuario remetente", example = "10", nullable = true)
     private Long remetenteId;
+
+    @Schema(description = "Identificador do ajudante remetente", example = "3", nullable = true)
+    private Long remetenteAjudanteId;
 
     @NotBlank(message = "O texto da mensagem e obrigatorio")
     @Size(max = 1000, message = "O texto da mensagem deve ter no maximo 1000 caracteres")
@@ -39,4 +42,11 @@ public class MensagemRequestDTO {
             pattern = DateTimePatterns.DATE_TIME
     )
     private LocalDateTime dataEnvio;
+
+    @AssertTrue(message = "Informe exatamente um remetente: usuario ou ajudante")
+    public boolean isRemetenteValido() {
+        boolean temUsuario = remetenteId != null;
+        boolean temAjudante = remetenteAjudanteId != null;
+        return temUsuario ^ temAjudante;
+    }
 }

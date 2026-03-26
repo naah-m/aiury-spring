@@ -20,6 +20,15 @@ public class AjudanteRequestDTO {
     @Schema(description = "Area principal de atuacao", example = "Escuta ativa")
     private String areaAtuacao;
 
+    @NotBlank(message = "O login do ajudante e obrigatorio")
+    @Size(max = 60, message = "O login deve ter no maximo 60 caracteres")
+    @Schema(description = "Login de acesso do ajudante", example = "ajudante.escuta")
+    private String login;
+
+    @Size(min = 8, max = 255, message = "A senha deve ter entre 8 e 255 caracteres")
+    @Schema(description = "Senha do ajudante (obrigatoria no cadastro, opcional na edicao)", example = "ajudante123", nullable = true)
+    private String senha;
+
     @Size(max = 2000, message = "A motivacao deve ter no maximo 2000 caracteres")
     @Schema(description = "Motivacao para atuar na plataforma", example = "Atuo com escuta qualificada em acolhimento emocional")
     private String motivacao;

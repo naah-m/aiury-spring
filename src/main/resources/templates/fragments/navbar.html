@@ -26,13 +26,19 @@
                        th:href="@{/app}"
                        th:attr="aria-current=${activePage == 'dashboard'} ? 'page' : null">Dashboard</a>
                 </li>
-                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','ATENDENTE')">
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link"
                            th:classappend="${activePage == 'usuarios'} ? ' active' : ''"
                            th:href="@{/app/usuarios}"
                            th:attr="aria-current=${activePage == 'usuarios'} ? 'page' : null">Usuarios</a>
                 </li>
-                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','ATENDENTE')">
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link"
+                       th:classappend="${activePage == 'ajudantes'} ? ' active' : ''"
+                       th:href="@{/app/ajudantes}"
+                       th:attr="aria-current=${activePage == 'ajudantes'} ? 'page' : null">Ajudantes</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','USUARIO','AJUDANTE')">
                     <a class="nav-link"
                        th:classappend="${activePage == 'chats'} ? ' active' : ''"
                        th:href="@{/app/chats}"
@@ -48,7 +54,8 @@
                     conectado como <strong class="text-white" sec:authentication="name">usuario</strong>
                 </span>
                 <span class="badge rounded-pill text-bg-light" sec:authorize="hasRole('ADMIN')">ADMIN</span>
-                <span class="badge rounded-pill text-bg-light" sec:authorize="hasRole('ATENDENTE')">ATENDENTE</span>
+                <span class="badge rounded-pill text-bg-light" sec:authorize="hasRole('AJUDANTE')">AJUDANTE</span>
+                <span class="badge rounded-pill text-bg-light" sec:authorize="hasRole('USUARIO')">USUARIO</span>
                 <a class="btn btn-light btn-sm px-3" sec:authorize="isAnonymous()" th:href="@{/login}">Entrar</a>
                 <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()" class="m-0">
                     <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">

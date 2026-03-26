@@ -31,6 +31,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@WithMockUser(username = "admin", roles = "ADMIN")
 class HateoasRuntimeIntegrationTest {
 
     @Autowired
@@ -91,7 +92,6 @@ class HateoasRuntimeIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = "ADMIN")
     void deveAceitarFormatoDeDataHoraAmigavelNosEndpointsDeChatEMensagem() throws Exception {
         Estado estado = criarEstado();
         Cidade cidade = criarCidade(estado);
@@ -169,6 +169,8 @@ class HateoasRuntimeIntegrationTest {
     private Ajudante criarAjudante() {
         Ajudante ajudante = new Ajudante();
         ajudante.setAreaAtuacao("Escuta ativa");
+        ajudante.setLogin("ajudante.escuta");
+        ajudante.setSenha("segredo123");
         ajudante.setMotivacao("Acolhimento voluntario");
         ajudante.setDisponivel(true);
         ajudante.setRating(4.8);

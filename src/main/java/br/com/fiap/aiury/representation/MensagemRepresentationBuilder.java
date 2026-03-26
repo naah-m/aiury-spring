@@ -1,5 +1,6 @@
 package br.com.fiap.aiury.representation;
 
+import br.com.fiap.aiury.controller.AjudanteController;
 import br.com.fiap.aiury.controller.ChatController;
 import br.com.fiap.aiury.controller.MensagemController;
 import br.com.fiap.aiury.controller.UsuarioController;
@@ -32,7 +33,8 @@ public class MensagemRepresentationBuilder {
         MensagemResponseDTO dto = mensagemMapper.toResponseDto(mensagem);
         Long mensagemId = mensagem.getId();
         Long chatId = mensagem.getChat() != null ? mensagem.getChat().getId() : null;
-        Long remetenteId = mensagem.getRemetente() != null ? mensagem.getRemetente().getId() : null;
+        Long remetenteUsuarioId = mensagem.getRemetente() != null ? mensagem.getRemetente().getId() : null;
+        Long remetenteAjudanteId = mensagem.getRemetenteAjudante() != null ? mensagem.getRemetenteAjudante().getId() : null;
 
         EntityModel<MensagemResponseDTO> model = EntityModel.of(
                 dto,
@@ -45,8 +47,11 @@ public class MensagemRepresentationBuilder {
         if (chatId != null) {
             model.add(linkTo(methodOn(ChatController.class).buscarChatPorId(chatId)).withRel(ApiRelations.CHAT));
         }
-        if (remetenteId != null) {
-            model.add(linkTo(methodOn(UsuarioController.class).buscarUsuarioPorId(remetenteId)).withRel(ApiRelations.REMETENTE));
+        if (remetenteUsuarioId != null) {
+            model.add(linkTo(methodOn(UsuarioController.class).buscarUsuarioPorId(remetenteUsuarioId)).withRel(ApiRelations.REMETENTE));
+        }
+        if (remetenteAjudanteId != null) {
+            model.add(linkTo(methodOn(AjudanteController.class).buscarAjudantePorId(remetenteAjudanteId)).withRel(ApiRelations.AJUDANTE));
         }
 
         return model;

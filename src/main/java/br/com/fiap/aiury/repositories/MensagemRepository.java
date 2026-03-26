@@ -1,7 +1,11 @@
 package br.com.fiap.aiury.repositories;
 
 import br.com.fiap.aiury.entities.Mensagem;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -12,7 +16,15 @@ import java.util.Optional;
  * Repositorio de acesso a dados para {@link Mensagem}.
  */
 @Repository
-public interface MensagemRepository extends JpaRepository<Mensagem, Long> {
+public interface MensagemRepository extends JpaRepository<Mensagem, Long>, JpaSpecificationExecutor<Mensagem> {
+
+    @Override
+    @EntityGraph(attributePaths = {"chat", "chat.usuario", "chat.ajudante", "remetente", "remetenteAjudante"})
+    Optional<Mensagem> findById(Long id);
+
+    @Override
+    @EntityGraph(attributePaths = {"chat", "chat.usuario", "chat.ajudante", "remetente", "remetenteAjudante"})
+    List<Mensagem> findAll(Specification<Mensagem> spec, Sort sort);
 
     List<Mensagem> findAllByOrderByDataEnvioAsc();
 
@@ -38,9 +50,24 @@ public interface MensagemRepository extends JpaRepository<Mensagem, Long> {
             String texto
     );
 
+    Optional<Mensagem> findFirstByChat_IdAndRemetenteAjudante_IdAndDataEnvioAndTextoOrderByIdAsc(
+            Long chatId,
+            Long remetenteAjudanteId,
+            LocalDateTime dataEnvio,
+            String texto
+    );
+
     long deleteByChat_Id(Long chatId);
 
     long deleteByChat_Usuario_Id(Long usuarioId);
 
     long deleteByRemetente_Id(Long remetenteId);
+
+    long deleteByChat_Ajudante_Id(Long ajudanteId);
+
+    long deleteByRemetenteAjudante_Id(Long remetenteAjudanteId);
+
+    long countByChat_Usuario_Id(Long usuarioId);
+
+    long countByChat_Ajudante_Id(Long ajudanteId);
 }

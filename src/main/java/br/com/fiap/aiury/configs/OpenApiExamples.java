@@ -36,6 +36,8 @@ public final class OpenApiExamples {
     public static final String AJUDANTE_REQUEST = """
             {
               "areaAtuacao": "Escuta ativa",
+              "login": "ajudante.escuta",
+              "senha": "apoio12345",
               "motivacao": "Acolhimento voluntario em plantao",
               "disponivel": true,
               "rating": 4.8

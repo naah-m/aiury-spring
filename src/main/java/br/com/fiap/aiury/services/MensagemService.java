@@ -31,7 +31,7 @@ public interface MensagemService {
      * Lista mensagens com filtros opcionais.
      *
      * @param chatId filtro opcional por chat
-     * @param remetenteId filtro opcional por remetente
+     * @param remetenteId filtro opcional por remetente (usuario ou ajudante)
      * @return colecao de mensagens
      */
     List<Mensagem> buscarTodos(Long chatId, Long remetenteId);

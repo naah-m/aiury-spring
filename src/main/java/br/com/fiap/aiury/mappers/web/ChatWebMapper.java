@@ -83,17 +83,35 @@ public class ChatWebMapper {
     }
 
     public ChatMensagemItemView toMensagemItem(Mensagem mensagem) {
+        boolean mensagemDoUsuario = mensagem.getRemetente() != null;
+        String remetenteNome = mensagemDoUsuario
+                ? (mensagem.getRemetente().getNomeAnonimo() != null && !mensagem.getRemetente().getNomeAnonimo().isBlank()
+                ? mensagem.getRemetente().getNomeAnonimo()
+                : textoOuHifen(mensagem.getRemetente().getNomeReal()))
+                : (mensagem.getRemetenteAjudante() != null
+                ? textoOuHifen(mensagem.getRemetenteAjudante().getAreaAtuacao())
+                : "-");
+        String remetenteTipo = mensagemDoUsuario ? "USUARIO" : "AJUDANTE";
+
         return new ChatMensagemItemView(
                 mensagem.getId(),
+                remetenteNome,
+                remetenteTipo,
+                mensagemDoUsuario,
                 mensagem.getTexto(),
                 mensagem.getDataEnvio()
         );
     }
 
-    public MensagemRequestDTO toMensagemRequest(Chat chat, MensagemWebForm form, LocalDateTime dataEnvio) {
+    public MensagemRequestDTO toMensagemRequest(Chat chat,
+                                                MensagemWebForm form,
+                                                LocalDateTime dataEnvio,
+                                                Long remetenteUsuarioId,
+                                                Long remetenteAjudanteId) {
         MensagemRequestDTO dto = new MensagemRequestDTO();
         dto.setChatId(chat.getId());
-        dto.setRemetenteId(chat.getUsuario() != null ? chat.getUsuario().getId() : null);
+        dto.setRemetenteId(remetenteUsuarioId);
+        dto.setRemetenteAjudanteId(remetenteAjudanteId);
         dto.setTexto(form.getTexto() != null ? form.getTexto().trim() : null);
         dto.setDataEnvio(dataEnvio);
         return dto;

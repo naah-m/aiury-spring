@@ -12,11 +12,14 @@ import br.com.fiap.aiury.repositories.AjudanteRepository;
 import br.com.fiap.aiury.repositories.ChatRepository;
 import br.com.fiap.aiury.repositories.MensagemRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
+import br.com.fiap.aiury.security.AiuryAuthenticatedUserService;
+import br.com.fiap.aiury.security.AiuryUserPrincipal;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,6 +39,7 @@ public class ChatServiceImpl implements ChatService {
     private final UsuarioRepository usuarioRepository;
     private final AjudanteRepository ajudanteRepository;
     private final MensagemRepository mensagemRepository;
+    private final AiuryAuthenticatedUserService authenticatedUserService;
     private final ChatMapper chatMapper;
 
     @Autowired
@@ -43,11 +47,13 @@ public class ChatServiceImpl implements ChatService {
                            UsuarioRepository usuarioRepository,
                            AjudanteRepository ajudanteRepository,
                            MensagemRepository mensagemRepository,
+                           AiuryAuthenticatedUserService authenticatedUserService,
                            ChatMapper chatMapper) {
         this.chatRepository = chatRepository;
         this.usuarioRepository = usuarioRepository;
         this.ajudanteRepository = ajudanteRepository;
         this.mensagemRepository = mensagemRepository;
+        this.authenticatedUserService = authenticatedUserService;
         this.chatMapper = chatMapper;
     }
 
@@ -57,6 +63,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public Chat criarChat(ChatRequestDTO chatDTO) {
+        exigirAdmin();
         validarConsistenciaTemporal(chatDTO);
         Usuario usuario = buscarUsuarioPorId(chatDTO.getUsuarioId());
         Ajudante ajudante = buscarAjudantePorId(chatDTO.getAjudanteId());
@@ -70,8 +77,10 @@ public class ChatServiceImpl implements ChatService {
      */
     @Override
     public Chat buscarPorId(Long id) {
-        return chatRepository.findById(id)
+        Chat chat = chatRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Chat nao encontrado com ID: " + id));
+        validarAcessoAoChat(chat);
+        return chat;
     }
 
     /**
@@ -79,17 +88,54 @@ public class ChatServiceImpl implements ChatService {
      */
     @Override
     public List<Chat> buscarTodos(Long usuarioId, Long ajudanteId, ChatStatus status) {
-        Specification<Chat> specification = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+        AiuryUserPrincipal principal = authenticatedUserService.getPrincipalOrThrow();
 
-        if (usuarioId != null) {
+        Long usuarioIdEfetivo = usuarioId;
+        Long ajudanteIdEfetivo = ajudanteId;
+
+        if (principal.isUsuario()) {
+            Long usuarioLogadoId = principal.getUsuarioId();
+            if (usuarioLogadoId == null) {
+                throw new AccessDeniedException("Perfil de usuario autenticado sem vinculo valido.");
+            }
+            if (usuarioId != null && !usuarioId.equals(usuarioLogadoId)) {
+                throw new AccessDeniedException("O usuario logado nao possui acesso ao filtro informado.");
+            }
+            if (ajudanteId != null) {
+                throw new AccessDeniedException("Nao e permitido filtrar por ajudante neste perfil.");
+            }
+            usuarioIdEfetivo = usuarioLogadoId;
+            ajudanteIdEfetivo = null;
+        }
+
+        if (principal.isAjudante()) {
+            Long ajudanteLogadoId = principal.getAjudanteId();
+            if (ajudanteLogadoId == null) {
+                throw new AccessDeniedException("Perfil de ajudante autenticado sem vinculo valido.");
+            }
+            if (ajudanteId != null && !ajudanteId.equals(ajudanteLogadoId)) {
+                throw new AccessDeniedException("O ajudante logado nao possui acesso ao filtro informado.");
+            }
+            if (usuarioId != null) {
+                throw new AccessDeniedException("Nao e permitido filtrar por usuario neste perfil.");
+            }
+            ajudanteIdEfetivo = ajudanteLogadoId;
+            usuarioIdEfetivo = null;
+        }
+
+        Specification<Chat> specification = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+        final Long filtroUsuarioId = usuarioIdEfetivo;
+        final Long filtroAjudanteId = ajudanteIdEfetivo;
+
+        if (filtroUsuarioId != null) {
             specification = specification.and(
-                    (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("usuario").get("id"), usuarioId)
+                    (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("usuario").get("id"), filtroUsuarioId)
             );
         }
 
-        if (ajudanteId != null) {
+        if (filtroAjudanteId != null) {
             specification = specification.and(
-                    (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("ajudante").get("id"), ajudanteId)
+                    (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("ajudante").get("id"), filtroAjudanteId)
             );
         }
 
@@ -108,6 +154,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public Chat atualizarChat(Long id, ChatRequestDTO chatDTO) {
+        exigirAdmin();
         Chat chatExistente = buscarPorId(id);
         validarConsistenciaTemporal(chatDTO);
 
@@ -124,6 +171,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public void deletarChat(Long id) {
+        exigirAdmin();
         if (!chatRepository.existsById(id)) {
             throw new NotFoundException("Chat nao encontrado com ID: " + id);
         }
@@ -150,6 +198,33 @@ public class ChatServiceImpl implements ChatService {
     private Ajudante buscarAjudantePorId(Long id) {
         return ajudanteRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Ajudante nao encontrado com ID: " + id));
+    }
+
+    private void exigirAdmin() {
+        if (!authenticatedUserService.isAdmin()) {
+            throw new AccessDeniedException("Apenas administradores podem executar esta operacao.");
+        }
+    }
+
+    private void validarAcessoAoChat(Chat chat) {
+        AiuryUserPrincipal principal = authenticatedUserService.getPrincipalOrThrow();
+        if (principal.isAdmin()) {
+            return;
+        }
+
+        if (principal.isUsuario()
+                && chat.getUsuario() != null
+                && chat.getUsuario().getId().equals(principal.getUsuarioId())) {
+            return;
+        }
+
+        if (principal.isAjudante()
+                && chat.getAjudante() != null
+                && chat.getAjudante().getId().equals(principal.getAjudanteId())) {
+            return;
+        }
+
+        throw new AccessDeniedException("Acesso negado ao chat solicitado.");
     }
 
     private void validarConsistenciaTemporal(ChatRequestDTO chatDTO) {

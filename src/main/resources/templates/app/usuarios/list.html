@@ -13,12 +13,6 @@
     </section>
 
     <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
-    <div class="alert alert-info border-0 shadow-sm"
-         role="alert"
-         sec:authorize="hasRole('ATENDENTE')">
-        Perfil ATENDENTE possui acesso somente de leitura nesta tela.
-    </div>
-
     <section class="page-card rounded-4 p-3 p-lg-4 mb-4">
         <form class="row g-3 align-items-end" method="get" th:action="@{/app/usuarios}">
             <div class="col-12 col-lg-8">

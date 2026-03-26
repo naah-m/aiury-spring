@@ -2,6 +2,7 @@ package br.com.fiap.aiury.mappers;
 
 import br.com.fiap.aiury.dto.MensagemRequestDTO;
 import br.com.fiap.aiury.dto.MensagemResponseDTO;
+import br.com.fiap.aiury.entities.Ajudante;
 import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.entities.Mensagem;
 import br.com.fiap.aiury.entities.Usuario;
@@ -23,9 +24,10 @@ public class MensagemMapper {
      * @param request dados da mensagem
      * @param chat chat resolvido no servico
      * @param remetente usuario remetente resolvido no servico
+     * @param remetenteAjudante ajudante remetente resolvido no servico
      * @return entidade nova de mensagem
      */
-    public Mensagem toEntity(MensagemRequestDTO request, Chat chat, Usuario remetente) {
+    public Mensagem toEntity(MensagemRequestDTO request, Chat chat, Usuario remetente, Ajudante remetenteAjudante) {
         if (request == null) {
             return null;
         }
@@ -33,6 +35,7 @@ public class MensagemMapper {
         Mensagem mensagem = new Mensagem();
         mensagem.setChat(chat);
         mensagem.setRemetente(remetente);
+        mensagem.setRemetenteAjudante(remetenteAjudante);
         mensagem.setTexto(request.getTexto());
         mensagem.setDataEnvio(request.getDataEnvio());
 
@@ -46,14 +49,18 @@ public class MensagemMapper {
      * @param request dados novos de atualizacao
      * @param chat referencia de chat resolvida
      * @param remetente referencia de usuario remetente resolvida
+     * @param remetenteAjudante referencia de ajudante remetente resolvida
      */
-    public void updateEntityFromDto(Mensagem mensagem, MensagemRequestDTO request, Chat chat, Usuario remetente) {
+    public void updateEntityFromDto(Mensagem mensagem,
+                                    MensagemRequestDTO request,
+                                    Chat chat,
+                                    Usuario remetente,
+                                    Ajudante remetenteAjudante) {
         if (chat != null) {
             mensagem.setChat(chat);
         }
-        if (remetente != null) {
-            mensagem.setRemetente(remetente);
-        }
+        mensagem.setRemetente(remetente);
+        mensagem.setRemetenteAjudante(remetenteAjudante);
         if (request.getTexto() != null) {
             mensagem.setTexto(request.getTexto());
         }
@@ -77,9 +84,23 @@ public class MensagemMapper {
         response.setId(mensagem.getId());
         response.setChatId(mensagem.getChat() != null ? mensagem.getChat().getId() : null);
         response.setRemetenteId(mensagem.getRemetente() != null ? mensagem.getRemetente().getId() : null);
+        response.setRemetenteAjudanteId(
+                mensagem.getRemetenteAjudante() != null ? mensagem.getRemetenteAjudante().getId() : null
+        );
+        response.setRemetenteTipo(resolverTipoRemetente(mensagem));
         response.setTexto(mensagem.getTexto());
         response.setDataEnvio(mensagem.getDataEnvio());
 
         return response;
+    }
+
+    private String resolverTipoRemetente(Mensagem mensagem) {
+        if (mensagem.getRemetenteAjudante() != null) {
+            return "AJUDANTE";
+        }
+        if (mensagem.getRemetente() != null) {
+            return "USUARIO";
+        }
+        return "NAO_INFORMADO";
     }
 }

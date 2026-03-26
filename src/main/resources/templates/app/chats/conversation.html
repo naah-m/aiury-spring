@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{layout/base :: base('Conversa do chat', 'chats', ~{::content})}">
 <th:block th:fragment="content">
     <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
@@ -48,10 +49,13 @@
             </div>
 
             <div class="conversation-list" th:if="${!#lists.isEmpty(mensagens)}">
-                <article class="message-bubble" th:each="mensagem : ${mensagens}">
+                <article class="message-bubble"
+                         th:classappend="${mensagem.mensagemDoUsuario} ? ' message-user' : ' message-helper'"
+                         th:each="mensagem : ${mensagens}">
                     <header class="message-meta">
-                        <span class="fw-semibold" th:text="${chat.usuarioNomeAnonimo != '-' ? '@' + chat.usuarioNomeAnonimo : chat.usuarioNomeReal}">
-                            Usuario
+                        <span class="fw-semibold"
+                              th:text="${mensagem.remetenteTipo == 'AJUDANTE' ? 'Ajudante: ' + mensagem.remetenteNome : 'Usuario: ' + mensagem.remetenteNome}">
+                            Remetente
                         </span>
                         <small class="text-secondary"
                                th:text="${mensagem.dataEnvio != null ? #temporals.format(mensagem.dataEnvio, 'dd/MM/yyyy HH:mm:ss') : '-'}">
@@ -73,7 +77,11 @@
 
                 <div class="mb-3" th:replace="~{fragments/form-errors :: summary('A mensagem nao foi enviada. Revise o conteudo.')}"></div>
 
-                <label for="texto" class="form-label fw-semibold">Nova mensagem</label>
+                <label for="texto" class="form-label fw-semibold">
+                    <span th:if="${perfilUsuario}">Nova mensagem (usuario)</span>
+                    <span th:if="${perfilAjudante}">Nova mensagem (ajudante)</span>
+                    <span th:if="${perfilAdmin}">Nova mensagem (admin)</span>
+                </label>
                 <textarea id="texto"
                           th:field="*{texto}"
                           rows="4"

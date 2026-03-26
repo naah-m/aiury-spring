@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base('Ajudantes', 'ajudantes', ~{::content})}">
+<th:block th:fragment="content">
+    <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">Ajudantes</h1>
+            <p class="text-secondary mb-0">Gerencie os colaboradores que atendem os chats da plataforma.</p>
+        </div>
+        <a class="btn btn-primary px-4" th:href="@{/app/ajudantes/novo}">Novo ajudante</a>
+    </section>
+
+    <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
+
+    <section class="page-card rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Area</th>
+                    <th scope="col">Login</th>
+                    <th scope="col">Disponibilidade</th>
+                    <th scope="col">Rating</th>
+                    <th scope="col" class="text-end">Acoes</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(ajudantes)}">
+                    <td colspan="6" class="text-center py-4">
+                        <p class="mb-2">Nenhum ajudante cadastrado.</p>
+                        <a class="btn btn-sm btn-primary" th:href="@{/app/ajudantes/novo}">Cadastrar ajudante</a>
+                    </td>
+                </tr>
+                <tr th:each="ajudante : ${ajudantes}">
+                    <td th:text="${ajudante.id}">1</td>
+                    <td th:text="${ajudante.areaAtuacao}">Escuta ativa</td>
+                    <td th:text="${ajudante.login}">ajudante.escuta</td>
+                    <td>
+                        <span th:classappend="${ajudante.disponivel} ? 'text-success' : 'text-secondary'"
+                              th:text="${ajudante.disponivel} ? 'Disponivel' : 'Indisponivel'">Disponivel</span>
+                    </td>
+                    <td th:text="${ajudante.rating != null ? #numbers.formatDecimal(ajudante.rating, 1, 1) : '-'}">4.8</td>
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-1">
+                            <a class="btn btn-sm btn-outline-primary"
+                               th:href="@{/app/ajudantes/{id}/editar(id=${ajudante.id})}">
+                                Editar
+                            </a>
+                            <form th:action="@{/app/ajudantes/{id}/excluir(id=${ajudante.id})}" method="post" class="d-inline">
+                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Deseja excluir este ajudante? Esta acao nao pode ser desfeita.');">
+                                    Excluir
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</th:block>
+</html>

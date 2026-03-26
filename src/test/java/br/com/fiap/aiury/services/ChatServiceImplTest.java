@@ -6,6 +6,7 @@ import br.com.fiap.aiury.repositories.AjudanteRepository;
 import br.com.fiap.aiury.repositories.ChatRepository;
 import br.com.fiap.aiury.repositories.MensagemRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
+import br.com.fiap.aiury.security.AiuryAuthenticatedUserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,9 @@ class ChatServiceImplTest {
     private MensagemRepository mensagemRepository;
 
     @Mock
+    private AiuryAuthenticatedUserService authenticatedUserService;
+
+    @Mock
     private ChatMapper chatMapper;
 
     @InjectMocks
@@ -40,6 +44,7 @@ class ChatServiceImplTest {
     @Test
     void deveExcluirChatComMensagensQuandoChatExiste() {
         Long chatId = 5L;
+        when(authenticatedUserService.isAdmin()).thenReturn(true);
         when(chatRepository.existsById(chatId)).thenReturn(true);
 
         chatService.deletarChat(chatId);
@@ -51,6 +56,7 @@ class ChatServiceImplTest {
     @Test
     void deveLancarNotFoundAoExcluirChatInexistente() {
         Long chatId = 999L;
+        when(authenticatedUserService.isAdmin()).thenReturn(true);
         when(chatRepository.existsById(chatId)).thenReturn(false);
 
         assertThatThrownBy(() -> chatService.deletarChat(chatId))

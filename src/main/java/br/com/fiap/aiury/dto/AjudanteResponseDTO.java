@@ -16,6 +16,9 @@ public class AjudanteResponseDTO {
     @Schema(description = "Area principal de atuacao", example = "Escuta ativa")
     private String areaAtuacao;
 
+    @Schema(description = "Login de acesso do ajudante", example = "ajudante.escuta")
+    private String login;
+
     @Schema(description = "Texto de motivacao", example = "Atuo voluntariamente em acolhimento emocional")
     private String motivacao;
 

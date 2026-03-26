@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,28 +30,26 @@ class SecurityIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "atendente", roles = "ATENDENTE")
-    void devePermitirAtendenteNoDashboardEListaDeUsuarios() throws Exception {
-        mockMvc.perform(get("/app"))
+    void devePermitirAjudanteNoDashboardEListaDeChats() throws Exception {
+        mockMvc.perform(
+                        get("/app")
+                                .with(user(AiuryUserPrincipal.ajudante("ajudante.escuta", "x", 1L)))
+                )
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/app/usuarios"))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/app/chats"))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/app/chats/novo"))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/app/chats/1/conversa"))
+        mockMvc.perform(
+                        get("/app/chats")
+                                .with(user(AiuryUserPrincipal.ajudante("ajudante.escuta", "x", 1L)))
+                )
                 .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser(username = "atendente", roles = "ATENDENTE")
-    void deveNegarCadastroDeUsuarioParaPerfilAtendente() throws Exception {
-        mockMvc.perform(get("/app/usuarios/novo"))
+    void deveNegarCadastroDeUsuarioParaPerfilAjudante() throws Exception {
+        mockMvc.perform(
+                        get("/app/usuarios/novo")
+                                .with(user(AiuryUserPrincipal.ajudante("ajudante.escuta", "x", 1L)))
+                )
                 .andExpect(status().isForbidden());
     }
 
@@ -70,7 +67,7 @@ class SecurityIntegrationTest {
     void deveRetornar403NaApiDeEscritaParaPerfilSemPermissao() throws Exception {
         mockMvc.perform(
                         post("/api/usuarios")
-                                .with(user("atendente").roles("ATENDENTE"))
+                                .with(user(AiuryUserPrincipal.usuario("11999998888", "x", 10L)))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{}")
                 )

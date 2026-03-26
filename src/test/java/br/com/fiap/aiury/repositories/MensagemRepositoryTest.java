@@ -70,6 +70,8 @@ class MensagemRepositoryTest {
 
         Ajudante ajudante = new Ajudante();
         ajudante.setAreaAtuacao("Escuta ativa");
+        ajudante.setLogin("ajudante.escuta");
+        ajudante.setSenha("segredo123");
         ajudante.setMotivacao("Voluntario");
         ajudante.setDisponivel(true);
         ajudante.setRating(4.6);

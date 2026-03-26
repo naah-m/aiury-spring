@@ -20,6 +20,12 @@ public interface AjudanteRepository extends JpaRepository<Ajudante, Long> {
 
     Optional<Ajudante> findFirstByAreaAtuacaoIgnoreCaseOrderByIdAsc(String areaAtuacao);
 
+    Optional<Ajudante> findByLoginIgnoreCase(String login);
+
+    boolean existsByLoginIgnoreCase(String login);
+
+    boolean existsByLoginIgnoreCaseAndIdNot(String login, Long id);
+
     /**
      * Retorna ajudantes filtrando pela disponibilidade atual.
      *

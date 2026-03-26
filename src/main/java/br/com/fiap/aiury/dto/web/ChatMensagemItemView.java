@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 
 public record ChatMensagemItemView(
         Long id,
+        String remetenteNome,
+        String remetenteTipo,
+        boolean mensagemDoUsuario,
         String texto,
         LocalDateTime dataEnvio
 ) {

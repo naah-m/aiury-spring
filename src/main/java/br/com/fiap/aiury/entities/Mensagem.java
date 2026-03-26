@@ -27,8 +27,12 @@ public class Mensagem {
     private Chat chat;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_remetente", nullable = false)
+    @JoinColumn(name = "id_remetente")
     private Usuario remetente;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_remetente_ajudante")
+    private Ajudante remetenteAjudante;
 
     @Column(name = "texto", nullable = false, length = 1000)
     private String texto;

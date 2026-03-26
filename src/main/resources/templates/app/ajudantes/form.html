@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base('Cadastro de ajudante', 'ajudantes', ~{::content})}">
+<th:block th:fragment="content">
+    <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-1" th:text="${modoEdicao} ? 'Editar ajudante' : 'Novo ajudante'">Novo ajudante</h1>
+            <p class="text-secondary mb-0"
+               th:text="${modoEdicao} ? 'Atualize os dados do ajudante selecionado.' : 'Preencha os dados para cadastrar um novo ajudante.'">
+                Preencha os dados para cadastrar um novo ajudante.
+            </p>
+        </div>
+        <a class="btn btn-outline-secondary px-4" th:href="@{/app/ajudantes}">Voltar para lista</a>
+    </section>
+
+    <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
+
+    <section class="form-card rounded-4 p-3 p-lg-4">
+        <form th:action="${modoEdicao} ? @{/app/ajudantes/{id}(id=${ajudanteId})} : @{/app/ajudantes}"
+              th:object="${ajudanteForm}"
+              method="post"
+              class="row g-3">
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+            <div class="col-12" th:replace="~{fragments/form-errors :: summary('Revise os campos obrigatorios do cadastro.')}"></div>
+
+            <div class="col-12 col-lg-6">
+                <label for="areaAtuacao" class="form-label">Area de atuacao</label>
+                <input id="areaAtuacao" type="text" th:field="*{areaAtuacao}" maxlength="100" required class="form-control"
+                       th:classappend="${#fields.hasErrors('areaAtuacao')} ? ' is-invalid' : ''">
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('areaAtuacao')}" th:errors="*{areaAtuacao}"></div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <label for="login" class="form-label">Login</label>
+                <input id="login" type="text" th:field="*{login}" maxlength="60" required class="form-control"
+                       th:classappend="${#fields.hasErrors('login')} ? ' is-invalid' : ''">
+                <div class="form-text">Use letras, numeros, ponto, traco ou underline.</div>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('login')}" th:errors="*{login}"></div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <label for="senha" class="form-label" th:text="${modoEdicao} ? 'Senha (opcional)' : 'Senha'">Senha</label>
+                <input id="senha" type="password" th:field="*{senha}" maxlength="255" class="form-control"
+                       th:classappend="${#fields.hasErrors('senha')} ? ' is-invalid' : ''"
+                       th:attr="required=${!modoEdicao}">
+                <div class="form-text" th:if="${modoEdicao}">Preencha apenas se quiser trocar a senha atual.</div>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
+            </div>
+
+            <div class="col-12 col-lg-3">
+                <label for="disponivel" class="form-label">Disponivel</label>
+                <select id="disponivel" th:field="*{disponivel}" class="form-select"
+                        th:classappend="${#fields.hasErrors('disponivel')} ? ' is-invalid' : ''" required>
+                    <option th:value="true">Sim</option>
+                    <option th:value="false">Nao</option>
+                </select>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('disponivel')}" th:errors="*{disponivel}"></div>
+            </div>
+
+            <div class="col-12 col-lg-3">
+                <label for="rating" class="form-label">Rating</label>
+                <input id="rating" type="number" min="0" max="5" step="0.1" th:field="*{rating}" class="form-control"
+                       th:classappend="${#fields.hasErrors('rating')} ? ' is-invalid' : ''">
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
+            </div>
+
+            <div class="col-12">
+                <label for="motivacao" class="form-label">Motivacao</label>
+                <textarea id="motivacao" rows="4" maxlength="2000" th:field="*{motivacao}" class="form-control"
+                          th:classappend="${#fields.hasErrors('motivacao')} ? ' is-invalid' : ''"></textarea>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('motivacao')}" th:errors="*{motivacao}"></div>
+            </div>
+
+            <div class="col-12 d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary px-4"
+                        th:text="${modoEdicao} ? 'Salvar alteracoes' : 'Salvar ajudante'">
+                    Salvar ajudante
+                </button>
+            </div>
+        </form>
+    </section>
+</th:block>
+</html>

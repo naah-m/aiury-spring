@@ -7,6 +7,8 @@ import br.com.fiap.aiury.dto.web.ChatStatusStepView;
 import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.entities.ChatStatus;
 import br.com.fiap.aiury.mappers.web.ChatWebMapper;
+import br.com.fiap.aiury.security.AiuryAuthenticatedUserService;
+import br.com.fiap.aiury.security.AiuryUserPrincipal;
 import br.com.fiap.aiury.services.AjudanteService;
 import br.com.fiap.aiury.services.MensagemService;
 import br.com.fiap.aiury.services.UsuarioService;
@@ -42,37 +44,60 @@ public class ChatMvcViewSupport {
     private final AjudanteService ajudanteService;
     private final MensagemService mensagemService;
     private final ChatWebMapper chatWebMapper;
+    private final AiuryAuthenticatedUserService authenticatedUserService;
 
     public ChatMvcViewSupport(UsuarioService usuarioService,
                               AjudanteService ajudanteService,
                               MensagemService mensagemService,
-                              ChatWebMapper chatWebMapper) {
+                              ChatWebMapper chatWebMapper,
+                              AiuryAuthenticatedUserService authenticatedUserService) {
         this.usuarioService = usuarioService;
         this.ajudanteService = ajudanteService;
         this.mensagemService = mensagemService;
         this.chatWebMapper = chatWebMapper;
+        this.authenticatedUserService = authenticatedUserService;
     }
 
     public void adicionarDadosListagem(Model model,
                                        Long usuarioId,
                                        Long ajudanteId,
                                        ChatStatus status) {
-        model.addAttribute("filtroUsuarioId", usuarioId);
-        model.addAttribute("filtroAjudanteId", ajudanteId);
+        AiuryUserPrincipal principal = authenticatedUserService.getPrincipalOrThrow();
+        adicionarContextoPerfil(model, principal);
+
+        Long filtroUsuarioId = usuarioId;
+        Long filtroAjudanteId = ajudanteId;
+        if (principal.isUsuario()) {
+            filtroUsuarioId = principal.getUsuarioId();
+            filtroAjudanteId = null;
+            model.addAttribute("usuarios", List.of(usuarioService.buscarPorId(principal.getUsuarioId())));
+            model.addAttribute("ajudantes", List.of());
+        } else if (principal.isAjudante()) {
+            filtroAjudanteId = principal.getAjudanteId();
+            filtroUsuarioId = null;
+            model.addAttribute("usuarios", List.of());
+            model.addAttribute("ajudantes", List.of(ajudanteService.buscarPorId(principal.getAjudanteId())));
+        } else {
+            model.addAttribute("usuarios", usuarioService.buscarTodos(null));
+            model.addAttribute("ajudantes", ajudanteService.buscarTodos(null));
+        }
+
+        model.addAttribute("filtroUsuarioId", filtroUsuarioId);
+        model.addAttribute("filtroAjudanteId", filtroAjudanteId);
         model.addAttribute("filtroStatus", status);
-        model.addAttribute("temFiltrosAtivos", usuarioId != null || ajudanteId != null || status != null);
-        model.addAttribute("usuarios", usuarioService.buscarTodos(null));
-        model.addAttribute("ajudantes", ajudanteService.buscarTodos(null));
+        model.addAttribute("temFiltrosAtivos", filtroUsuarioId != null || filtroAjudanteId != null || status != null);
         model.addAttribute("statusOptions", STATUS_OPTIONS);
     }
 
     public void carregarDadosFormulario(Model model) {
+        adicionarContextoPerfil(model, authenticatedUserService.getPrincipalOrThrow());
         model.addAttribute("usuarios", usuarioService.buscarTodos(null));
         model.addAttribute("ajudantes", ajudanteService.buscarTodos(null));
         model.addAttribute("statusOptions", STATUS_OPTIONS);
     }
 
     public void prepararTelaDetalhes(Model model, Chat chat) {
+        adicionarContextoPerfil(model, authenticatedUserService.getPrincipalOrThrow());
         ChatDetailView chatDetailView = chatWebMapper.toDetailView(chat);
         List<ChatMensagemItemView> mensagens = buscarMensagensDoChat(chat.getId());
 
@@ -85,6 +110,7 @@ public class ChatMvcViewSupport {
     }
 
     public void prepararTelaConversa(Model model, Chat chat) {
+        adicionarContextoPerfil(model, authenticatedUserService.getPrincipalOrThrow());
         List<ChatMensagemItemView> mensagens = buscarMensagensDoChat(chat.getId());
 
         model.addAttribute("chat", chatWebMapper.toDetailView(chat));
@@ -145,5 +171,11 @@ public class ChatMvcViewSupport {
                 ),
                 new ChatStatusStepView(etapaFinal, finalizado, finalizado)
         );
+    }
+
+    private void adicionarContextoPerfil(Model model, AiuryUserPrincipal principal) {
+        model.addAttribute("perfilAdmin", principal.isAdmin());
+        model.addAttribute("perfilUsuario", principal.isUsuario());
+        model.addAttribute("perfilAjudante", principal.isAjudante());
     }
 }

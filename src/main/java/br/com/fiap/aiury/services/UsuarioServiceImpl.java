@@ -13,7 +13,9 @@ import br.com.fiap.aiury.repositories.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -32,6 +34,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final CidadeRepository cidadeRepository;
     private final ChatRepository chatRepository;
     private final MensagemRepository mensagemRepository;
+    private final PasswordEncoder passwordEncoder;
     private final UsuarioMapper usuarioMapper;
 
     @Autowired
@@ -39,11 +42,13 @@ public class UsuarioServiceImpl implements UsuarioService {
                               CidadeRepository cidadeRepository,
                               ChatRepository chatRepository,
                               MensagemRepository mensagemRepository,
+                              PasswordEncoder passwordEncoder,
                               UsuarioMapper usuarioMapper) {
         this.usuarioRepository = usuarioRepository;
         this.cidadeRepository = cidadeRepository;
         this.chatRepository = chatRepository;
         this.mensagemRepository = mensagemRepository;
+        this.passwordEncoder = passwordEncoder;
         this.usuarioMapper = usuarioMapper;
     }
 
@@ -59,6 +64,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         validarCelularUnico(usuarioDTO.getCelular(), null);
 
         Usuario usuario = usuarioMapper.toEntity(usuarioDTO, cidade);
+        usuario.setSenha(codificarSenha(usuarioDTO.getSenha()));
         return usuarioRepository.save(usuario);
     }
 
@@ -101,8 +107,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         validarCelularUnico(detalhesUsuarioDTO.getCelular(), id);
         usuarioMapper.updateEntityFromDto(usuarioExistente, detalhesUsuarioDTO, novaCidade);
 
-        if (detalhesUsuarioDTO.getSenha() != null) {
-            usuarioExistente.setSenha(detalhesUsuarioDTO.getSenha());
+        if (StringUtils.hasText(detalhesUsuarioDTO.getSenha())) {
+            usuarioExistente.setSenha(codificarSenha(detalhesUsuarioDTO.getSenha()));
         }
 
         return usuarioRepository.save(usuarioExistente);
@@ -140,5 +146,19 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (celularEmUso) {
             throw new ConflictException("Ja existe usuario cadastrado com o celular informado.");
         }
+    }
+
+    private String codificarSenha(String senha) {
+        if (!StringUtils.hasText(senha)) {
+            return senha;
+        }
+
+        String valorNormalizado = senha.trim();
+        if (valorNormalizado.startsWith("$2a$")
+                || valorNormalizado.startsWith("$2b$")
+                || valorNormalizado.startsWith("$2y$")) {
+            return valorNormalizado;
+        }
+        return passwordEncoder.encode(valorNormalizado);
     }
 }

@@ -21,12 +21,16 @@ class AjudanteRepositoryTest {
     void deveFiltrarAjudantesPorDisponibilidade() {
         Ajudante disponivel = new Ajudante();
         disponivel.setAreaAtuacao("Escuta ativa");
+        disponivel.setLogin("escuta.ativa");
+        disponivel.setSenha("segredo123");
         disponivel.setMotivacao("Voluntario");
         disponivel.setDisponivel(true);
         disponivel.setRating(4.8);
 
         Ajudante indisponivel = new Ajudante();
         indisponivel.setAreaAtuacao("Psicologia");
+        indisponivel.setLogin("psicologia");
+        indisponivel.setSenha("segredo123");
         indisponivel.setMotivacao("Plantao");
         indisponivel.setDisponivel(false);
         indisponivel.setRating(4.5);

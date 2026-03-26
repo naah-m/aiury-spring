@@ -20,7 +20,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,6 +44,7 @@ public class LocalDevSeedInitializer implements ApplicationRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalDevSeedInitializer.class);
 
     private static final String SENHA_PADRAO_USUARIOS = "demo12345";
+    private static final String SENHA_PADRAO_AJUDANTES = "apoio12345";
 
     private static final LocalDateTime CHAT_ATIVO_INICIO = LocalDateTime.of(2026, 3, 25, 14, 0);
     private static final LocalDateTime CHAT_FINALIZADO_INICIO = LocalDateTime.of(2026, 3, 24, 19, 0);
@@ -53,19 +56,22 @@ public class LocalDevSeedInitializer implements ApplicationRunner {
     private final AjudanteRepository ajudanteRepository;
     private final ChatRepository chatRepository;
     private final MensagemRepository mensagemRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public LocalDevSeedInitializer(EstadoRepository estadoRepository,
                                    CidadeRepository cidadeRepository,
                                    UsuarioRepository usuarioRepository,
                                    AjudanteRepository ajudanteRepository,
                                    ChatRepository chatRepository,
-                                   MensagemRepository mensagemRepository) {
+                                   MensagemRepository mensagemRepository,
+                                   PasswordEncoder passwordEncoder) {
         this.estadoRepository = estadoRepository;
         this.cidadeRepository = cidadeRepository;
         this.usuarioRepository = usuarioRepository;
         this.ajudanteRepository = ajudanteRepository;
         this.chatRepository = chatRepository;
         this.mensagemRepository = mensagemRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -98,6 +104,8 @@ public class LocalDevSeedInitializer implements ApplicationRunner {
 
         Ajudante escutaAtiva = upsertAjudante(
                 "Escuta ativa",
+                "ajudante.escuta",
+                SENHA_PADRAO_AJUDANTES,
                 "Acolhimento inicial e escuta qualificada para momentos de vulnerabilidade.",
                 true,
                 4.9
@@ -105,6 +113,8 @@ public class LocalDevSeedInitializer implements ApplicationRunner {
 
         Ajudante plantaoEmocional = upsertAjudante(
                 "Plantao emocional",
+                "ajudante.plantao",
+                SENHA_PADRAO_AJUDANTES,
                 "Atendimento em janelas agendadas para suporte pontual.",
                 false,
                 4.6
@@ -127,10 +137,12 @@ public class LocalDevSeedInitializer implements ApplicationRunner {
         );
 
         upsertMensagem(chatAtivo, camila, "Oi, eu precisava conversar com alguem agora.", CHAT_ATIVO_INICIO.plusMinutes(3));
+        upsertMensagem(chatAtivo, escutaAtiva, "Oi, Camila. Estou aqui com voce neste momento.", CHAT_ATIVO_INICIO.plusMinutes(5));
         upsertMensagem(chatAtivo, camila, "Obrigado por me ouvir, ja me sinto mais calmo.", CHAT_ATIVO_INICIO.plusMinutes(8));
+        upsertMensagem(chatFinalizado, plantaoEmocional, "Fico feliz em saber disso. Conte comigo quando precisar.", CHAT_FINALIZADO_INICIO.plusMinutes(10));
         upsertMensagem(chatFinalizado, diego, "Consegui organizar meus pensamentos apos o atendimento.", CHAT_FINALIZADO_INICIO.plusMinutes(12));
 
-        LOGGER.info("Seed local aplicada (dev): 2 estados, 3 cidades, 2 usuarios, 2 ajudantes, 2 chats, 3 mensagens.");
+        LOGGER.info("Seed local aplicada (dev): 2 estados, 3 cidades, 2 usuarios, 2 ajudantes, 2 chats, 5 mensagens.");
     }
 
     private Estado upsertEstado(String nomeEstado, String uf) {
@@ -160,15 +172,22 @@ public class LocalDevSeedInitializer implements ApplicationRunner {
         usuario.setNomeAnonimo(nomeAnonimo);
         usuario.setDataNascimento(dataNascimento);
         usuario.setCelular(celular);
-        usuario.setSenha(senha);
+        usuario.setSenha(codificarSenha(senha));
         usuario.setCidade(cidade);
         return usuarioRepository.save(usuario);
     }
 
-    private Ajudante upsertAjudante(String areaAtuacao, String motivacao, boolean disponivel, double rating) {
+    private Ajudante upsertAjudante(String areaAtuacao,
+                                    String login,
+                                    String senha,
+                                    String motivacao,
+                                    boolean disponivel,
+                                    double rating) {
         Ajudante ajudante = ajudanteRepository.findFirstByAreaAtuacaoIgnoreCaseOrderByIdAsc(areaAtuacao)
                 .orElseGet(Ajudante::new);
         ajudante.setAreaAtuacao(areaAtuacao);
+        ajudante.setLogin(login);
+        ajudante.setSenha(codificarSenha(senha));
         ajudante.setMotivacao(motivacao);
         ajudante.setDisponivel(disponivel);
         ajudante.setRating(rating);
@@ -202,8 +221,36 @@ public class LocalDevSeedInitializer implements ApplicationRunner {
                 .orElseGet(Mensagem::new);
         mensagem.setChat(chat);
         mensagem.setRemetente(remetente);
+        mensagem.setRemetenteAjudante(null);
         mensagem.setTexto(texto);
         mensagem.setDataEnvio(dataEnvio);
         return mensagemRepository.save(mensagem);
+    }
+
+    private Mensagem upsertMensagem(Chat chat, Ajudante remetente, String texto, LocalDateTime dataEnvio) {
+        Mensagem mensagem = mensagemRepository
+                .findFirstByChat_IdAndRemetenteAjudante_IdAndDataEnvioAndTextoOrderByIdAsc(
+                        chat.getId(),
+                        remetente.getId(),
+                        dataEnvio,
+                        texto
+                )
+                .orElseGet(Mensagem::new);
+        mensagem.setChat(chat);
+        mensagem.setRemetente(null);
+        mensagem.setRemetenteAjudante(remetente);
+        mensagem.setTexto(texto);
+        mensagem.setDataEnvio(dataEnvio);
+        return mensagemRepository.save(mensagem);
+    }
+
+    private String codificarSenha(String senha) {
+        if (!StringUtils.hasText(senha)) {
+            return senha;
+        }
+        if (senha.startsWith("$2a$") || senha.startsWith("$2b$") || senha.startsWith("$2y$")) {
+            return senha;
+        }
+        return passwordEncoder.encode(senha);
     }
 }
