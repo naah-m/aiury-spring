@@ -33,9 +33,6 @@ Variaveis opcionais:
 - `SPRING_PROFILES_ACTIVE` (default: `oracle`)
 - `JPA_DDL_AUTO` (default: `validate`)
 - `JPA_SHOW_SQL` (default: `false`)
-- `AIURY_SEED_ENABLED` (default: `false`)
-- `AIURY_ADMIN_USERNAME` (default: `admin`)
-- `AIURY_ADMIN_PASSWORD` (default: `admin123`)
 
 ## 4. Subir a aplicacao
 
@@ -63,17 +60,14 @@ Aplicacao local: `http://localhost:8080`
 O Flyway esta habilitado por padrao e usa somente scripts Oracle:
 - `spring.flyway.locations=classpath:db/migration/oracle`
 - migracoes em `src/main/resources/db/migration/oracle`
+- estrutura: `V1` a `V5`
+- dados iniciais controlados: `V6` a `V8`
 
-## 6. Seed inicial (opcional)
-A seed local esta disponivel para demonstracao em Oracle e fica desabilitada por default.
+## 6. Dados iniciais via Flyway
+Os dados iniciais de demonstracao agora sobem automaticamente via SQL versionado no Flyway.
+Nao existe mais seed Java por `ApplicationRunner` para dados de dominio.
 
-Para habilitar:
-```powershell
-$env:AIURY_SEED_ENABLED="true"
-.\mvnw.cmd spring-boot:run
-```
-
-Dados criados pela seed:
+Dados criados pelas migrations de seed:
 - 2 estados
 - 3 cidades
 - 2 usuarios
@@ -89,8 +83,9 @@ Dados criados pela seed:
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
 ## 8. Credenciais
-- Admin (tabela `tb_admin_account`): por `AIURY_ADMIN_USERNAME` e `AIURY_ADMIN_PASSWORD`
-- Usuarios e ajudantes: cadastrados via seed ou CRUD da aplicacao
+- Admin: `admin / admin123`
+- Usuario demo: `11999998888 / demo12345`
+- Ajudante demo: `ajudante.escuta / apoio12345`
 
 ## 9. Testes
 ### Suite padrao

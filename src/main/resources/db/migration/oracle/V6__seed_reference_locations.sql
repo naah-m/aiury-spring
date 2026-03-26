@@ -1,0 +1,53 @@
+-- Seed de dados de referencia (catalogo geografico).
+-- Mantido no Flyway por ser dado controlado e necessario para uso inicial.
+
+INSERT INTO TB_ESTADO (NM_ESTADO, SG_ESTADO)
+SELECT 'Sao Paulo', 'SP'
+FROM dual
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM TB_ESTADO e
+    WHERE e.SG_ESTADO = 'SP'
+);
+
+INSERT INTO TB_ESTADO (NM_ESTADO, SG_ESTADO)
+SELECT 'Rio de Janeiro', 'RJ'
+FROM dual
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM TB_ESTADO e
+    WHERE e.SG_ESTADO = 'RJ'
+);
+
+INSERT INTO TB_CIDADE (NM_CIDADE, ID_ESTADO)
+SELECT 'Sao Paulo', e.ID_ESTADO
+FROM TB_ESTADO e
+WHERE e.SG_ESTADO = 'SP'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM TB_CIDADE c
+    WHERE c.NM_CIDADE = 'Sao Paulo'
+      AND c.ID_ESTADO = e.ID_ESTADO
+);
+
+INSERT INTO TB_CIDADE (NM_CIDADE, ID_ESTADO)
+SELECT 'Campinas', e.ID_ESTADO
+FROM TB_ESTADO e
+WHERE e.SG_ESTADO = 'SP'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM TB_CIDADE c
+    WHERE c.NM_CIDADE = 'Campinas'
+      AND c.ID_ESTADO = e.ID_ESTADO
+);
+
+INSERT INTO TB_CIDADE (NM_CIDADE, ID_ESTADO)
+SELECT 'Rio de Janeiro', e.ID_ESTADO
+FROM TB_ESTADO e
+WHERE e.SG_ESTADO = 'RJ'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM TB_CIDADE c
+    WHERE c.NM_CIDADE = 'Rio de Janeiro'
+      AND c.ID_ESTADO = e.ID_ESTADO
+);

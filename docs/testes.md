@@ -55,10 +55,9 @@ $env:TEST_DB_PASSWORD="SUA_SENHA"
 - profile: `test`
 - datasource: Oracle via variaveis de ambiente
 - Flyway: `classpath:db/migration/oracle`
-- seed: desabilitada (`aiury.seed.enabled=false`)
+- dados iniciais: carregados por migrations SQL (`V6` a `V8`)
 
 ## 6. Evidencias para entrega
 - log de `BUILD SUCCESS` em `clean test`;
 - log de `BUILD SUCCESS` em `clean package`;
 - evidencias de execucao da suite Oracle quando ambiente estiver disponivel.
-

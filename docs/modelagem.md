@@ -90,5 +90,5 @@
 ## 4. Observacoes de integridade
 - `ST_CHAT` permanece `EnumType.STRING` com os mesmos valores de dominio.
 - Mensagem continua com remetente exclusivo (usuario ou ajudante), validado por check constraint.
-- Todas as mudancas de nomenclatura foram versionadas no Flyway em `V5__standardize_corporate_naming.sql`.
-
+- Nomenclatura corporativa: `V5__standardize_corporate_naming.sql`.
+- Dados iniciais controlados: `V6__seed_reference_locations.sql`, `V7__seed_auth_and_people.sql`, `V8__seed_demo_chats_and_messages.sql`.

@@ -1,6 +1,5 @@
 package br.com.fiap.aiury.security;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,7 +19,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import java.util.LinkedHashMap;
 
 @Configuration
-@EnableConfigurationProperties(AiuryAdminProperties.class)
 public class SecurityConfig {
 
     private static final RequestMatcher API_REQUEST_MATCHER = PathPatternRequestMatcher.withDefaults().matcher("/api/**");

@@ -26,7 +26,7 @@
 8. Pasta `Erros Controlados`
 
 ## 5. Atalho para demo com seed Oracle
-Se a aplicacao estiver com `AIURY_SEED_ENABLED=true`, voce pode iniciar direto por requests de listagem:
+Com a aplicacao iniciada e Flyway executado, voce pode iniciar direto por requests de listagem:
 - `GET /api/estados`
 - `GET /api/cidades`
 - `GET /api/usuarios`
@@ -51,4 +51,3 @@ Depois, use os IDs retornados para updates/deletes.
 - print de `200` em listagens com filtro;
 - print de `400` com `validationErrors`;
 - print de `404` para busca de recurso inexistente.
-
