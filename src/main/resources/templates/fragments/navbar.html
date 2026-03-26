@@ -44,6 +44,9 @@
                        th:href="@{/app/chats}"
                        th:attr="aria-current=${activePage == 'chats'} ? 'page' : null">Chats</a>
                 </li>
+                <li class="nav-item" sec:authorize="hasRole('USUARIO')">
+                    <a class="nav-link" th:href="@{/app/chats/novo}">Abrir chat</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/swagger-ui/index.html}" target="_blank" rel="noopener">API Docs</a>
                 </li>

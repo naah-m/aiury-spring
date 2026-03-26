@@ -12,6 +12,7 @@ import br.com.fiap.aiury.mappers.web.ChatWebMapper;
 import br.com.fiap.aiury.security.AiuryAuthenticatedUserService;
 import br.com.fiap.aiury.services.ChatService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -71,6 +72,15 @@ public class ChatMvcController {
 
     @GetMapping("/novo")
     public String exibirFormularioNovo(Model model) {
+        if (authenticatedUserService.isUsuario()) {
+            Long usuarioId = authenticatedUserService.getUsuarioIdOrNull();
+            if (usuarioId == null) {
+                throw new AccessDeniedException("Perfil de usuario sem vinculo valido.");
+            }
+            model.addAttribute("usuarioNome", authenticatedUserService.getPrincipalOrThrow().getUsername());
+            return "app/chats/open";
+        }
+
         if (!model.containsAttribute("chatForm")) {
             ChatWebForm form = new ChatWebForm();
             form.setDataInicio(LocalDateTime.now().withSecond(0).withNano(0));
@@ -80,6 +90,26 @@ public class ChatMvcController {
 
         chatMvcViewSupport.carregarDadosFormulario(model);
         return "app/chats/form";
+    }
+
+    @PostMapping("/abrir")
+    public String abrirNovoChatParaUsuario(RedirectAttributes redirectAttributes) {
+        if (!authenticatedUserService.isUsuario()) {
+            throw new AccessDeniedException("Apenas usuarios podem abrir novo chat.");
+        }
+
+        Long usuarioId = authenticatedUserService.getUsuarioIdOrNull();
+        if (usuarioId == null) {
+            throw new AccessDeniedException("Perfil de usuario sem vinculo valido.");
+        }
+        try {
+            Chat chat = chatService.abrirChatParaUsuario(usuarioId);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Novo chat aberto com sucesso.");
+            return "redirect:/app/chats/" + chat.getId() + "/conversa";
+        } catch (ConflictException | NotFoundException | IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
+            return "redirect:/app/chats/novo";
+        }
     }
 
     @PostMapping

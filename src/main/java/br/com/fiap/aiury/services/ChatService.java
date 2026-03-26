@@ -21,6 +21,14 @@ public interface ChatService {
     Chat criarChat(@Valid ChatRequestDTO chatDTO);
 
     /**
+     * Abre um novo chat para o usuario autenticado.
+     *
+     * @param usuarioId identificador do usuario logado
+     * @return chat persistido
+     */
+    Chat abrirChatParaUsuario(Long usuarioId);
+
+    /**
      * Busca chat por identificador.
      *
      * @param id identificador do chat

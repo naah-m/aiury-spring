@@ -70,13 +70,13 @@ public class ChatMvcViewSupport {
         if (principal.isUsuario()) {
             filtroUsuarioId = principal.getUsuarioId();
             filtroAjudanteId = null;
-            model.addAttribute("usuarios", List.of(usuarioService.buscarPorId(principal.getUsuarioId())));
+            model.addAttribute("usuarios", List.of());
             model.addAttribute("ajudantes", List.of());
         } else if (principal.isAjudante()) {
             filtroAjudanteId = principal.getAjudanteId();
             filtroUsuarioId = null;
             model.addAttribute("usuarios", List.of());
-            model.addAttribute("ajudantes", List.of(ajudanteService.buscarPorId(principal.getAjudanteId())));
+            model.addAttribute("ajudantes", List.of());
         } else {
             model.addAttribute("usuarios", usuarioService.buscarTodos(null));
             model.addAttribute("ajudantes", ajudanteService.buscarTodos(null));

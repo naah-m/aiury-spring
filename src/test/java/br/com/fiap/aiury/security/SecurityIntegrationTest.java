@@ -45,6 +45,24 @@ class SecurityIntegrationTest {
     }
 
     @Test
+    void devePermitirUsuarioNoFluxoDeAberturaDeNovoChat() throws Exception {
+        mockMvc.perform(
+                        get("/app/chats/novo")
+                                .with(user(AiuryUserPrincipal.usuario("11999998888", "x", 1L)))
+                )
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deveNegarAberturaDeNovoChatParaPerfilAjudante() throws Exception {
+        mockMvc.perform(
+                        get("/app/chats/novo")
+                                .with(user(AiuryUserPrincipal.ajudante("ajudante.escuta", "x", 1L)))
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void deveNegarCadastroDeUsuarioParaPerfilAjudante() throws Exception {
         mockMvc.perform(
                         get("/app/usuarios/novo")

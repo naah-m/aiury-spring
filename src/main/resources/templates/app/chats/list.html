@@ -9,7 +9,9 @@
             <h1 class="mb-1">Chats e atendimentos</h1>
             <p class="text-secondary mb-0">Acompanhe os atendimentos em andamento e o historico de chats da plataforma.</p>
         </div>
-        <a class="btn btn-primary px-4" th:href="@{/app/chats/novo}" sec:authorize="hasRole('ADMIN')">Abrir novo chat</a>
+        <a class="btn btn-primary px-4" th:href="@{/app/chats/novo}" sec:authorize="hasAnyRole('ADMIN','USUARIO')">
+            <span th:text="${perfilUsuario} ? 'Abrir meu chat' : 'Abrir novo chat'">Abrir novo chat</span>
+        </a>
     </section>
 
     <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
@@ -84,8 +86,8 @@
                             <a class="btn btn-sm btn-outline-secondary" th:if="${temFiltrosAtivos}" th:href="@{/app/chats}">
                                 Limpar filtros
                             </a>
-                            <a class="btn btn-sm btn-primary" th:href="@{/app/chats/novo}" sec:authorize="hasRole('ADMIN')">
-                                Abrir novo chat
+                            <a class="btn btn-sm btn-primary" th:href="@{/app/chats/novo}" sec:authorize="hasAnyRole('ADMIN','USUARIO')">
+                                <span th:text="${perfilUsuario} ? 'Abrir meu chat' : 'Abrir novo chat'">Abrir novo chat</span>
                             </a>
                         </div>
                     </td>

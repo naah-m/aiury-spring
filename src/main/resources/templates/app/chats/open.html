@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base('Abrir novo chat', 'chats', ~{::content})}">
+<th:block th:fragment="content">
+    <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">Abrir novo chat</h1>
+            <p class="text-secondary mb-0">Inicie um novo atendimento com vinculacao automatica ao seu perfil.</p>
+        </div>
+        <a class="btn btn-outline-secondary px-4" th:href="@{/app/chats}">Voltar para chats</a>
+    </section>
+
+    <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
+
+    <section class="row g-3 g-lg-4">
+        <div class="col-12 col-xl-7">
+            <article class="form-card rounded-4 p-3 p-lg-4 h-100">
+                <h2 class="h5 fw-bold mb-3">Confirmar abertura</h2>
+                <p class="mb-3">
+                    <strong th:text="${usuarioNome}">Usuario</strong>,
+                    ao confirmar, o sistema ira:
+                </p>
+                <ul class="mb-4">
+                    <li>abrir o chat com status <strong>INICIADO</strong></li>
+                    <li>vincular automaticamente o chat ao seu cadastro</li>
+                    <li>atribuir um ajudante disponivel</li>
+                </ul>
+
+                <form th:action="@{/app/chats/abrir}" method="post">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="btn btn-primary px-4">Abrir meu chat agora</button>
+                </form>
+            </article>
+        </div>
+
+        <div class="col-12 col-xl-5">
+            <article class="page-card rounded-4 p-3 p-lg-4 h-100">
+                <h2 class="h6 text-uppercase text-secondary mb-3">Regra de atendimento</h2>
+                <p class="mb-2">
+                    Voce pode ter apenas <strong>1 chat ativo por vez</strong>.
+                </p>
+                <p class="mb-0 text-secondary">
+                    Se ja existir chat com status INICIADO ou EM_ANDAMENTO, a abertura sera bloqueada e uma
+                    mensagem amigavel sera exibida.
+                </p>
+            </article>
+        </div>
+    </section>
+</th:block>
+</html>

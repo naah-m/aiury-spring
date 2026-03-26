@@ -22,6 +22,8 @@ public interface AjudanteRepository extends JpaRepository<Ajudante, Long> {
 
     Optional<Ajudante> findByLoginIgnoreCase(String login);
 
+    Optional<Ajudante> findFirstByDisponivelTrueOrderByRatingDescIdAsc();
+
     boolean existsByLoginIgnoreCase(String login);
 
     boolean existsByLoginIgnoreCaseAndIdNot(String login, Long id);

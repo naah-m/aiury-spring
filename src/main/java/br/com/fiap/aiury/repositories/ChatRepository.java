@@ -1,5 +1,6 @@
 package br.com.fiap.aiury.repositories;
 
+import br.com.fiap.aiury.entities.ChatStatus;
 import br.com.fiap.aiury.entities.Chat;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +32,14 @@ public interface ChatRepository extends JpaRepository<Chat, Long>, JpaSpecificat
             Long usuarioId,
             Long ajudanteId,
             LocalDateTime dataInicio
+    );
+
+    Optional<Chat> findFirstByUsuario_IdAndStatusInOrderByDataInicioDesc(Long usuarioId, Collection<ChatStatus> status);
+
+    Optional<Chat> findFirstByUsuario_IdAndStatusInAndIdNotOrderByDataInicioDesc(
+            Long usuarioId,
+            Collection<ChatStatus> status,
+            Long id
     );
 
     long deleteByUsuario_Id(Long usuarioId);

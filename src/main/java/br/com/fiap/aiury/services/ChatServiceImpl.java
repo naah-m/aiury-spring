@@ -22,7 +22,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Implementacao de regras da camada de servico para chats.
@@ -34,6 +37,11 @@ import java.util.List;
  */
 @Service
 public class ChatServiceImpl implements ChatService {
+
+    private static final EnumSet<ChatStatus> CHAT_STATUS_ATIVOS = EnumSet.of(
+            ChatStatus.INICIADO,
+            ChatStatus.EM_ANDAMENTO
+    );
 
     private final ChatRepository chatRepository;
     private final UsuarioRepository usuarioRepository;
@@ -67,8 +75,39 @@ public class ChatServiceImpl implements ChatService {
         validarConsistenciaTemporal(chatDTO);
         Usuario usuario = buscarUsuarioPorId(chatDTO.getUsuarioId());
         Ajudante ajudante = buscarAjudantePorId(chatDTO.getAjudanteId());
+        if (isStatusAtivo(chatDTO.getStatus())) {
+            validarUsuarioSemChatAtivo(usuario.getId(), null);
+        }
 
         Chat chat = chatMapper.toEntity(chatDTO, usuario, ajudante);
+        return chatRepository.save(chat);
+    }
+
+    @Override
+    @Transactional
+    public Chat abrirChatParaUsuario(Long usuarioId) {
+        AiuryUserPrincipal principal = authenticatedUserService.getPrincipalOrThrow();
+        if (!principal.isUsuario()) {
+            throw new AccessDeniedException("Apenas usuarios podem abrir novo chat no fluxo web.");
+        }
+        if (principal.getUsuarioId() == null || !principal.getUsuarioId().equals(usuarioId)) {
+            throw new AccessDeniedException("Nao e permitido abrir chat para outro usuario.");
+        }
+
+        Usuario usuario = buscarUsuarioPorId(usuarioId);
+        validarUsuarioSemChatAtivo(usuarioId, null);
+
+        Ajudante ajudanteDisponivel = ajudanteRepository.findFirstByDisponivelTrueOrderByRatingDescIdAsc()
+                .orElseThrow(() -> new ConflictException(
+                        "No momento nao ha ajudantes disponiveis. Tente novamente em instantes."
+                ));
+
+        Chat chat = new Chat();
+        chat.setUsuario(usuario);
+        chat.setAjudante(ajudanteDisponivel);
+        chat.setDataInicio(LocalDateTime.now().withSecond(0).withNano(0));
+        chat.setDataFim(null);
+        chat.setStatus(ChatStatus.INICIADO);
         return chatRepository.save(chat);
     }
 
@@ -160,6 +199,9 @@ public class ChatServiceImpl implements ChatService {
 
         Usuario usuario = buscarUsuarioPorId(chatDTO.getUsuarioId());
         Ajudante ajudante = buscarAjudantePorId(chatDTO.getAjudanteId());
+        if (isStatusAtivo(chatDTO.getStatus())) {
+            validarUsuarioSemChatAtivo(usuario.getId(), id);
+        }
 
         chatMapper.updateEntityFromDto(chatExistente, chatDTO, usuario, ajudante);
         return chatRepository.save(chatExistente);
@@ -225,6 +267,28 @@ public class ChatServiceImpl implements ChatService {
         }
 
         throw new AccessDeniedException("Acesso negado ao chat solicitado.");
+    }
+
+    private void validarUsuarioSemChatAtivo(Long usuarioId, Long chatIdIgnorar) {
+        Optional<Chat> chatAtivo = chatIdIgnorar == null
+                ? chatRepository.findFirstByUsuario_IdAndStatusInOrderByDataInicioDesc(usuarioId, CHAT_STATUS_ATIVOS)
+                : chatRepository.findFirstByUsuario_IdAndStatusInAndIdNotOrderByDataInicioDesc(
+                usuarioId,
+                CHAT_STATUS_ATIVOS,
+                chatIdIgnorar
+        );
+
+        if (chatAtivo.isPresent()) {
+            Chat chatExistente = chatAtivo.get();
+            throw new ConflictException(
+                    "Este usuario ja possui chat ativo (#" + chatExistente.getId()
+                            + "). Finalize o atendimento atual para abrir um novo."
+            );
+        }
+    }
+
+    private boolean isStatusAtivo(ChatStatus status) {
+        return status != null && CHAT_STATUS_ATIVOS.contains(status);
     }
 
     private void validarConsistenciaTemporal(ChatRequestDTO chatDTO) {

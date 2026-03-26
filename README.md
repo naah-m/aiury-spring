@@ -4,9 +4,9 @@ Aplicacao Spring Boot com frontend server-side em Thymeleaf para gestao de atend
 
 ## 1. Visao geral
 O projeto entrega uma base completa de Sprint 3 com:
-- frontend web funcional (`/`, `/login`, `/app`, `/app/chats`, `/app/usuarios`);
+- frontend web funcional (`/`, `/login`, `/app`, `/app/chats`, `/app/usuarios`, `/app/ajudantes`);
 - API REST com HATEOAS (`/api/**`);
-- seguranca com Spring Security (perfis `ADMIN` e `ATENDENTE`);
+- seguranca com Spring Security (perfis `ADMIN`, `USUARIO` e `AJUDANTE`);
 - banco versionado com Flyway para H2 e Oracle;
 - seed controlada para demonstracao local.
 
@@ -109,7 +109,7 @@ No profile `dev`, a seed local sobe automaticamente (`AIURY_SEED_ENABLED=true`) 
 - 2 usuarios (`Camila Nunes`, `Diego Pereira`)
 - 2 ajudantes
 - 2 chats
-- 3 mensagens
+- 5 mensagens
 
 Desabilitar seed:
 
@@ -126,8 +126,8 @@ O Flyway esta habilitado por padrao e executa no startup:
 - `spring.flyway.validate-on-migrate=true`
 
 Scripts versionados:
-- H2: `src/main/resources/db/migration/h2/V1__create_core_tables.sql`, `V2__create_indexes.sql`
-- Oracle: `src/main/resources/db/migration/oracle/V1__create_core_tables.sql`, `V2__create_indexes.sql`
+- H2: `src/main/resources/db/migration/h2/V1__create_core_tables.sql`, `V2__create_indexes.sql`, `V3__security_roles_and_message_sender.sql`
+- Oracle: `src/main/resources/db/migration/oracle/V1__create_core_tables.sql`, `V2__create_indexes.sql`, `V3__security_roles_and_message_sender.sql`
 
 Em resumo: ao iniciar a aplicacao, o Flyway detecta o vendor do datasource, valida o historico e aplica somente migracoes pendentes.
 
@@ -149,13 +149,16 @@ Documentacao:
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
 Regra de acesso:
-- `GET /api/**`: liberado sem autenticacao;
-- `POST/PUT/DELETE /api/**`: requer perfil `ADMIN`.
+- API sempre autenticada;
+- `POST/PUT/DELETE /api/usuarios` e `/api/ajudantes`: `ADMIN`;
+- `GET/POST /api/mensagens`: `ADMIN`, `USUARIO`, `AJUDANTE` com validacao de vinculo;
+- `GET /api/chats`: `ADMIN`, `USUARIO`, `AJUDANTE` com validacao de vinculo.
 
 ## 10. Como fazer login
-Use a tela `/login` com usuarios tecnicos definidos em `SecurityConfig`:
+Use a tela `/login`:
 - `admin` / `admin123`
-- `atendente` / `atendente123`
+- `11999998888` / `demo12345` (usuario seed)
+- `ajudante.escuta` / `apoio12345` (ajudante seed)
 
 Depois de autenticar, o redirecionamento padrao e para `/app`.
 
@@ -164,19 +167,23 @@ Perfis da camada de seguranca web:
 
 | Perfil | Credencial | Acesso principal |
 |---|---|---|
-| `ADMIN` | `admin / admin123` | Acesso total ao painel web e escrita na API |
-| `ATENDENTE` | `atendente / atendente123` | Dashboard, chats e leitura de usuarios |
+| `ADMIN` | `admin / admin123` | Acesso total ao painel web e API |
+| `USUARIO` | `celular / senha` | Abre o proprio chat e acessa apenas chats/mensagens vinculados |
+| `AJUDANTE` | `login / senha` | Acessa apenas chats/mensagens sob sua responsabilidade |
 
 Regras relevantes:
-- `ATENDENTE` pode listar usuarios, mas nao criar/alterar;
-- `ADMIN` e `ATENDENTE` podem operar o fluxo de chats no frontend;
-- operacoes de escrita da API REST sao restritas a `ADMIN`.
+- `USUARIO` pode abrir novo chat web em `/app/chats/novo` com vinculacao automatica;
+- `USUARIO` so pode ter 1 chat ativo por vez (`INICIADO` ou `EM_ANDAMENTO`);
+- `AJUDANTE` nao abre chat novo no frontend;
+- `ADMIN` gerencia usuarios/ajudantes e pode criar/editar chats.
 
 ## 12. Fluxos principais implementados
 Fluxos Sprint 3 entregues ponta a ponta com Thymeleaf, validacao e persistencia real:
 
 1. Abertura e acompanhamento de atendimento/chat
-- abrir novo chat (`/app/chats/novo`);
+- usuario abre o proprio chat (`/app/chats/novo`) com atribuicao automatica de ajudante;
+- regra de bloqueio para impedir mais de 1 chat ativo por usuario;
+- admin pode abrir chat manual com selecao de usuario/ajudante;
 - listar e filtrar chats (`/app/chats`);
 - ver detalhes e atualizar status (`/app/chats/{id}`);
 - feedback visual de sucesso/erro e validacao de formulario.
@@ -205,11 +212,11 @@ Opcional (build completo):
 
 ### 13.2 Teste manual web (roteiro rapido para banca)
 1. Subir a aplicacao em `dev`.
-2. Acessar `/login` com `admin/admin123`.
-3. Ir em `/app/chats` e abrir um novo chat.
-4. Entrar em detalhes do chat e atualizar status.
+2. Acessar `/login` com `11999998888/demo12345`.
+3. Ir em `/app/chats/novo` e abrir um chat.
+4. Repetir abertura para validar bloqueio de chat ativo.
 5. Abrir conversa e enviar mensagens.
-6. Validar mensagens de erro/sucesso e comportamento com chat finalizado.
+6. Logar com `admin/admin123` e validar gestao administrativa.
 
 ### 13.3 Teste manual da API
 - Collection: `docs/postman/Aiury-Sprint3.postman_collection.json`
