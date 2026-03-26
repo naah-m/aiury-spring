@@ -119,12 +119,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Banco em memoria para execucao local e testes -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
     </dependencies>
 
     <build>

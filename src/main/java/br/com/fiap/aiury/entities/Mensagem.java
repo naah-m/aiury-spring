@@ -14,29 +14,39 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "tb_mensagem")
+@Table(name = "TB_MENSAGEM")
 public class Mensagem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_mensagem")
+    @Column(name = "ID_MENSAGEM")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_chat", nullable = false)
+    @JoinColumn(
+            name = "ID_CHAT",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "FK_TB_MENSAGEM_ID_CHAT")
+    )
     private Chat chat;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_remetente")
+    @JoinColumn(
+            name = "ID_USUARIO_REMETENTE",
+            foreignKey = @ForeignKey(name = "FK_TB_MSG_ID_USR_REM")
+    )
     private Usuario remetente;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_remetente_ajudante")
+    @JoinColumn(
+            name = "ID_AJUDANTE_REMETENTE",
+            foreignKey = @ForeignKey(name = "FK_TB_MSG_ID_AJD_REM")
+    )
     private Ajudante remetenteAjudante;
 
-    @Column(name = "texto", nullable = false, length = 1000)
+    @Column(name = "TX_MENSAGEM", nullable = false, length = 1000)
     private String texto;
 
-    @Column(name = "data_envio", nullable = false)
+    @Column(name = "DH_ENVIO", nullable = false)
     private LocalDateTime dataEnvio;
 }

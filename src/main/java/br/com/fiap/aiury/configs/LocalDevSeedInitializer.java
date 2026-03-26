@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -29,10 +28,9 @@ import java.time.LocalDateTime;
 import java.util.Locale;
 
 /**
- * Carga inicial minima para demonstracao local no profile dev.
+ * Carga inicial minima para demonstracao local em ambiente Oracle.
  */
 @Component
-@Profile("dev")
 @ConditionalOnProperty(prefix = "aiury.seed", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class LocalDevSeedInitializer implements ApplicationRunner {
 
@@ -137,7 +135,7 @@ public class LocalDevSeedInitializer implements ApplicationRunner {
         upsertMensagem(chatFinalizado, plantaoEmocional, "Fico feliz em saber disso. Conte comigo quando precisar.", CHAT_FINALIZADO_INICIO.plusMinutes(10));
         upsertMensagem(chatFinalizado, diego, "Consegui organizar meus pensamentos após o atendimento.", CHAT_FINALIZADO_INICIO.plusMinutes(12));
 
-        LOGGER.info("Seed local aplicada (dev): 2 estados, 3 cidades, 2 usuários, 2 ajudantes, 2 chats, 5 mensagens.");
+        LOGGER.info("Seed local aplicada: 2 estados, 3 cidades, 2 usuarios, 2 ajudantes, 2 chats, 5 mensagens.");
     }
 
     private Estado upsertEstado(String nomeEstado, String uf) {

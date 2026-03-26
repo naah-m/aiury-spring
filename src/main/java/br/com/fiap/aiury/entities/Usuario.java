@@ -15,34 +15,43 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "usuario")
+@Table(
+        name = "TB_USUARIO",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "UK_TB_USUARIO_NR_CEL", columnNames = "NR_CELULAR")
+        }
+)
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "ID_USUARIO")
     private Long id;
 
-    @Column(name = "nome_real", nullable = false, length = 100)
+    @Column(name = "NM_USUARIO_REAL", nullable = false, length = 100)
     private String nomeReal;
 
-    @Column(name = "nome_anonimo", length = 50)
+    @Column(name = "NM_USUARIO_ANONIMO", length = 50)
     private String nomeAnonimo;
 
-    @Column(name = "data_nascimento", nullable = false)
+    @Column(name = "DT_NASCIMENTO", nullable = false)
     private LocalDate dataNascimento;
 
-    @Column(name = "celular", length = 20, unique = true)
+    @Column(name = "NR_CELULAR", length = 20)
     private String celular;
 
-    @Column(name = "senha", nullable = false, length = 255)
+    @Column(name = "DS_SENHA", nullable = false, length = 255)
     private String senha;
 
     @CreationTimestamp
-    @Column(name = "data_cadastro", nullable = false, updatable = false)
+    @Column(name = "DT_CADASTRO", nullable = false, updatable = false)
     private LocalDate dataCadastro;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_cidade", nullable = false)
+    @JoinColumn(
+            name = "ID_CIDADE",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "FK_TB_USUARIO_ID_CID")
+    )
     private Cidade cidade;
 }

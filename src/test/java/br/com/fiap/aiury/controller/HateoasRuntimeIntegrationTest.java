@@ -13,6 +13,7 @@ import br.com.fiap.aiury.repositories.UsuarioRepository;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +32,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@EnabledIfEnvironmentVariable(named = "ORACLE_TEST_ENABLED", matches = "true")
 @WithMockUser(username = "admin", roles = "ADMIN")
 class HateoasRuntimeIntegrationTest {
 

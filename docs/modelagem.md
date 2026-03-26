@@ -1,90 +1,94 @@
 # Modelagem de Dominio e Persistencia
 
-## 1. Objetivo deste documento
-Registrar a modelagem final da Sprint 3, com foco em coerencia entre:
-- entidades JPA;
-- constraints no banco;
-- contratos DTO;
-- repositories e regras de servico.
+## 1. Convencao corporativa adotada
 
-## 2. Entidades do dominio
+### 1.1 Tabelas
+- Prefixo obrigatorio: `TB_`
+- Exemplo: `TB_USUARIO`, `TB_CHAT`, `TB_MENSAGEM`
 
-| Entidade | Responsabilidade | Tabela |
-|---|---|---|
-| `Estado` | Catalogo de UFs | `estado` |
-| `Cidade` | Catalogo de cidades por estado | `cidade` |
-| `Usuario` | Pessoa usuaria da plataforma | `usuario` |
-| `Ajudante` | Perfil de apoio no atendimento | `tb_ajudante` |
-| `Chat` | Sessao de atendimento entre usuario e ajudante | `chat` |
-| `Mensagem` | Registro textual do chat | `tb_mensagem` |
+### 1.2 Colunas
+- `ID_`: identificador
+- `NM_`: nome
+- `DS_`: descricao
+- `TX_`: texto
+- `ST_`: status
+- `DH_`: data/hora
+- `DT_`: data
+- `NR_`: numero
+- `FL_`: flag booleana
+- `SG_`: sigla
 
-## 3. Relacionamentos e cardinalidade
+### 1.3 Constraints e indexes
+- `PK_` para chave primaria
+- `FK_` para chave estrangeira
+- `UK_` para unicidade
+- `CK_` para check
+- `IX_` para index auxiliar
 
-| Origem | Destino | Cardinalidade | Implementacao |
-|---|---|---|---|
-| Estado | Cidade | 1:N | `Estado @OneToMany` / `Cidade @ManyToOne` |
-| Cidade | Usuario | 1:N | `Usuario @ManyToOne` |
-| Usuario | Chat | 1:N | `Chat @ManyToOne` |
-| Ajudante | Chat | 1:N | `Chat @ManyToOne` |
-| Chat | Mensagem | 1:N | `Chat @OneToMany` com `orphanRemoval=true` |
-| Usuario | Mensagem | 1:N | `Mensagem @ManyToOne` (`remetente`) |
+## 2. Tabelas e colunas finais
 
-## 4. Constraints aplicadas
+### TB_ESTADO
+- `ID_ESTADO`
+- `NM_ESTADO`
+- `SG_ESTADO`
 
-- `estado.uf` unico.
-- `estado.nome_estado` unico.
-- `cidade` com unicidade composta (`nome_cidade`, `id_estado`).
-- `usuario.celular` unico.
-- FKs obrigatorias em `cidade`, `usuario`, `chat` e `mensagem`.
-- `chat.status` persistido como enum string.
+### TB_CIDADE
+- `ID_CIDADE`
+- `NM_CIDADE`
+- `ID_ESTADO`
 
-## 5. Coerencia entre modelagem e repositories
+### TB_USUARIO
+- `ID_USUARIO`
+- `NM_USUARIO_REAL`
+- `NM_USUARIO_ANONIMO`
+- `DT_NASCIMENTO`
+- `NR_CELULAR`
+- `DS_SENHA`
+- `DT_CADASTRO`
+- `ID_CIDADE`
 
-Query methods ativos e validados:
-- `EstadoRepository.findByUfIgnoreCase(...)`
-- `CidadeRepository.findByEstado_IdOrderByNomeCidadeAsc(...)`
-- `UsuarioRepository.findByCidade_Id(...)`
-- `AjudanteRepository.findByDisponivel(...)`
-- `MensagemRepository.findByChat_IdOrderByDataEnvioAsc(...)`
-- `MensagemRepository.findByChat_IdAndRemetente_IdOrderByDataEnvioAsc(...)`
+### TB_AJUDANTE
+- `ID_AJUDANTE`
+- `NM_AREA_ATUACAO`
+- `NM_LOGIN`
+- `DS_SENHA`
+- `DS_MOTIVACAO`
+- `FL_DISPONIVEL`
+- `NR_RATING`
 
-Todos os campos usados nos metodos derivados existem nas entidades.
+### TB_CHAT
+- `ID_CHAT`
+- `ID_USUARIO`
+- `ID_AJUDANTE`
+- `DH_INICIO`
+- `DH_FIM`
+- `ST_CHAT`
 
-## 6. Decisao sobre Cidade e Estado
+### TB_MENSAGEM
+- `ID_MENSAGEM`
+- `ID_CHAT`
+- `ID_USUARIO_REMETENTE`
+- `ID_AJUDANTE_REMETENTE`
+- `TX_MENSAGEM`
+- `DH_ENVIO`
 
-### 6.1 Faz sentido manter Cidade e Estado no dominio?
-Sim. Elas deixaram de ser entidades soltas e passaram a operar como catalogo oficial para validação geografica de usuarios.
+### TB_ADMIN_ACCOUNT
+- `ID_ADMIN_ACCOUNT`
+- `NM_LOGIN`
+- `DS_SENHA`
+- `DH_ATUALIZACAO`
 
-### 6.2 Elas agregam valor real?
-Sim. Agora sustentam:
-- integridade referencial de `Usuario`;
-- filtros de busca (`/api/cidades?estadoId=...`, `/api/usuarios?cidadeId=...`);
-- navegação HATEOAS entre usuario, cidade e estado.
+## 3. Relacionamentos
+- `TB_CIDADE.ID_ESTADO -> TB_ESTADO.ID_ESTADO`
+- `TB_USUARIO.ID_CIDADE -> TB_CIDADE.ID_CIDADE`
+- `TB_CHAT.ID_USUARIO -> TB_USUARIO.ID_USUARIO`
+- `TB_CHAT.ID_AJUDANTE -> TB_AJUDANTE.ID_AJUDANTE`
+- `TB_MENSAGEM.ID_CHAT -> TB_CHAT.ID_CHAT`
+- `TB_MENSAGEM.ID_USUARIO_REMETENTE -> TB_USUARIO.ID_USUARIO`
+- `TB_MENSAGEM.ID_AJUDANTE_REMETENTE -> TB_AJUDANTE.ID_AJUDANTE`
 
-### 6.3 O relacionamento Cidade -> Estado esta correto?
-Sim. Foi mantido como `@ManyToOne` com FK obrigatória e unicidade composta para evitar duplicidade de cidade no mesmo estado.
-
-### 6.4 Usuario deve apontar para Cidade e Estado vir por consequencia?
-Sim. A referencia de `Usuario` fica em `Cidade`; `Estado` e derivado via relacionamento da cidade.
-
-### 6.5 Vale expor endpoint para Cidade e Estado?
-Sim. Foram adicionados endpoints CRUD para ambos os catalogos, evitando dependencia de insercao manual no banco.
-
-### 6.6 Qual foi a ação aplicada na Sprint 3?
-Manter e fortalecer. O modelo não foi removido; foi integrado por completo em DTO, service, controller, HATEOAS, repositorio e documentacao.
-
-## 7. Regras de negocio adicionadas
-
-- Chat finalizado exige `dataFim`.
-- Chat `INICIADO` não aceita `dataFim`.
-- Mensagem deve respeitar janela temporal do chat.
-- Remetente da mensagem deve pertencer ao chat.
-- Cidade/Estado e celular de usuario possuem validação de unicidade com resposta `409`.
-
-## 8. DER e diagrama de classes
-
-- DER final: `docs/imagens/der.png`
-- Diagrama de classes final: `docs/imagens/diagrama-classes.png`
-
-Esses artefatos devem refletir exatamente as entidades acima e seus relacionamentos.
+## 4. Observacoes de integridade
+- `ST_CHAT` permanece `EnumType.STRING` com os mesmos valores de dominio.
+- Mensagem continua com remetente exclusivo (usuario ou ajudante), validado por check constraint.
+- Todas as mudancas de nomenclatura foram versionadas no Flyway em `V5__standardize_corporate_naming.sql`.
 

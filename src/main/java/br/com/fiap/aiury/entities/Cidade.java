@@ -13,11 +13,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "cidade",
+        name = "TB_CIDADE",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_cidade_nome_estado",
-                        columnNames = {"nome_cidade", "id_estado"}
+                        name = "UK_TB_CIDADE_NM_ID_ESTADO",
+                        columnNames = {"NM_CIDADE", "ID_ESTADO"}
                 )
         }
 )
@@ -25,13 +25,17 @@ public class Cidade {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "ID_CIDADE")
     private Long id;
 
-    @Column(name = "nome_cidade", nullable = false, length = 100)
+    @Column(name = "NM_CIDADE", nullable = false, length = 100)
     private String nomeCidade;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_estado", nullable = false)
+    @JoinColumn(
+            name = "ID_ESTADO",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "FK_TB_CIDADE_ID_EST")
+    )
     private Estado estado;
 }

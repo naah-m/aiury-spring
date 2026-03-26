@@ -37,7 +37,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/login", "/acesso-negado").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/app/usuarios/**").hasRole("ADMIN")
                         .requestMatchers("/app/ajudantes/**").hasRole("ADMIN")
@@ -90,10 +89,7 @@ public class SecurityConfig {
                         .accessDeniedPage("/acesso-negado")
                 )
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**", "/h2-console/**")
-                )
-                .headers(headers -> headers
-                        .frameOptions(frame -> frame.sameOrigin())
+                        .ignoringRequestMatchers("/api/**")
                 );
 
         return http.build();

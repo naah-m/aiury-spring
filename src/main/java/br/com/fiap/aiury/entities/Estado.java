@@ -15,18 +15,24 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "estado")
+@Table(
+        name = "TB_ESTADO",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "UK_TB_ESTADO_NM_EST", columnNames = "NM_ESTADO"),
+                @UniqueConstraint(name = "UK_TB_ESTADO_SG_EST", columnNames = "SG_ESTADO")
+        }
+)
 public class Estado {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "ID_ESTADO")
     private Long id;
 
-    @Column(name = "nome_estado", nullable = false, length = 50, unique = true)
+    @Column(name = "NM_ESTADO", nullable = false, length = 50)
     private String nomeEstado;
 
-    @Column(name = "uf", nullable = false, length = 2, unique = true)
+    @Column(name = "SG_ESTADO", nullable = false, length = 2)
     private String uf;
 
     @OneToMany(mappedBy = "estado")

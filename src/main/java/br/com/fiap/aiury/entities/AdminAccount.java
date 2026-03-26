@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,21 +18,26 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "tb_admin_account")
+@Table(
+        name = "TB_ADMIN_ACCOUNT",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "UK_TB_ADMIN_NM_LOGIN", columnNames = "NM_LOGIN")
+        }
+)
 public class AdminAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "ID_ADMIN_ACCOUNT")
     private Long id;
 
-    @Column(name = "username", nullable = false, length = 120, unique = true)
+    @Column(name = "NM_LOGIN", nullable = false, length = 120)
     private String username;
 
-    @Column(name = "senha", nullable = false, length = 255)
+    @Column(name = "DS_SENHA", nullable = false, length = 255)
     private String senha;
 
     @UpdateTimestamp
-    @Column(name = "data_atualizacao")
+    @Column(name = "DH_ATUALIZACAO")
     private LocalDateTime dataAtualizacao;
 }

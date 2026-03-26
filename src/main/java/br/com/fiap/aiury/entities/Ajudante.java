@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,30 +19,35 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "tb_ajudante")
+@Table(
+        name = "TB_AJUDANTE",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "UK_TB_AJUDANTE_NM_LOGIN", columnNames = "NM_LOGIN")
+        }
+)
 public class Ajudante {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "ID_AJUDANTE")
     private Long id;
 
-    @Column(name = "area_atuacao", length = 100, nullable = false)
+    @Column(name = "NM_AREA_ATUACAO", length = 100, nullable = false)
     private String areaAtuacao;
 
-    @Column(name = "login", length = 60, nullable = false, unique = true)
+    @Column(name = "NM_LOGIN", length = 60, nullable = false)
     private String login;
 
-    @Column(name = "senha", nullable = false, length = 255)
+    @Column(name = "DS_SENHA", nullable = false, length = 255)
     private String senha;
 
     @Lob
-    @Column(name = "motivacao")
+    @Column(name = "DS_MOTIVACAO")
     private String motivacao;
 
-    @Column(name = "disponivel", nullable = false)
+    @Column(name = "FL_DISPONIVEL", nullable = false)
     private boolean disponivel;
 
-    @Column(name = "rating")
+    @Column(name = "NR_RATING")
     private Double rating;
 }
