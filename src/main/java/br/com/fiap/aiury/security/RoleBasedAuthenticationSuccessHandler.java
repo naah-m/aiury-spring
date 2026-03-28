@@ -31,13 +31,6 @@ public class RoleBasedAuthenticationSuccessHandler implements AuthenticationSucc
             return;
         }
 
-        String targetUrl = "/app";
-        if (authentication.getPrincipal() instanceof AiuryUserPrincipal principal) {
-            if (principal.isUsuario() || principal.isAjudante()) {
-                targetUrl = "/app/chats";
-            }
-        }
-
-        redirectStrategy.sendRedirect(request, response, targetUrl);
+        redirectStrategy.sendRedirect(request, response, "/app");
     }
 }

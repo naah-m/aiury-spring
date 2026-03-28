@@ -4,6 +4,8 @@ public record DashboardSummaryView(
         long totalUsuarios,
         long totalAjudantes,
         long totalChats,
-        long totalMensagens
+        long totalMensagens,
+        long chatsAtivos,
+        long chatsFinalizados
 ) {
 }

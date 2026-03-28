@@ -49,5 +49,15 @@ public interface ChatRepository extends JpaRepository<Chat, Long>, JpaSpecificat
     long countByUsuario_Id(Long usuarioId);
 
     long countByAjudante_Id(Long ajudanteId);
+
+    long countByStatusIn(Collection<ChatStatus> status);
+
+    long countByUsuario_IdAndStatusIn(Long usuarioId, Collection<ChatStatus> status);
+
+    long countByAjudante_IdAndStatusIn(Long ajudanteId, Collection<ChatStatus> status);
+
+    long countDistinctAjudante_IdByUsuario_IdAndAjudante_IdIsNotNull(Long usuarioId);
+
+    long countDistinctUsuario_IdByAjudante_IdAndUsuario_IdIsNotNull(Long ajudanteId);
 }
 

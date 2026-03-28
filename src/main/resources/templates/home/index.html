@@ -2,68 +2,59 @@
 <html lang="pt-BR"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout/base :: base('Início', 'home', ~{::content})}">
+      th:replace="~{layout/base :: base('Inicio', 'home', ~{::content})}">
 <th:block th:fragment="content">
-    <section class="home-hero rounded-4 p-4 p-lg-5 mb-4 mb-lg-5">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-8">
-                <span class="home-chip">Plataforma Aiury</span>
-                <h1 class="display-6 fw-bold mt-3 mb-3">Atendimento seguro com Spring Boot, Security e Thymeleaf.</h1>
-                <p class="lead mb-4">
-                    Fluxo completo de autenticação e autorização por perfil: administração, usuários atendidos
-                    e ajudantes vinculados aos chats.
-                </p>
-                <div class="d-flex flex-wrap gap-2">
-                    <a class="btn btn-primary btn-lg px-4" sec:authorize="isAnonymous()" th:href="@{/login}">
-                        Entrar no painel
-                    </a>
-                    <a class="btn btn-primary btn-lg px-4" sec:authorize="isAuthenticated()" th:href="@{/app}">
-                        Ir para dashboard
-                    </a>
-                    <a class="btn btn-outline-light btn-lg px-4" th:href="@{/swagger-ui/index.html}" target="_blank" rel="noopener">
-                        Ver documentação da API
-                    </a>
-                </div>
+    <section class="public-home-shell mb-4 mb-lg-5">
+        <article class="public-home-hero rounded-4 p-4 p-lg-5">
+            <span class="public-home-kicker">Sistema Aiury</span>
+            <h1 class="display-6 fw-bold mt-3 mb-3">Entrada oficial para gestao de atendimentos.</h1>
+            <p class="lead text-secondary mb-4">
+                Centralize abertura de chats, acompanhamento das conversas e operacao dos perfis
+                ADMIN, USUARIO e AJUDANTE em um unico ambiente.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary btn-lg px-4" sec:authorize="isAnonymous()" th:href="@{/login}">
+                    Entrar no sistema
+                </a>
+                <a class="btn btn-primary btn-lg px-4" sec:authorize="isAuthenticated()" th:href="@{/app}">
+                    Acessar painel
+                </a>
+                <a class="btn btn-outline-primary btn-lg px-4"
+                   th:href="@{/swagger-ui/index.html}"
+                   target="_blank"
+                   rel="noopener">
+                    Documentacao da API
+                </a>
             </div>
-            <div class="col-lg-4">
-                <div class="home-highlight rounded-4 p-4">
-                    <h2 class="h5 fw-bold mb-3">O que já está pronto</h2>
-                    <ul class="list-unstyled m-0 d-grid gap-2">
-                        <li>Login com perfis ADMIN, USUÁRIO e AJUDANTE</li>
-                        <li>Controle de acesso por vínculo de atendimento</li>
-                        <li>Telas MVC para gestão de usuários, ajudantes e chats</li>
-                        <li>API REST protegida por autorização real no backend</li>
-                    </ul>
-                </div>
-            </div>
+        </article>
+    </section>
+
+    <section class="row g-3 g-lg-4 mb-4">
+        <div class="col-md-6 col-xl-4">
+            <article class="home-module-card rounded-4 p-4 h-100">
+                <h2 class="h5 fw-bold mb-2">Atendimento</h2>
+                <p class="mb-0 text-secondary">Abrir e acompanhar chats com historico completo de mensagens.</p>
+            </article>
+        </div>
+        <div class="col-md-6 col-xl-4">
+            <article class="home-module-card rounded-4 p-4 h-100">
+                <h2 class="h5 fw-bold mb-2">Gestao por perfil</h2>
+                <p class="mb-0 text-secondary">Cada perfil acessa apenas os modulos e acoes permitidos para sua rotina.</p>
+            </article>
+        </div>
+        <div class="col-md-6 col-xl-4">
+            <article class="home-module-card rounded-4 p-4 h-100">
+                <h2 class="h5 fw-bold mb-2">Operacao diaria</h2>
+                <p class="mb-0 text-secondary">Use o painel para consultar status, tratar filas e navegar entre modulos.</p>
+            </article>
         </div>
     </section>
 
-    <section class="row g-3 g-lg-4">
-        <div class="col-md-6 col-xl-3">
-            <article class="feature-card h-100 rounded-4 p-4">
-                <h2 class="h5 fw-bold">Templates organizados</h2>
-                <p class="mb-0 text-secondary">Separação clara entre layout, fragments, páginas e telas de autenticação.</p>
-            </article>
-        </div>
-        <div class="col-md-6 col-xl-3">
-            <article class="feature-card h-100 rounded-4 p-4">
-                <h2 class="h5 fw-bold">Navegação funcional</h2>
-                <p class="mb-0 text-secondary">Fluxo inicial pronto com links para início, painel, usuários e documentação.</p>
-            </article>
-        </div>
-        <div class="col-md-6 col-xl-3">
-            <article class="feature-card h-100 rounded-4 p-4">
-                <h2 class="h5 fw-bold">Mensagens reutilizáveis</h2>
-                <p class="mb-0 text-secondary">Fragment único para feedback de sucesso e erro nas páginas MVC.</p>
-            </article>
-        </div>
-        <div class="col-md-6 col-xl-3">
-            <article class="feature-card h-100 rounded-4 p-4">
-                <h2 class="h5 fw-bold">Escalabilidade visual</h2>
-                <p class="mb-0 text-secondary">Base estilística limpa para novas views sem retrabalho de front-end.</p>
-            </article>
-        </div>
+    <section class="public-home-note rounded-4 p-4">
+        <h2 class="h5 fw-bold mb-2">Uso rapido</h2>
+        <p class="mb-0 text-secondary">
+            Entre com sua conta para visualizar seu painel inicial e seguir com as atividades do seu perfil.
+        </p>
     </section>
 </th:block>
 </html>

@@ -2,47 +2,217 @@
 <html lang="pt-BR"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout/base :: base('Dashboard', 'dashboard', ~{::content})}">
+      th:replace="~{layout/base :: base('Painel Inicial', 'dashboard', ~{::content})}">
 <th:block th:fragment="content">
-    <section class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
-        <div>
-            <h1 class="mb-1">Dashboard</h1>
-            <p class="text-secondary mb-0">Visao consolidada do seu perfil no sistema de atendimentos Aiury.</p>
-        </div>
-        <div class="d-flex flex-wrap gap-2">
-            <a class="btn btn-outline-primary px-4" sec:authorize="hasRole('ADMIN')" th:href="@{/app/usuarios}">Gerenciar usuarios</a>
-            <a class="btn btn-outline-primary px-4" sec:authorize="hasRole('ADMIN')" th:href="@{/app/ajudantes}">Gerenciar ajudantes</a>
-            <a class="btn btn-primary px-4" th:href="@{/app/chats/novo}" sec:authorize="hasRole('USUARIO')">Abrir meu chat</a>
-            <a class="btn btn-primary px-4" th:href="@{/app/chats}" sec:authorize="hasAnyRole('ADMIN','AJUDANTE')">Ir para chats</a>
-            <a class="btn btn-outline-primary px-4" th:href="@{/app/minha-conta}" sec:authorize="hasAnyRole('ADMIN','USUARIO','AJUDANTE')">Minha conta</a>
+    <section class="dashboard-hero rounded-4 p-4 p-lg-5 mb-4">
+        <div class="row g-4 align-items-start">
+            <div class="col-lg-8">
+                <p class="text-uppercase small fw-semibold text-secondary mb-2">Painel inicial</p>
+                <h1 class="mb-2">Bem-vindo, <span sec:authentication="name">usuario</span>.</h1>
+                <p class="text-secondary mb-0">
+                    Este painel concentra os atalhos e indicadores essenciais da operacao diaria no Aiury.
+                </p>
+            </div>
+            <div class="col-lg-4">
+                <div class="dashboard-context rounded-3 p-3 h-100">
+                    <p class="mb-2 small text-secondary">
+                        Ultima atualizacao:
+                        <strong class="text-dark" th:text="${generatedAtLabel}">-</strong>
+                    </p>
+                    <p class="mb-2 small text-secondary">Perfil ativo:</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge text-bg-dark" sec:authorize="hasRole('ADMIN')">ADMIN</span>
+                        <span class="badge text-bg-dark" sec:authorize="hasRole('USUARIO')">USUARIO</span>
+                        <span class="badge text-bg-dark" sec:authorize="hasRole('AJUDANTE')">AJUDANTE</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
     <div th:replace="~{fragments/alerts :: feedback(${mensagemSucesso}, ${mensagemErro})}"></div>
 
+    <section class="mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <h2 class="h5 fw-bold mb-0">Atalhos principais</h2>
+            <a class="btn btn-sm btn-outline-primary" th:href="@{/app/minha-conta}">Minha conta</a>
+        </div>
+        <div class="row g-3 g-lg-4">
+            <div class="col-md-6 col-xl-4" sec:authorize="hasRole('ADMIN')">
+                <article class="dashboard-action-card rounded-4 p-4 h-100">
+                    <h3 class="h6 fw-bold mb-2">Gestao de usuarios</h3>
+                    <p class="text-secondary mb-3">Cadastre, edite e acompanhe os usuarios atendidos.</p>
+                    <a class="btn btn-outline-primary btn-sm" th:href="@{/app/usuarios}">Abrir modulo</a>
+                </article>
+            </div>
+            <div class="col-md-6 col-xl-4" sec:authorize="hasRole('ADMIN')">
+                <article class="dashboard-action-card rounded-4 p-4 h-100">
+                    <h3 class="h6 fw-bold mb-2">Gestao de ajudantes</h3>
+                    <p class="text-secondary mb-3">Administre os profissionais vinculados aos atendimentos.</p>
+                    <a class="btn btn-outline-primary btn-sm" th:href="@{/app/ajudantes}">Abrir modulo</a>
+                </article>
+            </div>
+            <div class="col-md-6 col-xl-4" sec:authorize="hasRole('ADMIN')">
+                <article class="dashboard-action-card rounded-4 p-4 h-100">
+                    <h3 class="h6 fw-bold mb-2">Operacao de chats</h3>
+                    <p class="text-secondary mb-3">Monitore conversas, status e historico da plataforma.</p>
+                    <a class="btn btn-outline-primary btn-sm" th:href="@{/app/chats}">Abrir modulo</a>
+                </article>
+            </div>
+
+            <div class="col-md-6 col-xl-4" sec:authorize="hasRole('USUARIO')">
+                <article class="dashboard-action-card rounded-4 p-4 h-100">
+                    <h3 class="h6 fw-bold mb-2">Meus chats</h3>
+                    <p class="text-secondary mb-3">Visualize seus atendimentos e acompanhe o andamento.</p>
+                    <a class="btn btn-outline-primary btn-sm" th:href="@{/app/chats}">Ir para chats</a>
+                </article>
+            </div>
+            <div class="col-md-6 col-xl-4" sec:authorize="hasRole('USUARIO')">
+                <article class="dashboard-action-card rounded-4 p-4 h-100">
+                    <h3 class="h6 fw-bold mb-2">Abrir novo chat</h3>
+                    <p class="text-secondary mb-3">Solicite um novo atendimento na sua area.</p>
+                    <a class="btn btn-primary btn-sm" th:href="@{/app/chats/novo}">Novo atendimento</a>
+                </article>
+            </div>
+
+            <div class="col-md-6 col-xl-4" sec:authorize="hasRole('AJUDANTE')">
+                <article class="dashboard-action-card rounded-4 p-4 h-100">
+                    <h3 class="h6 fw-bold mb-2">Atendimentos vinculados</h3>
+                    <p class="text-secondary mb-3">Acesse as conversas associadas ao seu perfil.</p>
+                    <a class="btn btn-outline-primary btn-sm" th:href="@{/app/chats}">Ir para chats</a>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold mb-3">Resumo operacional</h2>
+        <div class="row g-3 g-lg-4" sec:authorize="hasRole('ADMIN')">
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Usuarios</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.totalUsuarios}">0</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Ajudantes</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.totalAjudantes}">0</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Chats ativos</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.chatsAtivos}">0</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Chats finalizados</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.chatsFinalizados}">0</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Mensagens</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.totalMensagens}">0</p>
+                </article>
+            </div>
+        </div>
+
+        <div class="row g-3 g-lg-4" sec:authorize="hasRole('USUARIO')">
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Meus chats</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.totalChats}">0</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Chats ativos</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.chatsAtivos}">0</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Chats finalizados</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.chatsFinalizados}">0</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Mensagens</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.totalMensagens}">0</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Ajudantes vinculados</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.totalAjudantes}">0</p>
+                </article>
+            </div>
+        </div>
+
+        <div class="row g-3 g-lg-4" sec:authorize="hasRole('AJUDANTE')">
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Atendimentos</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.totalChats}">0</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Ativos</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.chatsAtivos}">0</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Finalizados</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.chatsFinalizados}">0</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Usuarios atendidos</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.totalUsuarios}">0</p>
+                </article>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <article class="metric-card rounded-4 p-4 h-100">
+                    <h3 class="h6 text-uppercase text-secondary mb-2">Mensagens</h3>
+                    <p class="display-6 fw-bold mb-0" th:text="${summary.totalMensagens}">0</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
     <section class="row g-3 g-lg-4">
-        <div class="col-sm-6 col-xl-3">
-            <article class="metric-card rounded-4 p-4 h-100">
-                <h2 class="h6 text-uppercase text-secondary mb-2">Usuarios</h2>
-                <p class="display-6 fw-bold mb-0" th:text="${summary.totalUsuarios}">0</p>
+        <div class="col-lg-8">
+            <article class="dashboard-status-card rounded-4 p-4 h-100">
+                <h2 class="h6 text-uppercase text-secondary mb-2">Status operacional</h2>
+                <p class="mb-2 fw-semibold">Operacao normal.</p>
+                <p class="mb-0 text-secondary" sec:authorize="hasRole('ADMIN')">
+                    Monitoramento geral disponivel para gestao de usuarios, ajudantes e atendimentos.
+                </p>
+                <p class="mb-0 text-secondary" sec:authorize="hasRole('USUARIO')">
+                    Seu acesso esta pronto para abertura e acompanhamento dos seus chats.
+                </p>
+                <p class="mb-0 text-secondary" sec:authorize="hasRole('AJUDANTE')">
+                    Seus atendimentos vinculados podem ser consultados e respondidos em tempo real.
+                </p>
             </article>
         </div>
-        <div class="col-sm-6 col-xl-3">
-            <article class="metric-card rounded-4 p-4 h-100">
-                <h2 class="h6 text-uppercase text-secondary mb-2">Ajudantes</h2>
-                <p class="display-6 fw-bold mb-0" th:text="${summary.totalAjudantes}">0</p>
-            </article>
-        </div>
-        <div class="col-sm-6 col-xl-3">
-            <article class="metric-card rounded-4 p-4 h-100">
-                <h2 class="h6 text-uppercase text-secondary mb-2">Chats</h2>
-                <p class="display-6 fw-bold mb-0" th:text="${summary.totalChats}">0</p>
-            </article>
-        </div>
-        <div class="col-sm-6 col-xl-3">
-            <article class="metric-card rounded-4 p-4 h-100">
-                <h2 class="h6 text-uppercase text-secondary mb-2">Mensagens</h2>
-                <p class="display-6 fw-bold mb-0" th:text="${summary.totalMensagens}">0</p>
+        <div class="col-lg-4">
+            <article class="dashboard-status-card rounded-4 p-4 h-100">
+                <h2 class="h6 text-uppercase text-secondary mb-2">Acessos rapidos</h2>
+                <div class="d-grid gap-2">
+                    <a class="btn btn-outline-primary btn-sm" th:href="@{/app/chats}">Lista de chats</a>
+                    <a class="btn btn-outline-primary btn-sm" th:href="@{/app/minha-conta}">Minha conta</a>
+                    <a class="btn btn-outline-primary btn-sm" th:href="@{/swagger-ui/index.html}" target="_blank" rel="noopener">
+                        Documentacao da API
+                    </a>
+                </div>
             </article>
         </div>
     </section>
