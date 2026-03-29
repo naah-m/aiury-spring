@@ -4,7 +4,7 @@
 - Base URL local: `http://localhost:8080`
 - Prefixo da API: `/api`
 - Media type: `application/json`
-- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 - Formato de data (`LocalDate`): `dd/MM/yyyy`
 - Formato de data/hora (`LocalDateTime`): `dd/MM/yyyy HH:mm:ss`
@@ -46,7 +46,27 @@ Exemplo de erro de formato de data:
 }
 ```
 
-## 2. Fluxo recomendado para testes
+## 2. Autenticacao e autorizacao
+- A API usa a mesma sessao autenticada da aplicacao web (cookie `JSESSIONID`).
+- Credenciais persistidas em BCrypt; nao ha suporte a senha em texto puro.
+- Para testar endpoints protegidos no navegador:
+  1. autentique-se em `http://localhost:8080/login`;
+  2. abra o Swagger em `http://localhost:8080/swagger-ui.html`.
+- Para testes via Postman, autentique-se antes ou use requests permitidas para o perfil.
+
+Matriz de acesso por perfil:
+
+| Recurso | GET | POST | PUT | DELETE |
+|---|---|---|---|---|
+| `/api` | ADMIN, USUARIO, AJUDANTE | - | - | - |
+| `/api/estados` | ADMIN, USUARIO, AJUDANTE | ADMIN | ADMIN | ADMIN |
+| `/api/cidades` | ADMIN, USUARIO, AJUDANTE | ADMIN | ADMIN | ADMIN |
+| `/api/usuarios` | ADMIN | ADMIN | ADMIN | ADMIN |
+| `/api/ajudantes` | ADMIN | ADMIN | ADMIN | ADMIN |
+| `/api/chats` | ADMIN, USUARIO, AJUDANTE | ADMIN | ADMIN | ADMIN |
+| `/api/mensagens` | ADMIN, USUARIO, AJUDANTE | ADMIN, USUARIO, AJUDANTE | ADMIN | ADMIN |
+
+## 3. Fluxo recomendado para testes
 1. Criar estado
 2. Criar cidade com `estadoId` existente
 3. Criar usuario com `cidadeId` existente
@@ -54,7 +74,7 @@ Exemplo de erro de formato de data:
 5. Criar chat com `usuarioId` e `ajudanteId` existentes
 6. Criar mensagem com `chatId` existente e `remetenteId` igual ao usuario dono do chat
 
-## 3. Resumo executivo de recursos
+## 4. Resumo executivo de recursos
 
 | Recurso | Base path | Filtros suportados |
 |---|---|---|
@@ -66,7 +86,7 @@ Exemplo de erro de formato de data:
 | Chats | `/api/chats` | `usuarioId`, `ajudanteId`, `status` |
 | Mensagens | `/api/mensagens` | `chatId`, `remetenteId` |
 
-## 4. Root (entrypoint HATEOAS)
+## 5. Root (entrypoint HATEOAS)
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -81,7 +101,7 @@ Exemplo de relacoes retornadas:
 - `cidades`
 - `estados`
 
-## 5. Estados
+## 6. Estados
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -100,7 +120,7 @@ Exemplo `POST /api/estados`:
 }
 ```
 
-## 6. Cidades
+## 7. Cidades
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -122,7 +142,7 @@ Exemplo `POST /api/cidades`:
 Pre-requisito:
 - `estadoId` deve existir.
 
-## 7. Usuarios
+## 8. Usuarios
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -148,7 +168,7 @@ Exemplo `POST /api/usuarios`:
 Pre-requisito:
 - `cidadeId` deve existir.
 
-## 8. Ajudantes
+## 9. Ajudantes
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -169,7 +189,7 @@ Exemplo `POST /api/ajudantes`:
 }
 ```
 
-## 9. Chats
+## 10. Chats
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -206,7 +226,7 @@ Pre-requisitos:
 - `usuarioId` deve existir.
 - `ajudanteId` deve existir.
 
-## 10. Mensagens
+## 11. Mensagens
 
 | Metodo | Endpoint | Descricao | Sucesso | Erros |
 |---|---|---|---|---|
@@ -235,7 +255,7 @@ Pre-requisitos:
 - `chatId` deve existir.
 - `remetenteId` deve existir e corresponder ao usuario do chat.
 
-## 11. Status HTTP usados na API
+## 12. Status HTTP usados na API
 
 | Status | Uso |
 |---|---|

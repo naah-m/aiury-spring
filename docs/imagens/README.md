@@ -1,7 +1,11 @@
 # Pasta de Imagens
 
-Adicionar nesta pasta os artefatos visuais finais da entrega:
+Esta pasta pode armazenar os artefatos visuais usados na apresentacao final.
+
+Arquivos recomendados:
 - `der.png`
 - `diagrama-classes.png`
 
-Esses arquivos sao referenciados no `README.md` e em `docs/modelagem.md`.
+Observacao:
+- o arquivo `docs/modelagem.md` ja contem diagramas em Mermaid para leitura tecnica;
+- as imagens em PNG sao opcionais para complementar evidencia visual da banca.

@@ -1,39 +1,49 @@
 # Arquitetura da Aplicacao
 
 ## 1. Visao geral
-A API segue arquitetura em camadas com separacao de responsabilidade para reduzir acoplamento e facilitar manutencao.
+O projeto segue arquitetura em camadas com separacao de responsabilidades para reduzir acoplamento e aumentar previsibilidade de manutencao.
 
-## 2. Camadas
-
-| Camada | Pacote | Papel |
+## 2. Camadas e pacotes
+| Camada | Pacotes principais | Responsabilidade |
 |---|---|---|
-| HTTP | `controller` | Endpoints REST e MVC, status code e contratos de entrada/saida |
-| Regras | `services` | Validacoes de negocio e orquestracao de fluxo |
-| Persistencia | `repositories` | Acesso ao banco com Spring Data JPA |
-| Dominio | `entities` | Modelagem relacional com JPA |
-| Contratos | `dto` | Payloads de request e response |
-| Conversao | `mappers` | Conversao entre entidade e DTO |
-| Hipermidia | `representation` | Montagem de links HATEOAS |
-| Infra | `configs`, `exceptions`, `security` | Configuracoes globais, tratamento de erros e seguranca |
+| Web MVC | `controller.mvc`, `templates`, `fragments`, `static` | Fluxos de tela, formulários e navegação |
+| API REST | `controller`, `representation`, `dto` | Endpoints, contratos e HATEOAS |
+| Negocio | `services` | Regras de dominio e autorizacao contextual |
+| Persistencia | `repositories`, `entities` | Mapeamento JPA e consultas |
+| Conversao | `mappers`, `mappers.web` | Conversao entre entidades e DTOs/forms |
+| Infra | `configs`, `security`, `exceptions` | Config global, seguranca e tratamento de erro |
 
-## 3. Fluxo de requisicao
-1. Controller recebe request e aplica Bean Validation.
-2. Service executa regras de negocio.
-3. Repository consulta/persiste no Oracle.
-4. Mapper converte entidade para DTO.
-5. Representation builder adiciona links HATEOAS.
-6. Controller retorna resposta HTTP.
+## 3. Fluxo tecnico de requisicao
+1. Requisicao entra via controller MVC ou REST.
+2. Validacoes de entrada (Bean Validation + checks de negocio).
+3. Service aplica regras e autorizacao por contexto.
+4. Repository executa consulta/escrita no Oracle.
+5. Mapper converte resultado para DTO/view.
+6. Controller retorna resposta HTML ou JSON.
 
-## 4. Decisoes tecnicas
-- DTO separado para request e response em todos os recursos.
-- HATEOAS aplicado em `Estados`, `Cidades`, `Usuarios`, `Ajudantes`, `Chats` e `Mensagens`.
-- Tratamento global de excecoes com payload unico `ApiErrorResponse`.
-- Validacoes de conflito (`409`) para unicidade e integridade.
-- Banco padrao e unico da aplicacao: Oracle.
-- Flyway configurado somente para `db/migration/oracle`.
+## 4. Seguranca em profundidade
+- Regras de rota definidas em `SecurityConfig`.
+- Regras de vinculo reforcadas na camada de servico:
+  - usuario e ajudante so acessam seus chats/mensagens;
+  - operacoes administrativas restritas a `ADMIN`;
+  - controle de envio de mensagem por remetente valido.
+- Login centralizado com `AiuryUserDetailsService`, resolvendo credencial em 3 fontes:
+  - `TB_ADMIN_ACCOUNT` (admin),
+  - `TB_USUARIO` (celular),
+  - `TB_AJUDANTE` (login).
 
-## 5. Garantias de qualidade
-- Build validado com `mvn clean test`.
-- Testes unitarios, web slices e integracao Oracle condicional por ambiente.
-- Documentacao OpenAPI e markdown alinhadas ao codigo.
+## 5. Decisoes de arquitetura da Sprint 3
+- DTO separado para request/response em recursos REST.
+- DTO/web forms separados para MVC.
+- HATEOAS aplicado em todos os recursos principais da API.
+- Tratamento global de excecoes com payload padronizado (`ApiErrorResponse`).
+- Flyway Oracle-only como mecanismo oficial de evolucao de schema e seed.
 
+## 6. Qualidade e operacao
+- Build e testes automatizados via Maven Wrapper.
+- Suite de integracao Oracle condicional por ambiente.
+- Documentacao tecnica complementar em:
+  - `docs/endpoints.md`
+  - `docs/modelagem.md`
+  - `docs/testes.md`
+  - `docs/visao-mvp.md`

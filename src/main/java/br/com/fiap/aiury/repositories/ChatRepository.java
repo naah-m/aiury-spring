@@ -2,11 +2,13 @@ package br.com.fiap.aiury.repositories;
 
 import br.com.fiap.aiury.entities.ChatStatus;
 import br.com.fiap.aiury.entities.Chat;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -56,8 +58,20 @@ public interface ChatRepository extends JpaRepository<Chat, Long>, JpaSpecificat
 
     long countByAjudante_IdAndStatusIn(Long ajudanteId, Collection<ChatStatus> status);
 
-    long countDistinctAjudante_IdByUsuario_IdAndAjudante_IdIsNotNull(Long usuarioId);
+    @Query("""
+            select count(distinct c.ajudante.id)
+            from Chat c
+            where c.usuario.id = :usuarioId
+              and c.ajudante.id is not null
+            """)
+    long countDistinctAjudantesByUsuarioId(@Param("usuarioId") Long usuarioId);
 
-    long countDistinctUsuario_IdByAjudante_IdAndUsuario_IdIsNotNull(Long ajudanteId);
+    @Query("""
+            select count(distinct c.usuario.id)
+            from Chat c
+            where c.ajudante.id = :ajudanteId
+              and c.usuario.id is not null
+            """)
+    long countDistinctUsuariosByAjudanteId(@Param("ajudanteId") Long ajudanteId);
 }
 

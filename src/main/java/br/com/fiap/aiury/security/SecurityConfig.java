@@ -33,7 +33,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/login", "/acesso-negado").permitAll()
+                        .requestMatchers("/", "/login", "/acesso-negado", "/error").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/app/usuarios/**").hasRole("ADMIN")
@@ -63,7 +63,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET, "/api/cidades/**", "/api/estados/**", "/api").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
                         .requestMatchers("/api/**").hasRole("ADMIN")
-                        .anyRequest().permitAll()
+                        .anyRequest().denyAll()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -105,25 +105,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        BCryptPasswordEncoder delegate = new BCryptPasswordEncoder();
-        return new PasswordEncoder() {
-            @Override
-            public String encode(CharSequence rawPassword) {
-                return delegate.encode(rawPassword);
-            }
-
-            @Override
-            public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                if (encodedPassword == null) {
-                    return false;
-                }
-                if (encodedPassword.startsWith("$2a$")
-                        || encodedPassword.startsWith("$2b$")
-                        || encodedPassword.startsWith("$2y$")) {
-                    return delegate.matches(rawPassword, encodedPassword);
-                }
-                return rawPassword != null && rawPassword.toString().equals(encodedPassword);
-            }
-        };
+        return new BCryptPasswordEncoder();
     }
 }

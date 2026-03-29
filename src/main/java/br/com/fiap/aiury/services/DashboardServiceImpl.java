@@ -8,6 +8,7 @@ import br.com.fiap.aiury.repositories.MensagemRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
 import br.com.fiap.aiury.security.AiuryAuthenticatedUserService;
 import br.com.fiap.aiury.security.AiuryUserPrincipal;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
@@ -45,10 +46,10 @@ public class DashboardServiceImpl implements DashboardService {
     public DashboardSummaryView obterResumo() {
         AiuryUserPrincipal principal = authenticatedUserService.getPrincipalOrThrow();
         if (principal.isUsuario()) {
-            Long usuarioId = principal.getUsuarioId();
+            Long usuarioId = exigirUsuarioId(principal);
             return new DashboardSummaryView(
                     1,
-                    chatRepository.countDistinctAjudante_IdByUsuario_IdAndAjudante_IdIsNotNull(usuarioId),
+                    chatRepository.countDistinctAjudantesByUsuarioId(usuarioId),
                     chatRepository.countByUsuario_Id(usuarioId),
                     mensagemRepository.countByChat_Usuario_Id(usuarioId),
                     chatRepository.countByUsuario_IdAndStatusIn(usuarioId, STATUS_ATIVOS),
@@ -57,9 +58,9 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         if (principal.isAjudante()) {
-            Long ajudanteId = principal.getAjudanteId();
+            Long ajudanteId = exigirAjudanteId(principal);
             return new DashboardSummaryView(
-                    chatRepository.countDistinctUsuario_IdByAjudante_IdAndUsuario_IdIsNotNull(ajudanteId),
+                    chatRepository.countDistinctUsuariosByAjudanteId(ajudanteId),
                     1,
                     chatRepository.countByAjudante_Id(ajudanteId),
                     mensagemRepository.countByChat_Ajudante_Id(ajudanteId),
@@ -76,5 +77,21 @@ public class DashboardServiceImpl implements DashboardService {
                 chatRepository.countByStatusIn(STATUS_ATIVOS),
                 chatRepository.countByStatusIn(STATUS_FINALIZADOS)
         );
+    }
+
+    private Long exigirUsuarioId(AiuryUserPrincipal principal) {
+        Long usuarioId = principal.getUsuarioId();
+        if (usuarioId == null) {
+            throw new AccessDeniedException("Perfil de usuario autenticado sem vinculo valido.");
+        }
+        return usuarioId;
+    }
+
+    private Long exigirAjudanteId(AiuryUserPrincipal principal) {
+        Long ajudanteId = principal.getAjudanteId();
+        if (ajudanteId == null) {
+            throw new AccessDeniedException("Perfil de ajudante autenticado sem vinculo valido.");
+        }
+        return ajudanteId;
     }
 }

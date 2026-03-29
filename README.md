@@ -1,6 +1,6 @@
 # Aiury - Sistema de Gestão de Atendimentos
 
-Aplicação web e API REST para gestão de atendimentos entre **USUÁRIOS** e **AJUDANTES**, com controle de acesso por perfil, persistência relacional em Oracle e migrações versionadas.
+Aplicação web e API REST para gestão de atendimentos entre **USUÁRIOS** e **AJUDANTES**, com autenticação por perfil, regras de vínculo no backend e persistência Oracle com Flyway.
 
 ## Sumário
 1. [Visão geral](#visão-geral)
@@ -9,91 +9,86 @@ Aplicação web e API REST para gestão de atendimentos entre **USUÁRIOS** e **
 4. [Perfis de acesso](#perfis-de-acesso)
 5. [Acesso ao sistema em ambiente local](#acesso-ao-sistema-em-ambiente-local)
 6. [Como executar o projeto](#como-executar-o-projeto)
-7. [Configuração do ambiente](#configuração-do-ambiente)
-8. [Estrutura do projeto](#estrutura-do-projeto)
-9. [Fluxo de autenticação e autorização](#fluxo-de-autenticação-e-autorização)
-10. [Banco de dados](#banco-de-dados)
-11. [Documentação da API](#documentação-da-api)
-12. [Boas práticas e arquitetura](#boas-práticas-e-arquitetura)
-13. [Melhorias futuras](#melhorias-futuras)
-14. [Integrantes](#integrantes)
+7. [Fluxo rápido de avaliação](#fluxo-rápido-de-avaliação)
+8. [Como testar o sistema](#como-testar-o-sistema)
+9. [Configuração do ambiente](#configuração-do-ambiente)
+10. [Estrutura do projeto](#estrutura-do-projeto)
+11. [Fluxo de autenticação e autorização](#fluxo-de-autenticação-e-autorização)
+12. [Banco de dados e Flyway](#banco-de-dados-e-flyway)
+13. [Documentação da API](#documentação-da-api)
+14. [Boas práticas e arquitetura](#boas-práticas-e-arquitetura)
+15. [Melhorias futuras](#melhorias-futuras)
+16. [Documentação complementar](#documentação-complementar)
+17. [Integrantes](#integrantes)
 
 ## Visão geral
-O Aiury organiza o fluxo de atendimento em três frentes principais:
-- cadastro e manutenção de pessoas e catálogos de referência (estados e cidades);
-- abertura e acompanhamento de chats de atendimento;
-- troca de mensagens com regras de vínculo entre participante e chat.
+O Aiury organiza o ciclo completo de atendimento em um fluxo auditável:
+- cadastro e gestão de perfis de atendimento;
+- abertura e acompanhamento de chats;
+- troca de mensagens com rastreabilidade;
+- controle de acesso por perfil e por vínculo real de atendimento.
 
-Problema que o sistema resolve:
-- evitar atendimento sem rastreabilidade;
-- padronizar controle de acesso por perfil;
-- oferecer visão operacional web e API para integração e auditoria funcional.
-
-Fluxos de negócio principais:
-- **ADMIN** administra usuários, ajudantes e operação de chats;
-- **USUÁRIO** abre chat e acompanha seus atendimentos;
-- **AJUDANTE** acompanha e responde atendimentos vinculados ao seu perfil.
+Problema atacado:
+- evitar atendimento sem histórico confiável;
+- reduzir acesso indevido a dados de terceiros;
+- entregar operação web e API com regras coerentes.
 
 ## Objetivos do projeto
 ### Objetivo funcional
-Disponibilizar um sistema de atendimento com autenticação por perfil, gestão de dados de domínio e operação de chats/mensagens com regras de acesso consistentes.
+Disponibilizar um sistema de atendimento com painéis por perfil e regras de negócio consistentes para chats e mensagens.
 
 ### Objetivo técnico
-Entregar uma base sustentada por:
-- Spring Boot 3;
-- Spring Security;
+Consolidar uma base de Sprint 3 com:
+- Spring Boot 3.5.6;
+- Spring Security (autenticação/autorização);
 - Spring Data JPA + Hibernate;
-- Thymeleaf (camada web MVC);
-- Flyway para versionamento de banco;
-- OpenAPI/Swagger para documentação da API.
+- Thymeleaf (camada MVC);
+- Flyway (migração e seed Oracle);
+- OpenAPI/Swagger;
+- testes automatizados.
 
 ## Funcionalidades principais
-### Módulo web (MVC)
-- login e logout com redirecionamento para painel inicial (`/app`);
-- dashboard com atalhos por perfil e resumo operacional;
-- gestão de usuários (`/app/usuarios`) para perfil ADMIN;
-- gestão de ajudantes (`/app/ajudantes`) para perfil ADMIN;
-- gestão de chats (`/app/chats`) com filtros e detalhes;
-- abertura de novo chat pelo usuário (`/app/chats/novo`);
-- conversa do chat com envio de mensagem (`/app/chats/{id}/conversa`);
-- área de minha conta com troca de senha (`/app/minha-conta`).
+### Interface web (MVC)
+- login/logout;
+- painel inicial com atalhos por perfil;
+- gestão de usuários (ADMIN);
+- gestão de ajudantes (ADMIN);
+- gestão de chats com filtros e detalhes;
+- abertura de novo chat para USUÁRIO;
+- conversa do chat com envio de mensagens;
+- área “Minha conta” com alteração de senha.
 
 ### API REST
-- recursos versionados via `/api` com HATEOAS:
-  - `estados`
-  - `cidades`
-  - `usuarios`
-  - `ajudantes`
-  - `chats`
-  - `mensagens`
-- documentação OpenAPI disponível localmente.
+- recursos HATEOAS em `/api`:
+  - `estados`, `cidades`, `usuarios`, `ajudantes`, `chats`, `mensagens`;
+- contratos com DTOs de request/response;
+- tratamento padronizado de erro.
 
-### Regras de negócio implementadas
-- um usuário não pode manter mais de um chat ativo ao mesmo tempo;
-- abertura de chat do usuário escolhe ajudante disponível com melhor rating;
-- mensagens só podem ser enviadas por participante vinculado ao chat;
-- não é permitido enviar mensagem em chat finalizado;
-- validações de integridade, unicidade e consistência temporal aplicadas na camada de serviço.
+### Regras de negócio críticas
+- usuário não pode ter mais de um chat ativo;
+- abertura de chat do usuário seleciona ajudante disponível com maior rating;
+- envio de mensagem exige remetente vinculado ao chat;
+- mensagem em chat finalizado é bloqueada;
+- acesso a chats e mensagens é validado no backend por perfil/vínculo.
 
 ## Perfis de acesso
-| Perfil | Escopo principal | Permissões relevantes |
+| Perfil | Escopo principal | Permissões |
 |---|---|---|
-| `ADMIN` | Gestão completa | Administra usuários, ajudantes, chats e pode alterar status/excluir chat |
-| `USUÁRIO` | Atendimento próprio | Abre chat para si, visualiza e envia mensagens apenas nos próprios chats |
-| `AJUDANTE` | Atendimento vinculado | Visualiza e envia mensagens apenas nos chats vinculados ao próprio perfil |
+| `ADMIN` | Gestão completa | Usuários, ajudantes, chats, status e administração geral |
+| `USUÁRIO` | Atendimento próprio | Abre chat para si, acompanha e envia mensagens nos próprios chats |
+| `AJUDANTE` | Atendimento vinculado | Acompanha e envia mensagens apenas nos chats vinculados ao próprio perfil |
 
-Resumo de autorização:
-- `/app/usuarios/**` e `/app/ajudantes/**`: somente `ADMIN`;
-- `/app/chats/novo`: `ADMIN` e `USUÁRIO`;
-- `/app/chats/abrir` (POST): somente `USUÁRIO`;
-- `/app/chats/*/status` e `/app/chats/*/excluir` (POST): somente `ADMIN`;
-- `/app/chats/*/conversa/mensagens` (POST): `USUÁRIO` ou `AJUDANTE`;
-- `/app/minha-conta/**`: todos os perfis autenticados.
+Resumo de rotas web:
+- `/app/usuarios/**` e `/app/ajudantes/**`: somente ADMIN;
+- `/app/chats/novo`: ADMIN e USUÁRIO;
+- `/app/chats/abrir` (POST): somente USUÁRIO;
+- `/app/chats/*/status` e `/app/chats/*/excluir` (POST): somente ADMIN;
+- `/app/chats/*/conversa/mensagens` (POST): USUÁRIO ou AJUDANTE.
 
 ## Acesso ao sistema em ambiente local
-> Uso exclusivo para desenvolvimento/local.
-> Não utilizar em produção.
-> Credenciais dependem da carga inicial do banco via Flyway (migrations `V6`, `V7` e `V8`).
+> Credenciais de uso **exclusivo** para ambiente local/desenvolvimento.  
+> Não utilizar em produção.  
+> Dependem da carga inicial Flyway (`V6`, `V7`, `V8`, `V9`).
 
 | Perfil | Login | Senha |
 |---|---|---|
@@ -101,30 +96,29 @@ Resumo de autorização:
 | USUÁRIO | `11999998888` | `demo12345` |
 | AJUDANTE | `ajudante.escuta` | `apoio12345` |
 
-Diretriz do projeto:
-- as credenciais de ambiente local devem ficar documentadas no README;
-- a interface inicial não exibe credenciais de teste.
+Diretriz adotada:
+- credenciais locais ficam somente no README;
+- interface inicial não exibe logins/senhas de teste.
 
 ## Como executar o projeto
-## Pré-requisitos
+### Pré-requisitos
 - Java 21+;
-- Oracle Database acessível (19c, 21c ou 23c);
-- Maven Wrapper (já incluído no projeto);
-- schema com permissão para criar/alterar objetos.
+- Oracle Database (19c, 21c ou 23c);
+- schema com permissão de criar/alterar objetos;
+- Maven Wrapper (já no repositório).
 
-## Variáveis de ambiente obrigatórias
-- `DB_URL`  
-  Exemplo: `jdbc:oracle:thin:@localhost:1521/FREEPDB1`
+### Variáveis obrigatórias
+- `DB_URL` (ex.: `jdbc:oracle:thin:@localhost:1521/FREEPDB1`)
 - `DB_USERNAME`
 - `DB_PASSWORD`
 
-## Variáveis opcionais
+### Variáveis opcionais
 - `SPRING_PROFILES_ACTIVE` (default: `oracle`)
 - `JPA_DDL_AUTO` (default: `validate`)
 - `JPA_SHOW_SQL` (default: `false`)
 - `SERVER_PORT` (default: `8080`)
 
-## Executar no Windows (PowerShell)
+### Subir no Windows (PowerShell)
 ```powershell
 $env:SPRING_PROFILES_ACTIVE="oracle"
 $env:DB_URL="jdbc:oracle:thin:@localhost:1521/FREEPDB1"
@@ -133,7 +127,7 @@ $env:DB_PASSWORD="SUA_SENHA"
 .\mvnw.cmd clean spring-boot:run
 ```
 
-## Executar no Linux/macOS
+### Subir no Linux/macOS
 ```bash
 export SPRING_PROFILES_ACTIVE=oracle
 export DB_URL=jdbc:oracle:thin:@localhost:1521/FREEPDB1
@@ -142,157 +136,168 @@ export DB_PASSWORD=SUA_SENHA
 ./mvnw clean spring-boot:run
 ```
 
-## Endereços locais padrão
+### URLs principais
 - Home: `http://localhost:8080/`
 - Login: `http://localhost:8080/login`
 - Painel: `http://localhost:8080/app`
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
+## Fluxo rápido de avaliação
+1. Subir aplicação com Oracle e Flyway concluído.
+2. Entrar com perfil ADMIN.
+3. Validar acesso ao painel e módulos administrativos.
+4. Validar abertura/listagem de chats.
+5. Validar conversa e envio de mensagens.
+6. Validar bloqueio de acesso indevido para perfis não autorizados.
+7. Validar documentação Swagger.
+
+## Como testar o sistema
+### Testes automatizados
+```powershell
+.\mvnw.cmd clean test
+.\mvnw.cmd clean package
+```
+
+### Testes de integração Oracle (condicional)
+```powershell
+$env:ORACLE_TEST_ENABLED="true"
+$env:TEST_DB_URL="jdbc:oracle:thin:@localhost:1521/FREEPDB1"
+$env:TEST_DB_USERNAME="AIURY_TEST"
+$env:TEST_DB_PASSWORD="SUA_SENHA"
+.\mvnw.cmd test
+```
+
+### Validação via Postman
+Use os artefatos em `docs/postman/` e siga o guia:
+- [docs/postman/README.md](docs/postman/README.md)
+
 ## Configuração do ambiente
-Arquivos de configuração:
+Arquivos principais:
 - `src/main/resources/application.properties`
 - `src/main/resources/application-oracle.properties`
 - `src/main/resources/messages.properties`
 - `src/main/resources/messages_pt_BR.properties`
 
-Observações:
-- profile padrão da aplicação: `oracle`;
+Pontos importantes:
+- profile padrão: `oracle`;
 - Flyway habilitado por padrão;
-- localização de migration: `classpath:db/migration/oracle`;
-- não há `.env` nativo no projeto (uso via variáveis de ambiente do sistema);
-- não há Docker/Docker Compose no estado atual do repositório.
-
-Primeira execução:
-1. Configurar variáveis obrigatórias de banco.
-2. Subir a aplicação.
-3. Validar logs de migração Flyway concluída.
-4. Acessar `/login` e autenticar com as credenciais locais desta documentação.
+- migrations em `classpath:db/migration/oracle`;
+- projeto não usa `.env` nativo;
+- projeto não possui Docker/Docker Compose neste estado.
 
 ## Estrutura do projeto
 ```text
 src/main/java/br/com/fiap/aiury
-|- controller/              # REST controllers
-|- controller/mvc/          # Controllers de telas Thymeleaf
-|- services/                # Regras de negócio
-|- repositories/            # Spring Data JPA
-|- entities/                # Entidades JPA
-|- dto/                     # DTOs de API
-|- dto/web/                 # DTOs para views MVC
-|- mappers/                 # Conversões DTO <-> entidade
-|- mappers/web/             # Conversões para telas MVC
-|- representation/          # Builders HATEOAS
-|- configs/                 # Configurações globais (OpenAPI, Jackson, erros)
-|- security/                # Segurança, principal, sucesso de login
-|- exceptions/              # Exceções de domínio
+|- controller/              # REST
+|- controller/mvc/          # Fluxos de telas
+|- services/                # Regras de negocio
+|- repositories/            # JPA
+|- entities/                # Modelo persistente
+|- dto/                     # Contratos REST
+|- dto/web/                 # Contratos de tela
+|- mappers/                 # Conversoes
+|- representation/          # HATEOAS
+|- security/                # Login/perfis/autorizacao
+|- configs/                 # Config global e OpenAPI
+|- exceptions/              # Erros de dominio
 
 src/main/resources
 |- application*.properties
-|- db/migration/oracle/     # Migrations Flyway V1..V8
-|- templates/               # Thymeleaf (layout, fragments, telas)
-|- static/css/              # Estilos da aplicação
+|- db/migration/oracle/
+|- templates/
+|- static/css/
 
 docs/
-|- endpoints.md
-|- modelagem.md
 |- arquitetura.md
+|- modelagem.md
+|- endpoints.md
 |- testes.md
+|- visao-mvp.md
 |- postman/
 ```
 
 ## Fluxo de autenticação e autorização
-## Autenticação (login)
-- endpoint web: `/login`;
-- mecanismo: formulário Spring Security;
-- origem da credencial:
-  - `ADMIN`: tabela `TB_ADMIN_ACCOUNT`, login por `NM_LOGIN`;
-  - `USUÁRIO`: tabela `TB_USUARIO`, login por `NR_CELULAR`;
-  - `AJUDANTE`: tabela `TB_AJUDANTE`, login por `NM_LOGIN`;
-- após autenticação sem `savedRequest`, redireciona para `/app`.
+### Login
+- endpoint: `/login`;
+- sessão via cookie `JSESSIONID`;
+- senhas persistidas em BCrypt (sem fallback para texto puro);
+- resolução de usuário em 3 fontes:
+  - admin por `TB_ADMIN_ACCOUNT.NM_LOGIN`,
+  - usuário por `TB_USUARIO.NR_CELULAR`,
+  - ajudante por `TB_AJUDANTE.NM_LOGIN`;
+- redirecionamento pós-login para `/app`.
 
-## Autorização
-- baseada em roles (`ROLE_ADMIN`, `ROLE_USUARIO`, `ROLE_AJUDANTE`);
-- políticas declaradas em `SecurityConfig`;
-- validações de acesso também existem na camada de serviço para impedir acesso indevido por ID.
+### Autorização
+- regras declarativas em `SecurityConfig`;
+- reforço de segurança no backend (services), não apenas na UI;
+- rotas não mapeadas explicitamente são negadas (`denyAll`).
 
-## MVC x API protegida
-- camada MVC (`/app/**`): experiência operacional da interface web;
-- camada API (`/api/**`): endpoints REST com regras por método/perfil;
-- GETs de catálogo e navegação HATEOAS exigem usuário autenticado;
-- operações de escrita em recursos administrativos são restritas a ADMIN.
+### API x MVC
+- MVC (`/app/**`): operação diária;
+- REST (`/api/**`): integração técnica;
+- GET de catálogos/API root para perfis autenticados;
+- escrita administrativa restrita ao ADMIN, com exceções controladas para fluxo de mensagens.
 
-## Relação entre usuário, ajudante, chats e vínculos
-- chat possui `usuario` e `ajudante` obrigatórios;
-- mensagem pertence a um chat e tem remetente exclusivo (usuário ou ajudante);
-- usuário/ajudante só visualiza e manipula dados vinculados ao próprio contexto.
-
-## Banco de dados
-Banco oficial:
+## Banco de dados e Flyway
+### Banco oficial
 - Oracle Database.
 
-Migrations Flyway:
-- `V1` e `V2`: criação inicial de tabelas e índices;
-- `V3`: ajustes de segurança e remetente de mensagem;
-- `V4`: conta administrativa;
-- `V5`: padronização corporativa de nomenclatura (`TB_*`, colunas, constraints, índices);
+### Migrations
+- `V1` e `V2`: estrutura inicial + índices;
+- `V3`: ajustes de segurança/remetente;
+- `V4`: tabela administrativa;
+- `V5`: padronização corporativa (`TB_*`, colunas, constraints e índices);
 - `V6`, `V7`, `V8`: seed de referência, autenticação e dados de demonstração.
+- `V9`: normalização de credenciais legadas em texto puro para BCrypt.
 
-Dados iniciais de demonstração:
-- 2 estados;
-- 3 cidades;
-- 2 usuários;
-- 2 ajudantes;
-- 2 chats;
-- 5 mensagens;
-- 1 conta admin.
+### Dados iniciais
+- 2 estados, 3 cidades;
+- 2 usuários, 2 ajudantes;
+- 2 chats e 5 mensagens;
+- 1 conta ADMIN.
 
-## Reset/recriação da base local
-Estratégia recomendada:
-1. usar um schema dedicado de desenvolvimento;
-2. recriar o schema (ou remover objetos de negócio + histórico Flyway);
-3. subir a aplicação novamente para reaplicar migrations do zero.
-
-Boas práticas adotadas:
-- migrations idempotentes para seed;
-- constraints explícitas para integridade;
-- nomenclatura padronizada de objetos Oracle.
+### Reset local (recomendação)
+1. usar schema dedicado de desenvolvimento;
+2. recriar schema (ou limpar objetos de negócio + histórico Flyway);
+3. subir a aplicação novamente para reaplicar migrations.
 
 ## Documentação da API
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
-- root HATEOAS da API: `GET /api`
+- entrypoint HATEOAS: `GET /api`
 
-Recursos disponíveis na API:
-- estados, cidades, usuários, ajudantes, chats e mensagens;
-- documentação com exemplos de payload e erros.
-
-Diferenciação:
-- interface web = operação do dia a dia;
-- API REST = integração, testes e automação.
-
-Material de apoio:
-- [docs/endpoints.md](docs/endpoints.md)
-- [docs/modelagem.md](docs/modelagem.md)
-- [docs/arquitetura.md](docs/arquitetura.md)
-- [docs/testes.md](docs/testes.md)
-- coleção Postman em `docs/postman/`.
+Recursos documentados:
+- payloads de criação/atualização;
+- filtros por recurso;
+- status HTTP e estrutura de erros.
 
 ## Boas práticas e arquitetura
-- separação por camadas (`controller`, `service`, `repository`, `entity`);
-- DTO de request/response com mapeamento dedicado;
-- tratamento global de exceções com payload padronizado;
-- HATEOAS nos recursos REST;
-- regras de autorização aplicadas em configuração de segurança e reforçadas no serviço;
-- migração de banco versionada com Flyway;
-- interface MVC com layout base e fragments reutilizáveis.
+- arquitetura em camadas com responsabilidades separadas;
+- DTOs específicos para API e MVC;
+- tratamento global de exceções;
+- HATEOAS em recursos REST;
+- validação de regra de acesso no backend;
+- migrations versionadas e idempotentes para seed;
+- `@EnableCaching` preservado na aplicação;
+- `@OpenAPIDefinition` preservado na configuração OpenAPI.
 
 ## Melhorias futuras
-- paginação e ordenação avançada em listas web/API;
+- paginação e filtros avançados nas telas;
 - trilha de auditoria de ações críticas;
-- observabilidade com métricas e health checks expandidos;
-- pipeline CI/CD com validações automatizadas mais amplas;
-- fortalecimento de testes de integração Oracle em ambiente dedicado.
+- observabilidade com métricas/alertas;
+- pipeline CI/CD com gates de qualidade mais rígidos;
+- ampliação de testes de integração Oracle em ambiente dedicado.
+
+## Documentação complementar
+- [docs/arquitetura.md](docs/arquitetura.md)
+- [docs/modelagem.md](docs/modelagem.md)
+- [docs/endpoints.md](docs/endpoints.md)
+- [docs/testes.md](docs/testes.md)
+- [docs/visao-mvp.md](docs/visao-mvp.md)
+- [docs/postman/README.md](docs/postman/README.md)
+- [docs/imagens/README.md](docs/imagens/README.md)
 
 ## Integrantes
-- **Renato de Angelo**
-- **Nathália Mantovani de Falco — RM 99904**
+- **Renato De Angelo - RM 560585**
+- **Nathália Mantovani de Falco - RM 99904**

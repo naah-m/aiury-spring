@@ -2,6 +2,7 @@ package br.com.fiap.aiury;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 /**
  * Classe de bootstrap da aplicacao Spring Boot.
@@ -14,6 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * - não contem regra de negocio; a responsabilidade e somente iniciar a API.
  */
 @SpringBootApplication
+@EnableCaching
 public class AiuryApplication {
 
 	/**
