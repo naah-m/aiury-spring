@@ -227,7 +227,7 @@ docs/
 
 ## Video de demonstracao
 - Status do link final: **PENDENTE**
-- Link para publicar na entrega final: `INSERIR_LINK_YOUTUBE_AQUI`
+- Link para publicar na entrega final: `https://youtu.be/5IYVQQgzeM8`
 
 ## Integrantes
 | Nome completo | RM | Breve apresentacao | Responsabilidade principal no projeto |
