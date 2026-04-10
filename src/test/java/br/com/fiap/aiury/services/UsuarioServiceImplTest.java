@@ -7,20 +7,23 @@ import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.UsuarioMapper;
 import br.com.fiap.aiury.repositories.ChatRepository;
 import br.com.fiap.aiury.repositories.CidadeRepository;
-import br.com.fiap.aiury.repositories.MensagemRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,9 +38,6 @@ class UsuarioServiceImplTest {
 
     @Mock
     private ChatRepository chatRepository;
-
-    @Mock
-    private MensagemRepository mensagemRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -90,21 +90,25 @@ class UsuarioServiceImplTest {
     @Test
     void deveExcluirUsuarioComDependenciasQuandoUsuarioExiste() {
         Long usuarioId = 10L;
+        Usuario usuario = new Usuario();
+        usuario.setId(usuarioId);
+        br.com.fiap.aiury.entities.Chat chat = new br.com.fiap.aiury.entities.Chat();
+        chat.setId(100L);
 
-        when(usuarioRepository.existsById(usuarioId)).thenReturn(true);
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
+        when(chatRepository.findAll(any(Specification.class), any(Sort.class))).thenReturn(List.of(chat));
 
         usuarioService.deletarUsuario(usuarioId);
 
-        verify(mensagemRepository).deleteByChat_Usuario_Id(usuarioId);
-        verify(mensagemRepository).deleteByRemetente_Id(usuarioId);
-        verify(chatRepository).deleteByUsuario_Id(usuarioId);
-        verify(usuarioRepository).deleteById(usuarioId);
+        verify(chatRepository).findAll(any(Specification.class), any(Sort.class));
+        verify(chatRepository).delete(chat);
+        verify(usuarioRepository).delete(usuario);
     }
 
     @Test
     void deveLancarNotFoundAoExcluirUsuarioInexistente() {
         Long usuarioId = 999L;
-        when(usuarioRepository.existsById(usuarioId)).thenReturn(false);
+        when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> usuarioService.deletarUsuario(usuarioId))
                 .isInstanceOf(NotFoundException.class)

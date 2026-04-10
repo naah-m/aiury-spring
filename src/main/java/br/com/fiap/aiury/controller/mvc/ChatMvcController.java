@@ -175,6 +175,25 @@ public class ChatMvcController {
         }
     }
 
+    @PostMapping("/{id}/encerrar")
+    public String encerrar(@PathVariable Long id,
+                           @RequestParam(defaultValue = "detalhe") String retorno,
+                           RedirectAttributes redirectAttributes) {
+        try {
+            Chat chatEncerrado = chatService.encerrarChat(id);
+            redirectAttributes.addFlashAttribute(
+                    "mensagemSucesso",
+                    "Chat encerrado como " + chatMvcViewSupport.resolverRotuloStatus(chatEncerrado.getStatus()) + "."
+            );
+        } catch (NotFoundException | ConflictException | IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("mensagemErro", ex.getMessage());
+        }
+
+        return "conversa".equalsIgnoreCase(retorno)
+                ? "redirect:/app/chats/" + id + "/conversa"
+                : "redirect:/app/chats/" + id;
+    }
+
     @PostMapping("/{id}/excluir")
     public String excluir(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

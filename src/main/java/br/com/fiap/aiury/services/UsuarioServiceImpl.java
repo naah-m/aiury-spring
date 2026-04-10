@@ -1,6 +1,7 @@
 package br.com.fiap.aiury.services;
 
 import br.com.fiap.aiury.dto.UsuarioRequestDTO;
+import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.entities.Cidade;
 import br.com.fiap.aiury.entities.Usuario;
 import br.com.fiap.aiury.exceptions.ConflictException;
@@ -8,7 +9,6 @@ import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.UsuarioMapper;
 import br.com.fiap.aiury.repositories.ChatRepository;
 import br.com.fiap.aiury.repositories.CidadeRepository;
-import br.com.fiap.aiury.repositories.MensagemRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final CidadeRepository cidadeRepository;
     private final ChatRepository chatRepository;
-    private final MensagemRepository mensagemRepository;
     private final PasswordEncoder passwordEncoder;
     private final UsuarioMapper usuarioMapper;
 
@@ -36,13 +35,11 @@ public class UsuarioServiceImpl implements UsuarioService {
     public UsuarioServiceImpl(UsuarioRepository usuarioRepository,
                               CidadeRepository cidadeRepository,
                               ChatRepository chatRepository,
-                              MensagemRepository mensagemRepository,
                               PasswordEncoder passwordEncoder,
                               UsuarioMapper usuarioMapper) {
         this.usuarioRepository = usuarioRepository;
         this.cidadeRepository = cidadeRepository;
         this.chatRepository = chatRepository;
-        this.mensagemRepository = mensagemRepository;
         this.passwordEncoder = passwordEncoder;
         this.usuarioMapper = usuarioMapper;
     }
@@ -104,15 +101,16 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional
     public void deletarUsuario(Long id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new NotFoundException("Usuario nao encontrado com ID: " + id);
-        }
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuario nao encontrado com ID: " + id));
 
         try {
-            mensagemRepository.deleteByChat_Usuario_Id(id);
-            mensagemRepository.deleteByRemetente_Id(id);
-            chatRepository.deleteByUsuario_Id(id);
-            usuarioRepository.deleteById(id);
+            List<Chat> chats = chatRepository.findAll(
+                    (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("usuario").get("id"), id),
+                    org.springframework.data.domain.Sort.by("id")
+            );
+            chats.forEach(chatRepository::delete);
+            usuarioRepository.delete(usuario);
         } catch (DataIntegrityViolationException ex) {
             throw new ConflictException("Nao foi possivel excluir o usuario pois existem registros vinculados.");
         }

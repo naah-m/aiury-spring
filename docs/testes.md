@@ -24,6 +24,13 @@ Resultado esperado:
 - testes de controllers REST com `@WebMvcTest`;
 - testes de handlers de seguranca e fluxos MVC isolados.
 
+Locais no repositorio:
+- `src/test/java/br/com/fiap/aiury/services`
+- `src/test/java/br/com/fiap/aiury/controller`
+- `src/test/java/br/com/fiap/aiury/controller/mvc`
+- `src/test/java/br/com/fiap/aiury/security`
+- `src/test/java/br/com/fiap/aiury/repositories`
+
 ### 3.2 Suite de integracao Oracle (condicional)
 Ativacao por variavel:
 - `ORACLE_TEST_ENABLED=true`
@@ -64,3 +71,8 @@ $env:TEST_DB_PASSWORD="SUA_SENHA"
 - captura de respostas `200/201/400/401/403/404/409` em cenarios relevantes;
 - captura de Swagger listando recursos da API;
 - captura de fluxo completo de abertura e acompanhamento de chat.
+
+Collection para validacao de endpoints:
+- `docs/postman/Aiury-Sprint3.postman_collection.json`
+- `docs/postman/Aiury-local.postman_environment.json`
+- `docs/postman/README.md`

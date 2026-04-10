@@ -20,6 +20,19 @@
         <div class="d-flex flex-wrap gap-2">
             <a class="btn btn-outline-secondary px-4" th:href="@{/app/chats/{id}(id=${chat.id})}">Voltar para acompanhamento</a>
             <a class="btn btn-outline-primary px-4" th:href="@{/app/chats}">Lista de chats</a>
+            <form th:action="@{/app/chats/{id}/encerrar(id=${chat.id})}"
+                  method="post"
+                  class="d-inline"
+                  th:if="${(perfilUsuario or perfilAjudante) and !chatEncerrado}">
+                <input type="hidden" name="retorno" value="conversa">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button type="submit"
+                        class="btn btn-danger px-4"
+                        th:text="${perfilUsuario} ? 'Encerrar como usuario' : 'Encerrar como ajudante'"
+                        onclick="return confirm('Deseja encerrar este chat agora?');">
+                    Encerrar chat
+                </button>
+            </form>
         </div>
     </section>
 

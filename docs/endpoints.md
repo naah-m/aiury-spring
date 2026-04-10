@@ -72,7 +72,7 @@ Matriz de acesso por perfil:
 3. Criar usuario com `cidadeId` existente
 4. Criar ajudante
 5. Criar chat com `usuarioId` e `ajudanteId` existentes
-6. Criar mensagem com `chatId` existente e `remetenteId` igual ao usuario dono do chat
+6. Criar mensagem com `chatId` existente e exatamente um remetente (`remetenteId` ou `remetenteAjudanteId`)
 
 ## 4. Resumo executivo de recursos
 
@@ -242,18 +242,20 @@ Exemplo `POST /api/mensagens`:
 {
   "chatId": 101,
   "remetenteId": 10,
+  "remetenteAjudanteId": null,
   "texto": "Obrigado pela escuta de hoje.",
   "dataEnvio": "25/03/2026 14:15:00"
 }
 ```
 
 Regras adicionais de negocio:
-- `remetenteId` deve pertencer ao usuario dono do chat.
+- informar exatamente um remetente (`remetenteId` ou `remetenteAjudanteId`).
+- o remetente informado deve pertencer ao contexto do chat.
 - `dataEnvio` deve estar entre início e fim do chat.
 
 Pre-requisitos:
 - `chatId` deve existir.
-- `remetenteId` deve existir e corresponder ao usuario do chat.
+- `remetenteId` ou `remetenteAjudanteId` deve existir e corresponder ao participante do chat.
 
 ## 12. Status HTTP usados na API
 

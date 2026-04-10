@@ -56,6 +56,14 @@ public interface ChatService {
     Chat atualizarChat(Long id, @Valid ChatRequestDTO chatDTO);
 
     /**
+     * Encerra um chat a partir do participante autenticado.
+     *
+     * @param id identificador do chat
+     * @return chat encerrado
+     */
+    Chat encerrarChat(Long id);
+
+    /**
      * Exclui chat por ID.
      *
      * @param id identificador do chat

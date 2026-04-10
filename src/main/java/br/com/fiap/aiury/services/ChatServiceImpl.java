@@ -10,15 +10,14 @@ import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.ChatMapper;
 import br.com.fiap.aiury.repositories.AjudanteRepository;
 import br.com.fiap.aiury.repositories.ChatRepository;
-import br.com.fiap.aiury.repositories.MensagemRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
 import br.com.fiap.aiury.security.AiuryAuthenticatedUserService;
 import br.com.fiap.aiury.security.AiuryUserPrincipal;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +45,6 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
     private final UsuarioRepository usuarioRepository;
     private final AjudanteRepository ajudanteRepository;
-    private final MensagemRepository mensagemRepository;
     private final AiuryAuthenticatedUserService authenticatedUserService;
     private final ChatMapper chatMapper;
 
@@ -54,13 +52,11 @@ public class ChatServiceImpl implements ChatService {
     public ChatServiceImpl(ChatRepository chatRepository,
                            UsuarioRepository usuarioRepository,
                            AjudanteRepository ajudanteRepository,
-                           MensagemRepository mensagemRepository,
                            AiuryAuthenticatedUserService authenticatedUserService,
                            ChatMapper chatMapper) {
         this.chatRepository = chatRepository;
         this.usuarioRepository = usuarioRepository;
         this.ajudanteRepository = ajudanteRepository;
-        this.mensagemRepository = mensagemRepository;
         this.authenticatedUserService = authenticatedUserService;
         this.chatMapper = chatMapper;
     }
@@ -88,10 +84,10 @@ public class ChatServiceImpl implements ChatService {
     public Chat abrirChatParaUsuario(Long usuarioId) {
         AiuryUserPrincipal principal = authenticatedUserService.getPrincipalOrThrow();
         if (!principal.isUsuario()) {
-            throw new AccessDeniedException("Apenas usuários podem abrir novo chat no fluxo web.");
+            throw new AccessDeniedException("Apenas usuarios podem abrir novo chat no fluxo web.");
         }
         if (principal.getUsuarioId() == null || !principal.getUsuarioId().equals(usuarioId)) {
-            throw new AccessDeniedException("Não é permitido abrir chat para outro usuário.");
+            throw new AccessDeniedException("Nao e permitido abrir chat para outro usuario.");
         }
 
         Usuario usuario = buscarUsuarioPorId(usuarioId);
@@ -99,7 +95,7 @@ public class ChatServiceImpl implements ChatService {
 
         Ajudante ajudanteDisponivel = ajudanteRepository.findFirstByDisponivelTrueOrderByRatingDescIdAsc()
                 .orElseThrow(() -> new ConflictException(
-                        "No momento não há ajudantes disponíveis. Tente novamente em instantes."
+                        "No momento nao ha ajudantes disponiveis. Tente novamente em instantes."
                 ));
 
         Chat chat = new Chat();
@@ -117,7 +113,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Chat buscarPorId(Long id) {
         Chat chat = chatRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Chat não encontrado com ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Chat nao encontrado com ID: " + id));
         validarAcessoAoChat(chat);
         return chat;
     }
@@ -135,13 +131,13 @@ public class ChatServiceImpl implements ChatService {
         if (principal.isUsuario()) {
             Long usuarioLogadoId = principal.getUsuarioId();
             if (usuarioLogadoId == null) {
-                throw new AccessDeniedException("Perfil de usuário autenticado sem vínculo válido.");
+                throw new AccessDeniedException("Perfil de usuario autenticado sem vinculo valido.");
             }
             if (usuarioId != null && !usuarioId.equals(usuarioLogadoId)) {
-                throw new AccessDeniedException("O usuário logado não possui acesso ao filtro informado.");
+                throw new AccessDeniedException("O usuario logado nao possui acesso ao filtro informado.");
             }
             if (ajudanteId != null) {
-                throw new AccessDeniedException("Não é permitido filtrar por ajudante neste perfil.");
+                throw new AccessDeniedException("Nao e permitido filtrar por ajudante neste perfil.");
             }
             usuarioIdEfetivo = usuarioLogadoId;
             ajudanteIdEfetivo = null;
@@ -150,13 +146,13 @@ public class ChatServiceImpl implements ChatService {
         if (principal.isAjudante()) {
             Long ajudanteLogadoId = principal.getAjudanteId();
             if (ajudanteLogadoId == null) {
-                throw new AccessDeniedException("Perfil de ajudante autenticado sem vínculo válido.");
+                throw new AccessDeniedException("Perfil de ajudante autenticado sem vinculo valido.");
             }
             if (ajudanteId != null && !ajudanteId.equals(ajudanteLogadoId)) {
-                throw new AccessDeniedException("O ajudante logado não possui acesso ao filtro informado.");
+                throw new AccessDeniedException("O ajudante logado nao possui acesso ao filtro informado.");
             }
             if (usuarioId != null) {
-                throw new AccessDeniedException("Não é permitido filtrar por usuário neste perfil.");
+                throw new AccessDeniedException("Nao e permitido filtrar por usuario neste perfil.");
             }
             ajudanteIdEfetivo = ajudanteLogadoId;
             usuarioIdEfetivo = null;
@@ -207,6 +203,33 @@ public class ChatServiceImpl implements ChatService {
         return chatRepository.save(chatExistente);
     }
 
+    @Override
+    @Transactional
+    public Chat encerrarChat(Long id) {
+        Chat chat = buscarPorId(id);
+        if (isStatusFinalizado(chat.getStatus())) {
+            throw new ConflictException("Este chat ja esta finalizado.");
+        }
+
+        AiuryUserPrincipal principal = authenticatedUserService.getPrincipalOrThrow();
+        if (principal.isUsuario()) {
+            if (principal.getUsuarioId() == null) {
+                throw new AccessDeniedException("Perfil de usuario autenticado sem vinculo valido.");
+            }
+            chat.setStatus(ChatStatus.FINALIZADO_USUARIO);
+        } else if (principal.isAjudante()) {
+            if (principal.getAjudanteId() == null) {
+                throw new AccessDeniedException("Perfil de ajudante autenticado sem vinculo valido.");
+            }
+            chat.setStatus(ChatStatus.FINALIZADO_AJUDANTE);
+        } else {
+            throw new AccessDeniedException("Apenas usuario ou ajudante podem encerrar o chat.");
+        }
+
+        chat.setDataFim(resolverDataEncerramento(chat));
+        return chatRepository.save(chat);
+    }
+
     /**
      * Exclui chat com verificacao previa de existencia.
      */
@@ -214,15 +237,13 @@ public class ChatServiceImpl implements ChatService {
     @Transactional
     public void deletarChat(Long id) {
         exigirAdmin();
-        if (!chatRepository.existsById(id)) {
-            throw new NotFoundException("Chat não encontrado com ID: " + id);
-        }
+        Chat chat = chatRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Chat nao encontrado com ID: " + id));
 
         try {
-            mensagemRepository.deleteByChat_Id(id);
-            chatRepository.deleteById(id);
+            chatRepository.delete(chat);
         } catch (DataIntegrityViolationException ex) {
-            throw new ConflictException("Não foi possível excluir o chat pois existem dados vinculados.");
+            throw new ConflictException("Nao foi possivel excluir o chat pois existem dados vinculados.");
         }
     }
 
@@ -231,7 +252,7 @@ public class ChatServiceImpl implements ChatService {
      */
     private Usuario buscarUsuarioPorId(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado com ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Usuario nao encontrado com ID: " + id));
     }
 
     /**
@@ -239,12 +260,12 @@ public class ChatServiceImpl implements ChatService {
      */
     private Ajudante buscarAjudantePorId(Long id) {
         return ajudanteRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Ajudante não encontrado com ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Ajudante nao encontrado com ID: " + id));
     }
 
     private void exigirAdmin() {
         if (!authenticatedUserService.isAdmin()) {
-            throw new AccessDeniedException("Apenas administradores podem executar esta operação.");
+            throw new AccessDeniedException("Apenas administradores podem executar esta operacao.");
         }
     }
 
@@ -281,7 +302,7 @@ public class ChatServiceImpl implements ChatService {
         if (chatAtivo.isPresent()) {
             Chat chatExistente = chatAtivo.get();
             throw new ConflictException(
-                    "Este usuário já possui chat ativo (#" + chatExistente.getId()
+                    "Este usuario ja possui chat ativo (#" + chatExistente.getId()
                             + "). Finalize o atendimento atual para abrir um novo."
             );
         }
@@ -291,22 +312,33 @@ public class ChatServiceImpl implements ChatService {
         return status != null && CHAT_STATUS_ATIVOS.contains(status);
     }
 
+    private boolean isStatusFinalizado(ChatStatus status) {
+        return status == ChatStatus.FINALIZADO_USUARIO
+                || status == ChatStatus.FINALIZADO_AJUDANTE
+                || status == ChatStatus.FINALIZADO_SISTEMA;
+    }
+
+    private LocalDateTime resolverDataEncerramento(Chat chat) {
+        LocalDateTime dataEncerramento = LocalDateTime.now().withSecond(0).withNano(0);
+        if (chat.getDataInicio() != null && dataEncerramento.isBefore(chat.getDataInicio())) {
+            return chat.getDataInicio();
+        }
+        return dataEncerramento;
+    }
+
     private void validarConsistenciaTemporal(ChatRequestDTO chatDTO) {
         if (chatDTO.getDataFim() != null && chatDTO.getDataFim().isBefore(chatDTO.getDataInicio())) {
-            throw new IllegalArgumentException("A data/hora de fim não pode ser anterior à data/hora de início.");
+            throw new IllegalArgumentException("A data/hora de fim nao pode ser anterior a data/hora de inicio.");
         }
 
-        boolean statusFinalizado = chatDTO.getStatus() == ChatStatus.FINALIZADO_USUARIO
-                || chatDTO.getStatus() == ChatStatus.FINALIZADO_AJUDANTE
-                || chatDTO.getStatus() == ChatStatus.FINALIZADO_SISTEMA;
+        boolean statusFinalizado = isStatusFinalizado(chatDTO.getStatus());
 
         if (statusFinalizado && chatDTO.getDataFim() == null) {
             throw new IllegalArgumentException("Chats finalizados devem informar data/hora de fim.");
         }
 
         if (chatDTO.getStatus() == ChatStatus.INICIADO && chatDTO.getDataFim() != null) {
-            throw new IllegalArgumentException("Chat com status INICIADO não pode ter data/hora de fim.");
+            throw new IllegalArgumentException("Chat com status INICIADO nao pode ter data/hora de fim.");
         }
     }
 }
-

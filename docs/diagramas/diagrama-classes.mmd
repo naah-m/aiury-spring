@@ -1,0 +1,69 @@
+classDiagram
+    class Estado {
+      Long id
+      String nomeEstado
+      String uf
+    }
+    class Cidade {
+      Long id
+      String nomeCidade
+      Estado estado
+    }
+    class Usuario {
+      Long id
+      String nomeReal
+      String nomeAnonimo
+      LocalDate dataNascimento
+      String celular
+      String senha
+      LocalDate dataCadastro
+      Cidade cidade
+    }
+    class Ajudante {
+      Long id
+      String areaAtuacao
+      String login
+      String senha
+      String motivacao
+      boolean disponivel
+      Double rating
+    }
+    class Chat {
+      Long id
+      LocalDateTime dataInicio
+      LocalDateTime dataFim
+      ChatStatus status
+      Usuario usuario
+      Ajudante ajudante
+    }
+    class Mensagem {
+      Long id
+      String texto
+      LocalDateTime dataEnvio
+      Chat chat
+      Usuario remetente
+      Ajudante remetenteAjudante
+    }
+    class AdminAccount {
+      Long id
+      String username
+      String senha
+      LocalDateTime dataAtualizacao
+    }
+    class ChatStatus {
+      <<enum>>
+      INICIADO
+      EM_ANDAMENTO
+      FINALIZADO_USUARIO
+      FINALIZADO_AJUDANTE
+      FINALIZADO_SISTEMA
+    }
+
+    Estado "1" --> "*" Cidade
+    Cidade "1" --> "*" Usuario
+    Usuario "1" --> "*" Chat
+    Ajudante "1" --> "*" Chat
+    Chat "1" --> "*" Mensagem
+    Usuario "0..1" --> "*" Mensagem : remetente
+    Ajudante "0..1" --> "*" Mensagem : remetenteAjudante
+    Chat --> ChatStatus

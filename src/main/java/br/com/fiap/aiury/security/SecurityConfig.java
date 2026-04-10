@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/app/chats/abrir").hasRole("USUARIO")
                         .requestMatchers("/app/chats/novo").hasAnyRole("ADMIN", "USUARIO")
                         .requestMatchers(HttpMethod.POST, "/app/chats/*/status").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/app/chats/*/encerrar").hasAnyRole("USUARIO", "AJUDANTE")
                         .requestMatchers(HttpMethod.POST, "/app/chats/*/excluir").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/app/chats/*/conversa/mensagens").hasAnyRole("USUARIO", "AJUDANTE")
                         .requestMatchers("/app/minha-conta/**").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
@@ -52,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/ajudantes/**").hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.GET, "/api/chats/**").hasAnyRole("ADMIN", "USUARIO", "AJUDANTE")
+                        .requestMatchers(HttpMethod.POST, "/api/chats/*/encerrar").hasAnyRole("USUARIO", "AJUDANTE")
                         .requestMatchers(HttpMethod.POST, "/api/chats/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/chats/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/chats/**").hasRole("ADMIN")

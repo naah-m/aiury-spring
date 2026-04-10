@@ -177,6 +177,27 @@ public class ChatController {
         return ResponseEntity.ok(chatRepresentationBuilder.toModel(chatAtualizado));
     }
 
+    @PostMapping("/{id}/encerrar")
+    @Operation(
+            summary = "Encerrar chat",
+            description = "Permite que o usuario ou ajudante vinculado ao atendimento finalize o chat com seu proprio perfil."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Chat encerrado"),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Chat nao encontrado",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))
+            )
+    })
+    public ResponseEntity<EntityModel<ChatResponseDTO>> encerrarChat(
+            @Parameter(description = "ID do chat a ser encerrado.", example = "1")
+            @PathVariable Long id
+    ) {
+        Chat chatEncerrado = chatService.encerrarChat(id);
+        return ResponseEntity.ok(chatRepresentationBuilder.toModel(chatEncerrado));
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Excluir chat", description = "Remove um chat pelo ID")
     @ApiResponses({

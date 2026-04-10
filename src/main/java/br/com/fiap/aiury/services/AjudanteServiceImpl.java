@@ -2,12 +2,12 @@ package br.com.fiap.aiury.services;
 
 import br.com.fiap.aiury.dto.AjudanteRequestDTO;
 import br.com.fiap.aiury.entities.Ajudante;
+import br.com.fiap.aiury.entities.Chat;
 import br.com.fiap.aiury.exceptions.ConflictException;
 import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.AjudanteMapper;
 import br.com.fiap.aiury.repositories.AjudanteRepository;
 import br.com.fiap.aiury.repositories.ChatRepository;
-import br.com.fiap.aiury.repositories.MensagemRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,19 +25,16 @@ public class AjudanteServiceImpl implements AjudanteService {
 
     private final AjudanteRepository ajudanteRepository;
     private final ChatRepository chatRepository;
-    private final MensagemRepository mensagemRepository;
     private final PasswordEncoder passwordEncoder;
     private final AjudanteMapper ajudanteMapper;
 
     @Autowired
     public AjudanteServiceImpl(AjudanteRepository ajudanteRepository,
                                ChatRepository chatRepository,
-                               MensagemRepository mensagemRepository,
                                PasswordEncoder passwordEncoder,
                                AjudanteMapper ajudanteMapper) {
         this.ajudanteRepository = ajudanteRepository;
         this.chatRepository = chatRepository;
-        this.mensagemRepository = mensagemRepository;
         this.passwordEncoder = passwordEncoder;
         this.ajudanteMapper = ajudanteMapper;
     }
@@ -92,15 +89,16 @@ public class AjudanteServiceImpl implements AjudanteService {
     @Override
     @Transactional
     public void deletarAjudante(Long id) {
-        if (!ajudanteRepository.existsById(id)) {
-            throw new NotFoundException("Ajudante nao encontrado com ID: " + id);
-        }
+        Ajudante ajudante = ajudanteRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Ajudante nao encontrado com ID: " + id));
 
         try {
-            mensagemRepository.deleteByChat_Ajudante_Id(id);
-            mensagemRepository.deleteByRemetenteAjudante_Id(id);
-            chatRepository.deleteByAjudante_Id(id);
-            ajudanteRepository.deleteById(id);
+            List<Chat> chats = chatRepository.findAll(
+                    (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("ajudante").get("id"), id),
+                    org.springframework.data.domain.Sort.by("id")
+            );
+            chats.forEach(chatRepository::delete);
+            ajudanteRepository.delete(ajudante);
         } catch (DataIntegrityViolationException ex) {
             throw new ConflictException("Nao foi possivel excluir o ajudante pois existem chats vinculados.");
         }

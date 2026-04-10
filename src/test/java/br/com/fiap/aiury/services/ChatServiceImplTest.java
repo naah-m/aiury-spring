@@ -10,7 +10,6 @@ import br.com.fiap.aiury.exceptions.NotFoundException;
 import br.com.fiap.aiury.mappers.ChatMapper;
 import br.com.fiap.aiury.repositories.AjudanteRepository;
 import br.com.fiap.aiury.repositories.ChatRepository;
-import br.com.fiap.aiury.repositories.MensagemRepository;
 import br.com.fiap.aiury.repositories.UsuarioRepository;
 import br.com.fiap.aiury.security.AiuryAuthenticatedUserService;
 import br.com.fiap.aiury.security.AiuryUserPrincipal;
@@ -19,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -42,9 +42,6 @@ class ChatServiceImplTest {
     private AjudanteRepository ajudanteRepository;
 
     @Mock
-    private MensagemRepository mensagemRepository;
-
-    @Mock
     private AiuryAuthenticatedUserService authenticatedUserService;
 
     @Mock
@@ -56,24 +53,26 @@ class ChatServiceImplTest {
     @Test
     void deveExcluirChatComMensagensQuandoChatExiste() {
         Long chatId = 5L;
+        Chat chat = new Chat();
+        chat.setId(chatId);
+
         when(authenticatedUserService.isAdmin()).thenReturn(true);
-        when(chatRepository.existsById(chatId)).thenReturn(true);
+        when(chatRepository.findById(chatId)).thenReturn(Optional.of(chat));
 
         chatService.deletarChat(chatId);
 
-        verify(mensagemRepository).deleteByChat_Id(chatId);
-        verify(chatRepository).deleteById(chatId);
+        verify(chatRepository).delete(chat);
     }
 
     @Test
     void deveLancarNotFoundAoExcluirChatInexistente() {
         Long chatId = 999L;
         when(authenticatedUserService.isAdmin()).thenReturn(true);
-        when(chatRepository.existsById(chatId)).thenReturn(false);
+        when(chatRepository.findById(chatId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> chatService.deletarChat(chatId))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessageContaining("Chat não encontrado");
+                .hasMessageContaining("Chat nao encontrado");
     }
 
     @Test
@@ -128,5 +127,108 @@ class ChatServiceImplTest {
         Chat chat = chatService.abrirChatParaUsuario(1L);
         assertThat(chat.getId()).isEqualTo(10L);
         assertThat(chat.getStatus()).isEqualTo(ChatStatus.INICIADO);
+    }
+
+    @Test
+    void deveEncerrarChatComoUsuario() {
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+
+        Ajudante ajudante = new Ajudante();
+        ajudante.setId(3L);
+
+        Chat chat = new Chat();
+        chat.setId(10L);
+        chat.setUsuario(usuario);
+        chat.setAjudante(ajudante);
+        chat.setStatus(ChatStatus.EM_ANDAMENTO);
+        chat.setDataInicio(LocalDateTime.now().minusMinutes(5));
+
+        when(chatRepository.findById(10L)).thenReturn(Optional.of(chat));
+        when(authenticatedUserService.getPrincipalOrThrow())
+                .thenReturn(AiuryUserPrincipal.usuario("11999998888", "x", 1L));
+        when(chatRepository.save(any(Chat.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Chat encerrado = chatService.encerrarChat(10L);
+
+        assertThat(encerrado.getStatus()).isEqualTo(ChatStatus.FINALIZADO_USUARIO);
+        assertThat(encerrado.getDataFim()).isNotNull();
+        verify(chatRepository).save(chat);
+    }
+
+    @Test
+    void deveEncerrarChatComoAjudante() {
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+
+        Ajudante ajudante = new Ajudante();
+        ajudante.setId(3L);
+
+        Chat chat = new Chat();
+        chat.setId(10L);
+        chat.setUsuario(usuario);
+        chat.setAjudante(ajudante);
+        chat.setStatus(ChatStatus.INICIADO);
+        chat.setDataInicio(LocalDateTime.now().minusMinutes(2));
+
+        when(chatRepository.findById(10L)).thenReturn(Optional.of(chat));
+        when(authenticatedUserService.getPrincipalOrThrow())
+                .thenReturn(AiuryUserPrincipal.ajudante("ajudante.escuta", "x", 3L));
+        when(chatRepository.save(any(Chat.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Chat encerrado = chatService.encerrarChat(10L);
+
+        assertThat(encerrado.getStatus()).isEqualTo(ChatStatus.FINALIZADO_AJUDANTE);
+        assertThat(encerrado.getDataFim()).isNotNull();
+        verify(chatRepository).save(chat);
+    }
+
+    @Test
+    void deveBloquearEncerramentoPorAdministrador() {
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+
+        Ajudante ajudante = new Ajudante();
+        ajudante.setId(3L);
+
+        Chat chat = new Chat();
+        chat.setId(10L);
+        chat.setUsuario(usuario);
+        chat.setAjudante(ajudante);
+        chat.setStatus(ChatStatus.EM_ANDAMENTO);
+        chat.setDataInicio(LocalDateTime.now().minusMinutes(5));
+
+        when(chatRepository.findById(10L)).thenReturn(Optional.of(chat));
+        when(authenticatedUserService.getPrincipalOrThrow())
+                .thenReturn(AiuryUserPrincipal.admin("admin", "x"));
+
+        assertThatThrownBy(() -> chatService.encerrarChat(10L))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("Apenas usuario ou ajudante");
+    }
+
+    @Test
+    void deveBloquearNovoEncerramentoDeChatJaFinalizado() {
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+
+        Ajudante ajudante = new Ajudante();
+        ajudante.setId(3L);
+
+        Chat chat = new Chat();
+        chat.setId(10L);
+        chat.setUsuario(usuario);
+        chat.setAjudante(ajudante);
+        chat.setStatus(ChatStatus.FINALIZADO_AJUDANTE);
+        chat.setDataInicio(LocalDateTime.now().minusMinutes(5));
+        chat.setDataFim(LocalDateTime.now().minusMinutes(1));
+
+        when(chatRepository.findById(10L)).thenReturn(Optional.of(chat));
+        when(authenticatedUserService.getPrincipalOrThrow())
+                .thenReturn(AiuryUserPrincipal.ajudante("ajudante.escuta", "x", 3L));
+
+        assertThatThrownBy(() -> chatService.encerrarChat(10L))
+                .isInstanceOf(ConflictException.class)
+                .hasMessageContaining("ja esta finalizado");
     }
 }

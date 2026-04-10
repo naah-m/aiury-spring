@@ -1,0 +1,81 @@
+@startuml
+title Aiury - Diagrama de Classes (Entidades JPA)
+
+hide methods
+skinparam classAttributeIconSize 0
+
+class Estado {
+  +Long id
+  +String nomeEstado
+  +String uf
+}
+
+class Cidade {
+  +Long id
+  +String nomeCidade
+}
+
+class Usuario {
+  +Long id
+  +String nomeReal
+  +String nomeAnonimo
+  +LocalDate dataNascimento
+  +String celular
+  +String senha
+  +LocalDate dataCadastro
+}
+
+class Ajudante {
+  +Long id
+  +String areaAtuacao
+  +String login
+  +String senha
+  +String motivacao
+  +boolean disponivel
+  +Double rating
+}
+
+class Chat {
+  +Long id
+  +LocalDateTime dataInicio
+  +LocalDateTime dataFim
+  +ChatStatus status
+}
+
+class Mensagem {
+  +Long id
+  +String texto
+  +LocalDateTime dataEnvio
+}
+
+class AdminAccount {
+  +Long id
+  +String username
+  +String senha
+  +LocalDateTime dataAtualizacao
+}
+
+enum ChatStatus {
+  INICIADO
+  EM_ANDAMENTO
+  FINALIZADO_USUARIO
+  FINALIZADO_AJUDANTE
+  FINALIZADO_SISTEMA
+}
+
+Estado "1" -- "0..*" Cidade : estado
+Cidade "1" -- "0..*" Usuario : cidade
+Usuario "1" -- "0..*" Chat : usuario
+Ajudante "1" -- "0..*" Chat : ajudante
+Chat "1" -- "0..*" Mensagem : chat
+Usuario "0..1" -- "0..*" Mensagem : remetente
+Ajudante "0..1" -- "0..*" Mensagem : remetenteAjudante
+Chat --> ChatStatus : status
+
+note bottom of Mensagem
+  Regra de dominio:
+  apenas um remetente por mensagem
+  (usuario OU ajudante).
+end note
+
+@enduml

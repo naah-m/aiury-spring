@@ -42,6 +42,7 @@ O projeto segue arquitetura em camadas com separacao de responsabilidades para r
 ## 6. Qualidade e operacao
 - Build e testes automatizados via Maven Wrapper.
 - Suite de integracao Oracle condicional por ambiente.
+- Diagrama de arquitetura versionado em `docs/diagramas/arquitetura.mmd` e exportado em `docs/imagens/arquitetura.png`.
 - Documentacao tecnica complementar em:
   - `docs/endpoints.md`
   - `docs/modelagem.md`

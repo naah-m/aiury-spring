@@ -18,6 +18,13 @@ O modelo foi desenhado para suportar atendimento com:
 Padronizacao aplicada em migration dedicada:
 - `V5__standardize_corporate_naming.sql`
 
+## 2.1 Arquivos de diagramas no repositorio
+- DER (fonte): `docs/diagramas/der.mmd`
+- Diagrama de classes (fonte principal): `docs/diagramas/diagrama-classes.puml`
+- Diagrama de classes (fonte Mermaid para export): `docs/diagramas/diagrama-classes.mmd`
+- Arquitetura (fonte): `docs/diagramas/arquitetura.mmd`
+- Exportacoes PNG: `docs/imagens/der.png`, `docs/imagens/diagrama-classes.png`, `docs/imagens/arquitetura.png`
+
 ## 3. Entidades e tabelas
 | Entidade | Tabela | Papel |
 |---|---|---|
@@ -129,5 +136,5 @@ classDiagram
 - `V9`: normalizacao de credenciais legadas em texto puro para BCrypt.
 
 ## 9. Observacoes para banca
-- A pasta `docs/imagens/` pode receber exportacoes PNG dos diagramas, caso exigido na apresentacao.
-- Mesmo sem imagens, os diagramas Mermaid acima descrevem integralmente o modelo atual implementado no codigo e no banco.
+- A pasta `docs/imagens/` ja contem exportacoes PNG dos diagramas.
+- Em caso de alteracao de modelagem, atualize os arquivos-fonte em `docs/diagramas/` e regenere os PNGs para manter consistencia da entrega.

@@ -17,8 +17,9 @@ Cada linha representa entrega verificavel em codigo, documentacao ou testes.
 | 3 | Reforco de regras de negocio em `Chat` e `Mensagem` | Renato De Angelo | 2026-03-24 | 2026-03-24 | Concluido |
 | 3 | Reescrita de README e docs obrigatorios | Renato De Angelo | 2026-03-24 | 2026-03-25 | Concluido |
 | 3 | Atualizacao da collection Postman e roteiros de evidencia | Renato De Angelo | 2026-03-25 | 2026-03-25 | Concluido |
-| 3 | Revisao final para submissao academica | Equipe | 2026-03-25 | 2026-03-26 | Em andamento |
-| 3 | Gravacao e publicacao do video final | Equipe | 2026-03-25 | 2026-03-26 | Em andamento |
+| 3 | Revisao final para submissao academica | Equipe | 2026-03-25 | 2026-03-28 | Concluido |
+| 3 | Consolidacao de diagramas (fontes + PNG) | Equipe | 2026-03-28 | 2026-03-28 | Concluido |
+| 3 | Gravacao e publicacao do video final | Equipe | 2026-03-25 | - | Pendente |
 
 ## 3. Responsabilidades por frente
 | Frente | Responsavel principal | Entregavel |
@@ -29,4 +30,3 @@ Cada linha representa entrega verificavel em codigo, documentacao ou testes.
 
 ## 4. Itens ainda dependentes da equipe
 - Publicar link definitivo do video da Sprint 3 no README.
-- Inserir exportacoes finais de DER e diagrama de classes em `docs/imagens/`.

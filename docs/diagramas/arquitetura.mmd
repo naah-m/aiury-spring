@@ -1,0 +1,28 @@
+flowchart LR
+    UI[UI Web<br/>Thymeleaf] --> MVC[Controllers MVC]
+    API[Clientes API<br/>Swagger/Postman] --> REST[Controllers REST]
+
+    MVC --> SERVICE[Services<br/>Regras de negocio + autorizacao contextual]
+    REST --> SERVICE
+
+    SERVICE --> MAP[DTO/Web Mappers]
+    SERVICE --> REPO[Repositories JPA]
+    REPO --> DB[(Oracle Database)]
+
+    SEC[Spring Security] --> MVC
+    SEC --> REST
+    FLYWAY[Flyway Migrations] --> DB
+    OPENAPI[OpenAPI / Swagger] --> REST
+
+    subgraph APP[Aiury Spring Boot]
+        UI
+        API
+        MVC
+        REST
+        SERVICE
+        MAP
+        REPO
+        SEC
+        OPENAPI
+        FLYWAY
+    end

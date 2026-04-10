@@ -18,6 +18,18 @@
             <a class="btn btn-outline-secondary px-4" th:href="@{/app/chats}">Voltar para lista</a>
             <a class="btn btn-outline-primary px-4" th:href="@{/app/chats/{id}/conversa(id=${chat.id})}">Abrir conversa</a>
             <a class="btn btn-primary px-4" th:href="@{/app/chats/novo}" sec:authorize="hasRole('ADMIN')">Abrir outro chat</a>
+            <form th:action="@{/app/chats/{id}/encerrar(id=${chat.id})}"
+                  method="post"
+                  class="d-inline"
+                  th:if="${(perfilUsuario or perfilAjudante) and !chatEncerrado}">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button type="submit"
+                        class="btn btn-danger px-4"
+                        th:text="${perfilUsuario} ? 'Encerrar como usuario' : 'Encerrar como ajudante'"
+                        onclick="return confirm('Deseja encerrar este chat agora?');">
+                    Encerrar chat
+                </button>
+            </form>
             <form th:action="@{/app/chats/{id}/excluir(id=${chat.id})}" method="post" class="d-inline" sec:authorize="hasRole('ADMIN')">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <button type="submit"
@@ -101,7 +113,12 @@
                 </ul>
 
                 <div class="alert alert-secondary border-0 shadow-sm mb-4" th:if="${!perfilAdmin}">
-                    Apenas administradores podem alterar o status deste atendimento.
+                    <span th:if="${!chatEncerrado}">
+                        Voce pode encerrar este atendimento, mas a alteracao manual de status permanece restrita ao administrador.
+                    </span>
+                    <span th:if="${chatEncerrado}">
+                        Atendimento encerrado. Apenas o administrador pode ajustar o status manualmente.
+                    </span>
                 </div>
 
                 <form th:action="@{/app/chats/{id}/status(id=${chat.id})}" th:object="${statusForm}" method="post" class="row g-3"
