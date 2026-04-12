@@ -226,11 +226,11 @@ docs/
 ```
 
 ## Video de demonstracao
-- Status do link final: **PENDENTE**
-- Link para publicar na entrega final: `https://youtu.be/5IYVQQgzeM8`
+- Link: `https://youtu.be/5IYVQQgzeM8`
 
 ## Integrantes
 | Nome completo | RM | Breve apresentacao | Responsabilidade principal no projeto |
 |---|---|---|---|
 | Renato De Angelo | RM 560585 | Integrante com atuacao tecnica central no backend e na organizacao da entrega. | Implementacao de backend/modelagem (entidades, services, repositories), evolucao de API e consolidacao da documentacao tecnica. |
 | Nathália Mantovani de Falco | RM 99904 | Integrante da equipe para validacao final da entrega academica. | Apoio em evidencias de demonstracao e revisao final de consistencia da entrega (conforme frente de equipe no cronograma). |
+| João Victor Madella | RM 561007 | Integrante da equipe para validacao final da entrega academica. | Apoio em evidencias de demonstracao e revisao final de consistencia da entrega (conforme frente de equipe no cronograma). |
